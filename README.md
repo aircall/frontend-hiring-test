@@ -303,7 +303,7 @@ Example
 }
 ```
 
-#### Submission
+## Submission
 
 We don’t provide any boilerplate as a simple CRA will be enough here. Feel free to create a repository and send us the link once you’re ready. If the repository is private, please invite @litil and @kamalbennani.
 
