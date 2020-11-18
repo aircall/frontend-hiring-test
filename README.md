@@ -1,6 +1,6 @@
 # ☎️ Phone
 
-This test is a part of our hiring process at Aircall for the Frontend Developer position. It should take you between 3 and 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
+This test is a part of our hiring process at Aircall for the Frontend Engineer position. It should take you between 3 to 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
 
 *Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io.*
 
@@ -20,7 +20,7 @@ This application must:
 - handle real time events
 
 Bonus:
-- use our own UI library, called tractor
+- use our own Design System UI library, called [tractor](http://tractor.aircall.io/) 🚜 Link to the NPM Repository [here](https://www.npmjs.com/package/@aircall/tractor).
 - provide filtering feature, to filter calls  by type (archived, missed …)
 - use Typescript
 … and many others! Don’t be afraid to use new or unknown libraries, we’d love to learn new things!  
@@ -157,7 +157,7 @@ To be able to listen for the mutations/changes done on a given call, you can cal
 onUpdateCall(id: ID): Call!
 ```
 
-Now, we whenever an call is changed via the `addNote` or `archiveCall` mutations, you will receive a subscription event informing you of this change.
+Now, we whenever a call data changed either via the `addNote` or `archiveCall` mutations, you will receive a subscription event informing you of this change.
 
 _Don't forget to pass the Authorization header with the right access token in order to be able to listen for these changes_
 
@@ -305,7 +305,7 @@ Example
 
 ## Submission
 
-We don’t provide any boilerplate as a simple CRA will be enough here. Feel free to create a repository and send us the link once you’re ready. If the repository is private, please invite @litil and @kamalbennani.
+We don’t provide any boilerplate as a simple [CRA](https://create-react-app.dev/) will be enough here. Feel free to create a repository and send us the link once you’re ready. If the repository is private, please invite @litil and @kamalbennani.
 
 We'll try to review it in the next 48 hours and get back to you in order to talk about your code!
 
