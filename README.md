@@ -1,4 +1,4 @@
-# ☎️ Phone
+# :phone: Phone
 
 This test is a part of our hiring process at Aircall for the Frontend Engineer position. It should take you between 3 to 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
 
@@ -10,20 +10,29 @@ Aircall is on a mission to revolutionize the business phone industry! This test 
 
 ## Exercise
 
-You’ll have to build an application, either with React, Angular, Vue or any other framework. We do write our applications in React but you can use other frameworks or libraries here.
+The application can be built using any Frontend Framework/Library such as React, Angular, Vue. We do use React on our main apps and the website is built using Vue.
+
+You can also choose whatever Design System you'd like to build the application, but we provide you with our own sweet, lovely and homemade Design System called tractor :tractor:
+- Storybook: [here](http://tractor.aircall.io/)
+- NPM Repository [here](https://www.npmjs.com/package/@aircall/tractor).
+
+_NB: You can also build your own components from scratch._
 
 This application must:
-- display a paginated list of calls that you’ll retrieve from our backend
-- if the user clicks on a call, display its details
-- archive 1 or several calls
-- group calls by date
-- handle real time events
+- Display a paginated list of calls that you’ll retrieve from the API.
+- Display the call details view if the user clicks on a call. the view should display all the data related to the call itself.
+- Be able to archive one or several calls
+- Group calls by date
+- Handle real-time events (Whenever a call is archived or a note is being added to a call, these changes should be reflected on the UI immediately)
 
 Bonus:
-- use our own Design System UI library, called [tractor](http://tractor.aircall.io/) 🚜 Link to the NPM Repository [here](https://www.npmjs.com/package/@aircall/tractor).
-- provide filtering feature, to filter calls  by type (archived, missed …)
-- use Typescript
+- Use Typescript
+- Provide filtering feature, to filter calls by type (archived, missed …)
 … and many others! Don’t be afraid to use new or unknown libraries, we’d love to learn new things!  
+
+
+**Important Note**: We want you to build this small app as you'd have done it for your current job. (UI, UX, tests, documentation matters).
+
 
 ## APIs
 
@@ -86,13 +95,13 @@ type PaginatedCalls {
 }
 ```
 
-`activitiy` return a single call if any, otherwise it returns null.
+`activitiy` returns a single call if any, otherwise it returns null.
 
 ```
 call(id: Float!): Call
 ```
 
-`me` return the current authenticated user.
+`me` returns the currently authenticated user.
 
 ```
 me: UserType!
@@ -109,7 +118,7 @@ type UserType {
 
 To be able to grab a valid JWT token, you need to execute the login mutation.
 
-`login` receives the username and password as 1st parameter and return the access_token and the user identity.
+`login` receives the username and password as 1st parameter and returns the access_token and the user identity.
 
 ```
 login(input: LoginInput!): LoginType!
@@ -151,7 +160,7 @@ input AddNoteInput {
 
 To be able to listen for the mutations/changes done on a given call, you can call the `onUpdateCall` using an actibity ID.
 
-`onUpdateCall` receives the call ID as 1st parameter and returns a call instance.
+`onUpdateCall` receives the call ID as the 1st parameter and returns a call instance.
 
 ```
 onUpdateCall(id: ID): Call!
@@ -194,7 +203,7 @@ Response:
 /calls/:id<uuid>
 ```
 
-`GET` `/me` return the current authenticated user.
+`GET` `/me` return the currently authenticated user.
 
 ```
 /me
@@ -244,11 +253,11 @@ Body
 }
 ```
 
-It returns the `Call` as response or an error if the note doesn't exist.
+It returns the `Call` as a response or an error if the note doesn't exist.
 
 #### PUT endpoints
 
-`PUT` `/calls/:id/archive` as the name implies it either archive or unarchive a given call.If the call doesn't exist, it'll throw an error.
+`PUT` `/calls/:id/archive` as the name implies it either archive or unarchive a given call. If the call doesn't exist, it'll throw an error.
 
 ```
 PUT /calls/:id/archive
@@ -266,9 +275,9 @@ Because this channel is private you need to authenticate first, to do that, you 
 
 #### Errors
 
-The REST API can return different type of errors:
+The REST API can return a different type of errors:
 
-`400` `BAD_REQUEST` error, it happens when you provide some data which doesn't respect a given shape.
+`400` `BAD_REQUEST` error, happens when you provide some data which doesn't respect a given shape.
 
 Example
 ```
@@ -282,7 +291,7 @@ Example
 }
 ```
 
-`401` `UNAUTHORIZED` error, it happens when the user is not authorized to perform an action or if his token is no longer valid
+`401` `UNAUTHORIZED` error, happens when the user is not authorized to perform an action or if his token is no longer valid
 
 Example
 ```
@@ -292,7 +301,7 @@ Example
 }
 ```
 
-`404` `NOT_FOUND` error, it happens when the user request a resource that no longer exist.
+`404` `NOT_FOUND` error, happens when the user requests a resource that no longer exists.
 
 Example
 ```
@@ -307,6 +316,6 @@ Example
 
 We don’t provide any boilerplate as a simple [CRA](https://create-react-app.dev/) will be enough here. Feel free to create a repository and send us the link once you’re ready. If the repository is private, please invite @litil and @kamalbennani.
 
-We'll try to review it in the next 48 hours and get back to you in order to talk about your code!
+We'll try to review it in the next 48 hours and get back to you to talk about your code!
 
 Contact us at jobs@aircall.io if you need more details.
