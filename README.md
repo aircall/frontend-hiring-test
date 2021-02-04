@@ -271,7 +271,10 @@ This event will be called each time you add a note or archive a call.
 
 Note that, you need to use Pusher SDK in order to listen for this event.
 
-Because this channel is private you need to authenticate first, to do that, you need to make `authEndpoint` point to: `<https://frontend-test-api.aircall.io/pusher/auth>`
+Because this channel is private you need to authenticate first, to do that, you need to make 
+- `APP_AUTH_ENDPOINT` point to: `https://frontend-test-api.aircall.io/pusher/auth`
+- set `APP_KEY` to `d44e3d910d38a928e0be`
+- and set `APP_CLUSTER` to `eu`
 
 #### Errors
 
