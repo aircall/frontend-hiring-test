@@ -116,28 +116,43 @@ type UserType {
 
 #### Mutations
 
-To be able to grab a valid JWT token, you need to execute the login mutation.
+To be able to grab a valid JWT token, you need to execute the `login` mutation.
 
-`login` receives the username and password as 1st parameter and returns the access_token and the user identity.
+`login` receives the username and password as 1st parameter and return the access_token and the user identity.
 
-```
-login(input: LoginInput!): LoginType!
+```graphql
+login(input: LoginInput!): AuthResponseType!
 
 input LoginInput {
   username: String!
   password: String!
 }
+
+interface AuthResponseType {
+  access_token: String!
+  user: UserType
+}
 ```
 
 Once you are correctly authenticated you need to pass the Authorization header for all the next calls to the GraphQL API.
 
-```
+```JSON
 {
   "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
 }
 ```
 
-Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by executing the same mutation.
+Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the `refreshToken` mutation before the token gets expired.
+
+`refreshToken` allows you to ask for a new fresh token based on your existing access_token
+
+```graphql
+refreshToken: AuthResponseType!
+```
+
+This will send you the same response as the `login` mutation.
+
+You must use the new token for the new requests made to the API.
 
 `archiveCall` as the name implies it either archive or unarchive a given call.If the call doesn't exist, it'll throw an error.
 
@@ -234,13 +249,20 @@ To be able to grab a valid JWT token, you need to call the following endpoint:
 ```
 
 Once you are correctly authenticated you need to pass the Authorization header for all the next calls to the REST API.
-```
+
+```JSON
 {
   "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
 }
 ```
 
-Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the same previous endpoint.
+Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the `/auth/refresh-token` endpoint before the token gets expired.
+
+`POST` `/auth/refresh-token` allows you to ask for a new fresh token based on your existing access_token
+
+This will return the same response as the `/auth/login` resource.
+
+You must use the new token for the new requests made to the API.
 
 `POST` `/calls/:id/note` create a note and add it prepend it to the call's notes list.
 
