@@ -1,6 +1,4 @@
-# FrontendHiringTest
-
-# :phone: Phone
+# :phone: FrontendHiringTest
 
 This test is a part of our hiring process at Aircall for the Frontend Engineer position. It should take you between 3 to 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
 
@@ -355,6 +353,12 @@ We'll try to review it in the next 48 hours and get back to you to talk about yo
 Contact us at jobs@aircall.io if you need more details.
 
 # Development documentation
+
+## Project Arqutecure
+
+### Views application flow
+
+![Views application flow](./src/assets/dev/frontend-hiring-test-architecture.jpg)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.1.4.
 
