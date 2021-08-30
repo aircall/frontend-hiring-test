@@ -1,8 +1,10 @@
+# FrontendHiringTest
+
 # :phone: Phone
 
 This test is a part of our hiring process at Aircall for the Frontend Engineer position. It should take you between 3 to 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
 
-*Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io.*
+_Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io._
 
 ## Context
 
@@ -13,12 +15,14 @@ Aircall is on a mission to revolutionize the business phone industry! This test 
 The application can be built using any Frontend Framework/Library such as React, Angular, Vue. We do use React on our main apps and the website is built using Vue.
 
 You can also choose whatever Design System you'd like to build the application, but we provide you with our own sweet, lovely and homemade Design System called tractor :tractor:
+
 - Storybook: [here](http://tractor.aircall.io/)
 - NPM Repository [here](https://www.npmjs.com/package/@aircall/tractor).
 
 _NB: You can also build your own components from scratch._
 
 This application must:
+
 - Display a paginated list of calls that you’ll retrieve from the API.
 - Display the call details view if the user clicks on a call. the view should display all the data related to the call itself.
 - Be able to archive one or several calls
@@ -26,13 +30,12 @@ This application must:
 - Handle real-time events (Whenever a call is archived or a note is being added to a call, these changes should be reflected on the UI immediately)
 
 Bonus:
+
 - Use Typescript
 - Provide filtering feature, to filter calls by type (archived, missed …)
-… and many others! Don’t be afraid to use new or unknown libraries, we’d love to learn new things!  
-
+  … and many others! Don’t be afraid to use new or unknown libraries, we’d love to learn new things!
 
 **Important Note**: We want you to build this small app as you'd have done it for your current job. (UI, UX, tests, documentation matters).
-
 
 ## APIs
 
@@ -204,6 +207,7 @@ All the endpoints are protected by a middleware that checks if the user is authe
 ```
 
 Response:
+
 ```
 {
   nodes: [Call!]
@@ -225,6 +229,7 @@ Response:
 ```
 
 Response
+
 ```
 {
   id: String!
@@ -293,7 +298,8 @@ This event will be called each time you add a note or archive a call.
 
 Note that, you need to use Pusher SDK in order to listen for this event.
 
-Because this channel is private you need to authenticate first, to do that, you need to make 
+Because this channel is private you need to authenticate first, to do that, you need to make
+
 - `APP_AUTH_ENDPOINT` point to: `https://frontend-test-api.aircall.io/pusher/auth`
 - set `APP_KEY` to `d44e3d910d38a928e0be`
 - and set `APP_CLUSTER` to `eu`
@@ -305,6 +311,7 @@ The REST API can return a different type of errors:
 `400` `BAD_REQUEST` error, happens when you provide some data which doesn't respect a given shape.
 
 Example
+
 ```
 {
   "statusCode": 400,
@@ -319,6 +326,7 @@ Example
 `401` `UNAUTHORIZED` error, happens when the user is not authorized to perform an action or if his token is no longer valid
 
 Example
+
 ```
 {
   "statusCode": 401,
@@ -329,6 +337,7 @@ Example
 `404` `NOT_FOUND` error, happens when the user requests a resource that no longer exists.
 
 Example
+
 ```
 {
   "statusCode": 404,
@@ -344,3 +353,31 @@ We don’t provide any boilerplate as a simple [CRA](https://create-react-app.de
 We'll try to review it in the next 48 hours and get back to you to talk about your code!
 
 Contact us at jobs@aircall.io if you need more details.
+
+# Development documentation
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.1.4.
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
