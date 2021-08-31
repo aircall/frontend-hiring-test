@@ -1,3 +1,32 @@
 <div class="page-login">
-	div
+	<form class="page-login__form mat-elevation-z2" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+		<img src="assets/aircall-logo.svg" alt="Logo AirCall">
+		<mat-form-field appearance="outline">
+			<mat-label>Username</mat-label>
+			<input type="text" matInput [(ngModel)]="authData.username" placeholder="Enter your email"
+				formControlName="username">
+			<mat-error *ngIf="loginForm.controls.username.hasError('required')">
+				Username is <strong>required</strong>
+			</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="outline">
+			<mat-label>Password</mat-label>
+			<input matInput [(ngModel)]="authData.password" placeholder="Enter your password" formControlName="password"
+				[type]="passwordVisible ? 'password' : 'text'">
+			<mat-icon matSuffix (click)="passwordVisible = !passwordVisible">{{passwordVisible ? 'visibility_off' :
+				'visibility'}}</mat-icon>
+			<mat-error
+				*ngIf="loginForm.controls.password.hasError('minlength') && !loginForm.controls.password.hasError('required')">
+				Password should content <strong>at least 6 characters</strong>
+			</mat-error>
+			<mat-error *ngIf="loginForm.controls.password.hasError('required')">
+				Password is <strong>required</strong>
+			</mat-error>
+		</mat-form-field>
+		<button mat-raised-button color="primary" [disabled]="!loginForm.valid">SignIn</button>
+		<a mat-button routerLink="/welcome">
+			<mat-icon>arrow_back</mat-icon> Back to "Welcome" page
+		</a>
+	</form>
 </div>
