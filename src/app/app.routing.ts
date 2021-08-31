@@ -43,4 +43,4 @@ const routes: Routes = [
   { path: '**', redirectTo: '404' },
 ];
 
-export const AppRoutes = RouterModule.forChild(routes);
+export const AppRoutes = RouterModule.forRoot(routes);
