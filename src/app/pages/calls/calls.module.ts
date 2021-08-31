@@ -1,17 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CallsListComponent } from './calls-list/calls-list.component';
-import { CallsDetailsComponent } from './calls-details/calls-details.component';
 
-
+import { CallsComponent } from './calls.component';
+import { CallsRoutes } from './calls.routing';
 
 @NgModule({
-  declarations: [
-    CallsListComponent,
-    CallsDetailsComponent
-  ],
-  imports: [
-    CommonModule
-  ]
+  declarations: [CallsComponent],
+  imports: [CommonModule, CallsRoutes],
 })
-export class CallsModule { }
+export class CallsModule {}
