@@ -8,6 +8,9 @@ import { REQUEST_PROVIDER_TYPE } from '@core/models/request-provider.enum';
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
+  host: {
+    class: 'h-100',
+  },
 })
 export class WelcomeComponent implements OnInit, OnDestroy {
   providerTypes: REQUEST_PROVIDER_TYPE[] = requestProviderType;

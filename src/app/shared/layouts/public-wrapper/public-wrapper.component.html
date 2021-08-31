@@ -1,1 +1,3 @@
-<router-outlet></router-outlet>
+<div :class="router-container" [@routeAnimation]="getDepth(outlet)">
+	<router-outlet #outlet="outlet"></router-outlet>
+</div>

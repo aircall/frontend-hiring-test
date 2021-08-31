@@ -11,16 +11,25 @@ const routes: Routes = [
     children: [
       {
         path: 'welcome',
+        data: {
+          depth: 1,
+        },
         loadChildren: () =>
           import('./pages/welcome/welcome.module').then((m) => m.WelcomeModule),
       },
       {
         path: 'login',
+        data: {
+          depth: 2,
+        },
         loadChildren: () =>
           import('./pages/login/login.module').then((m) => m.LoginModule),
       },
       {
         path: '404',
+        data: {
+          depth: 3,
+        },
         loadChildren: () =>
           import('./pages/not-found/not-found.module').then(
             (m) => m.NotFoundModule
