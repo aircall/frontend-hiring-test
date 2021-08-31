@@ -20,6 +20,10 @@ $legacy_browser_support: false !default;
 	*  `em` units.
 	*/
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   font-family: sans-serif; /* 1 */
   -ms-text-size-adjust: 100%; /* 2 */
