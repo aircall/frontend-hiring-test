@@ -1,1 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500");
+@import "theme/normalize";
+@import "theme/variables";
+
+body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--grey-50);
+  color: var(--grey-900);
+  font: 14px Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 400;
+  padding: 0;
+  margin: 0;
+}
