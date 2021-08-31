@@ -1,1 +1,22 @@
-<p>welcome works!</p>
+<div class="page-welcome">
+	<div class="page-welcome__header">
+		<img src="assets/aircall-logo.svg" alt="Logo AirCall">
+	</div>
+	<div class="page-welcome__main">
+		<h1>Welcome to FrontEnd Hearing test application</h1>
+		<p>One of the requirements of this test is to use one of the following types of communication with Backend.</p>
+		<p>In that application, both are implemented and you yourself will be able to select which one you would like to
+			use.</p>
+		<div>
+			<label id="provider-selector">Pick your favorite request provider</label>
+			<mat-radio-group aria-labelledby="provider-selector" [(ngModel)]="selectedProvider">
+				<mat-radio-button color="primary" *ngFor="let provider of providerTypes" [value]="provider">
+					{{provider}}
+				</mat-radio-button>
+			</mat-radio-group>
+		</div>
+	</div>
+	<div class="page-welcome__footer">
+		<button mat-flat-button color="primary">Start</button>
+	</div>
+</div>

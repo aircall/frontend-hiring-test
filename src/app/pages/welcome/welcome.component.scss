@@ -1,0 +1,53 @@
+.page-welcome {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  padding: 3em;
+  gap: 2em;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 100%;
+      max-width: 15em;
+    }
+  }
+
+  &__main {
+    padding: 1em 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.8em;
+    h1 {
+      font-size: 1.5em;
+      font-weight: 600;
+      text-align: center;
+    }
+    & > div {
+      display: flex;
+      flex-direction: column;
+      label {
+        color: var(--green-700);
+      }
+      .mat-radio-group {
+        margin: 1em;
+        .mat-radio-button {
+          margin-right: 1em;
+        }
+      }
+    }
+  }
+  &__footer {
+    button {
+      width: 100%;
+    }
+  }
+}
