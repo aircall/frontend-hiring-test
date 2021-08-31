@@ -1,7 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
-import { PrivateWrapperComponent } from './shared/layouts/private-wrapper/private-wrapper.component';
 
-import { PublicWrapperComponent } from './shared/layouts/public-wrapper/public-wrapper.component';
+import { PrivateWrapperComponent } from '@shared/layouts/private-wrapper/private-wrapper.component';
+import { PublicWrapperComponent } from '@shared/layouts/public-wrapper/public-wrapper.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
