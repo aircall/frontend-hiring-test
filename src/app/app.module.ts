@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from '@shared/shared.module';
 import { CoreModule } from '@core/core.module';
 import { TokenInterceptor } from '@core/interceptors/token.interceptor';
+import { ErrorInterceptor } from '@core/interceptors/error.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +24,7 @@ import { TokenInterceptor } from '@core/interceptors/token.interceptor';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

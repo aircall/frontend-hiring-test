@@ -1,0 +1,15 @@
+.app-loader {
+  background: rgba(16, 24, 23, 0.5);
+  width: 100%;
+  position: absolute;
+  top: 0;
+  height: 100%;
+
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  display: none;
+  &--active {
+    display: flex;
+  }
+}
