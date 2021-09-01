@@ -43,6 +43,20 @@ export class GraphQLProvider implements IRequestProvider {
   }
 
   public refreshToken(): Observable<string> {
-    return new Observable();
+    const query = `
+    mutation {
+      refreshToken {
+        access_token
+      }
+    }
+    `;
+
+    return this._apollo
+      .mutate<{ access_token: string }>({
+        mutation: gql`
+          ${query}
+        `,
+      })
+      .pipe(map((res) => res.data?.access_token || ''));
   }
 }

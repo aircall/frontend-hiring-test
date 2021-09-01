@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IAuth } from '@core/models/auth.interface';
 
 import { AuthService } from '@core/services/auth/auth.service';
+import { NotificationService } from '@core/services/notification/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -26,12 +28,18 @@ export class LoginComponent {
   };
   public passwordVisible = true;
 
-  constructor(private _authService: AuthService) {}
+  constructor(
+    private _authService: AuthService,
+    private _router: Router,
+    private _notificationService: NotificationService
+  ) {}
 
   public onSubmit(): void {
+    this._notificationService.setLoader();
     this._authService.auth(this.authData).subscribe(
       (res) => {
-        console.log(res);
+        this._notificationService.clearLoading();
+        this._router.navigate(['./calls/list']);
       },
       (err) => {
         console.error(err);
