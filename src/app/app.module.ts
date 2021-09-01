@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutes } from './app.routing';
 import { AppComponent } from './app.component';
 import { SharedModule } from '@shared/shared.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CoreModule } from '@core/core.module';
+import { TokenInterceptor } from '@core/interceptors/token.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -15,8 +18,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     SharedModule.forRoot(),
     AppRoutes,
     BrowserAnimationsModule,
+    CoreModule,
+    HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

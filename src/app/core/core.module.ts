@@ -1,12 +1,33 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { APOLLO_NAMED_OPTIONS, NamedOptions } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
+import { InMemoryCache } from '@apollo/client/core';
 
-
+import { AuthService } from './services/auth/auth.service';
+import { RequestService } from './services/request/request.service';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
+  imports: [HttpClientModule],
+
+  providers: [
+    AuthService,
+    RequestService,
+    {
+      provide: APOLLO_NAMED_OPTIONS, // <-- Different from standard initialization
+      useFactory(httpLink: HttpLink): NamedOptions {
+        return {
+          aircall_client: {
+            cache: new InMemoryCache(),
+            link: httpLink.create({
+              uri: environment.apiURL.GraphQL,
+            }),
+          },
+        };
+      },
+      deps: [HttpLink],
+    },
+  ],
 })
-export class CoreModule { }
+export class CoreModule {}

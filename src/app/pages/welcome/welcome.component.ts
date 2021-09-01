@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { requestProviderType } from '@core/constants/request-provider.constants';
 import { REQUEST_PROVIDER_TYPE } from '@core/models/request-provider.enum';
+import { RequestService } from '@core/services/request/request.service';
 
 @Component({
   selector: 'app-welcome',
@@ -13,21 +14,27 @@ import { REQUEST_PROVIDER_TYPE } from '@core/models/request-provider.enum';
   },
 })
 export class WelcomeComponent implements OnInit, OnDestroy {
-  providerTypes: REQUEST_PROVIDER_TYPE[] = requestProviderType;
-  selectedProvider: REQUEST_PROVIDER_TYPE = REQUEST_PROVIDER_TYPE.GraphQL;
+  public providerTypes: REQUEST_PROVIDER_TYPE[] = requestProviderType;
+  public selectedProvider: REQUEST_PROVIDER_TYPE =
+    REQUEST_PROVIDER_TYPE.GraphQL;
 
-  constructor(private _router: Router) {}
+  constructor(
+    private _router: Router,
+    private _requestService: RequestService
+  ) {}
 
   ngOnInit(): void {
-    console.log('TODO: preset privies selected provider');
+    this.selectedProvider =
+      this._requestService.getCurrentProviderType() ||
+      REQUEST_PROVIDER_TYPE.GraphQL;
   }
 
   ngOnDestroy(): void {
-    console.log('TODO: save selected provider');
-    console.log('TODO: init the provider by type');
+    this._requestService.setProvider(this.selectedProvider);
   }
 
   public start(): void {
+    this._requestService.setProvider(this.selectedProvider);
     this._router.navigate(['/login']);
   }
 }
