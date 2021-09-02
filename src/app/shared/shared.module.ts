@@ -7,7 +7,6 @@ import { CoreModule } from '@core/core.module';
 @NgModule({
   exports: [LayoutsModule],
   imports: [CommonModule, CoreModule],
-  declarations: [],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {

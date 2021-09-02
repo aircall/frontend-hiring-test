@@ -7,6 +7,7 @@ import { InMemoryCache } from '@apollo/client/core';
 import { AuthService } from './services/auth/auth.service';
 import { RequestService } from './services/request/request.service';
 import { environment } from 'src/environments/environment';
+import { AuthGuard } from './guards/auth.guard';
 
 @NgModule({
   imports: [HttpClientModule],
@@ -14,6 +15,7 @@ import { environment } from 'src/environments/environment';
   providers: [
     AuthService,
     RequestService,
+    AuthGuard,
     {
       provide: APOLLO_NAMED_OPTIONS, // <-- Different from standard initialization
       useFactory(httpLink: HttpLink): NamedOptions {

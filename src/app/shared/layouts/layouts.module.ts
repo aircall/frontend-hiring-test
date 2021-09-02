@@ -4,10 +4,12 @@ import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 import { PublicWrapperComponent } from './public-wrapper/public-wrapper.component';
 import { PrivateWrapperComponent } from './private-wrapper/private-wrapper.component';
-import { LoaderComponent } from './ui-kit';
+import { LoaderComponent, HeaderComponent } from './ui-kit';
 import { NotificationService } from '@core/services/notification/notification.service';
 
 @NgModule({
@@ -15,6 +17,7 @@ import { NotificationService } from '@core/services/notification/notification.se
     PublicWrapperComponent,
     PrivateWrapperComponent,
     LoaderComponent,
+    HeaderComponent,
   ],
   exports: [PublicWrapperComponent, PrivateWrapperComponent, LoaderComponent],
   imports: [
@@ -22,6 +25,8 @@ import { NotificationService } from '@core/services/notification/notification.se
     RouterModule,
     BrowserAnimationsModule,
     MatProgressSpinnerModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   providers: [NotificationService],
 })

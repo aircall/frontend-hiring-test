@@ -39,7 +39,7 @@ export class LoginComponent {
     this._authService.auth(this.authData).subscribe(
       (res) => {
         this._notificationService.clearLoading();
-        this._router.navigate(['./calls/list']);
+        this._router.navigate(['/private/calls/list']);
       },
       (err) => {
         console.error(err);

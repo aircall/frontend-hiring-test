@@ -1,0 +1,16 @@
+.app-header {
+  background-color: var(--green-500);
+  color: var(--white);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 4em;
+  padding: 0 0.5em;
+  &__main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+}
