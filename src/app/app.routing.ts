@@ -1,4 +1,5 @@
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from '@core/guards/auth.guard';
 
 import { PrivateWrapperComponent } from '@shared/layouts/private-wrapper/private-wrapper.component';
 import { PublicWrapperComponent } from '@shared/layouts/public-wrapper/public-wrapper.component';
@@ -40,7 +41,7 @@ const routes: Routes = [
   {
     path: 'private',
     component: PrivateWrapperComponent,
-    canActivateChild: [],
+    canActivateChild: [AuthGuard],
     children: [
       {
         path: 'calls',
