@@ -8,6 +8,7 @@ import { AuthService } from './services/auth/auth.service';
 import { RequestService } from './services/request/request.service';
 import { environment } from 'src/environments/environment';
 import { AuthGuard } from './guards/auth.guard';
+import { CallsService } from './services/calls/calls.service';
 
 @NgModule({
   imports: [HttpClientModule],
@@ -16,6 +17,7 @@ import { AuthGuard } from './guards/auth.guard';
     AuthService,
     RequestService,
     AuthGuard,
+    CallsService,
     {
       provide: APOLLO_NAMED_OPTIONS, // <-- Different from standard initialization
       useFactory(httpLink: HttpLink): NamedOptions {
