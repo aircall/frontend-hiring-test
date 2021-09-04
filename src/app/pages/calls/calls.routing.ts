@@ -9,6 +9,9 @@ const routes: Routes = [
     children: [
       {
         path: 'list',
+        data: {
+          depth: 1,
+        },
         loadChildren: () =>
           import('./calls-list/calls-list.module').then(
             (m) => m.CallsListModule
@@ -16,6 +19,9 @@ const routes: Routes = [
       },
       {
         path: 'details/:id',
+        data: {
+          depth: 2,
+        },
         loadChildren: () =>
           import('./call-details/call-details.module').then(
             (m) => m.CallDetailsModule

@@ -1,1 +1,66 @@
-<p>calls-list works!</p>
+<div class="page-calls-list">
+	<mat-toolbar color="primary" class="page-calls-list__toolbar">
+		<mat-toolbar-row class="mat-elevation-z2">
+			<span>Call list</span>
+			<span class="example-spacer"></span>
+			<button mat-icon-button [matMenuTriggerFor]="menu">
+				<mat-icon>more_vert</mat-icon>
+			</button>
+			<mat-menu #menu="matMenu">
+				<button mat-menu-item>Item 1</button>
+				<button mat-menu-item>Item 2</button>
+			</mat-menu>
+		</mat-toolbar-row>
+		<mat-toolbar-row *ngIf="isActionBarActive">
+			<span>action bar</span>
+		</mat-toolbar-row>
+
+	</mat-toolbar>
+	<div class="page-calls-list__content call-list">
+		<div class="call-list__item list-item" *ngFor="let call of calls | filterByField:'call_type':selectedCallType ">
+			<div class="list-item__icon">
+				<mat-icon [color]="callDirectionIcon[call.direction].color">{{
+					callDirectionIcon[call.direction].icon }}
+				</mat-icon>
+			</div>
+			<div class="list-item__content">
+				<div>{{call.from}}</div>
+				<div>{{call.call_type}}</div>
+				<div>{{call.created_at | date}}</div>
+			</div>
+			<div>
+				<button mat-icon-button (click)="viewDetails(call.id)">
+					<mat-icon color="primary">chevron_right</mat-icon>
+				</button>
+			</div>
+		</div>
+		<div class="list-item" *ngIf="calls.length !== 0 && hasNextPage">
+			<button mat-flat-button (click)="loadMore()">Load more</button>
+		</div>
+	</div>
+	<div class="page-calls-list__footer">
+		<mat-button-toggle-group class="call-filter" [(ngModel)]="selectedCallType">
+			<mat-button-toggle class="call-filter__item" [value]="null">
+				<div class="call-filter__item-content">
+					<div>
+						<mat-icon>list</mat-icon>
+					</div>
+					<div>
+						ALL
+					</div>
+				</div>
+			</mat-button-toggle>
+			<mat-button-toggle class="call-filter__item" *ngFor="let callType of callTypes" [value]="callType.title">
+				<div class="call-filter__item-content">
+					<div>
+						<mat-icon>{{callType.icon}}</mat-icon>
+					</div>
+					<div>
+						{{callType.title | uppercase}}
+					</div>
+				</div>
+			</mat-button-toggle>
+
+		</mat-button-toggle-group>
+	</div>
+</div>

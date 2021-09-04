@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NotificationService } from '@core/services/notification/notification.service';
-
-import { routerAnimation } from '@shared/animation/router-animation';
 import { Subscription } from 'rxjs';
+
+import { NotificationService } from '@core/services/notification/notification.service';
+import { routerAnimation } from '@shared/animation/router-animation';
 
 @Component({
   selector: 'app-public-wrapper',

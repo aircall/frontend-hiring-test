@@ -45,6 +45,9 @@ const routes: Routes = [
     children: [
       {
         path: 'calls',
+        data: {
+          depth: 1,
+        },
         loadChildren: () =>
           import('./pages/calls/calls.module').then((m) => m.CallsModule),
       },

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { requestProviderType } from '@core/constants/request-provider.constants';
+import { requestProviderType } from '@core/constants/request-provider.constant';
 import { REQUEST_PROVIDER_TYPE } from '@core/models/request-provider.enum';
 import { RequestService } from '@core/services/request/request.service';
 
