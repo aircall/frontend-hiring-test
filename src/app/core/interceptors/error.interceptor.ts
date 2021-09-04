@@ -4,9 +4,10 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
+  HttpResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, mergeMap } from 'rxjs/operators';
 
 import { AuthService } from '@core/services/auth/auth.service';
 
@@ -19,6 +20,21 @@ export class ErrorInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
+      mergeMap((response: any) => {
+        if (response.body && response.body.errors) {
+          if (
+            response.body.errors.length > 0 &&
+            response.body.errors[0].message === 'Unauthorized'
+          ) {
+            this.Error401Handler();
+            return throwError({
+              error: { status: 401, message: 'Unauthorized' },
+            });
+          }
+        }
+
+        return of(response);
+      }),
       catchError((error) => {
         if (error) {
           switch (error.status) {
