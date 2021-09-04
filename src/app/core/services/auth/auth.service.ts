@@ -5,7 +5,7 @@ import { tap, map } from 'rxjs/operators';
 import { IAuth } from '@core/models/auth.interface';
 import { RequestService } from '../request/request.service';
 import { IUser } from '@core/models/user.interface';
-import { localStorageKeys } from '@core/constants/local-storage-keys.constants';
+import { localStorageKeys } from '@core/constants/local-storage-keys.constant';
 
 @Injectable()
 export class AuthService {
@@ -40,10 +40,11 @@ export class AuthService {
     if (this._authRefreshInterval) {
       clearInterval(this._authRefreshInterval);
     }
-    this._authRefreshInterval = setInterval(() => this.refreshToken(), 59000);
+    this._authRefreshInterval = setInterval(() => this.refreshToken(), 50000);
   }
 
   private refreshToken(): void {
+    console.info('Token refreshed');
     this._requestService.refreshToken().subscribe(
       (token) => {
         this.token = token;
