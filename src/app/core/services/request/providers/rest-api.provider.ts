@@ -9,9 +9,7 @@ import { IRequestProvider } from '@core/models/request-provider.interface';
 import { IUser } from '@core/models/user.interface';
 
 export class RestAPIProvider implements IRequestProvider {
-  constructor(private _httpClient: HttpClient) {
-    console.log('RestAPIProvider is ready');
-  }
+  constructor(private _httpClient: HttpClient) {}
 
   public auth(user: IAuth): Observable<{ access_token: string; user: IUser }> {
     let url = `${environment.apiURL.RestAPI}/auth/login`;
@@ -26,5 +24,9 @@ export class RestAPIProvider implements IRequestProvider {
     return this._httpClient
       .post<{ access_token: string }>(url, {})
       .pipe(map((res) => res.access_token));
+  }
+
+  public getCalls(offset: number, limit: number): Observable<any> {
+    return new Observable();
   }
 }

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Apollo } from 'apollo-angular';
 
-import { localStorageKeys } from '@core/constants/local-storage-keys.constants';
+import { localStorageKeys } from '@core/constants/local-storage-keys.constant';
 import { IAuth } from '@core/models/auth.interface';
 import { REQUEST_PROVIDER_TYPE } from '@core/models/request-provider.enum';
 import { IRequestProvider } from '@core/models/request-provider.interface';
@@ -48,5 +48,9 @@ export class RequestService {
 
   public refreshToken(): Observable<string> {
     return this.provider.refreshToken();
+  }
+
+  public getCalls(offset: number, limit: number): Observable<any> {
+    return this.provider.getCalls(offset, limit);
   }
 }

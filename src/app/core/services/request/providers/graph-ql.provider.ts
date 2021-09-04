@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { IAuth } from '@core/models/auth.interface';
 import { IRequestProvider } from '@core/models/request-provider.interface';
 import { IUser } from '@core/models/user.interface';
+import { CallModel } from '@core/models/call.model';
 
 export class GraphQLProvider implements IRequestProvider {
   private _apollo: ApolloBase;
@@ -52,11 +53,43 @@ export class GraphQLProvider implements IRequestProvider {
     `;
 
     return this._apollo
-      .mutate<{ access_token: string }>({
+      .mutate<{ refreshToken: { access_token: string } }>({
         mutation: gql`
           ${query}
         `,
       })
-      .pipe(map((res) => res.data?.access_token || ''));
+      .pipe(map((res) => res.data?.refreshToken.access_token || ''));
+  }
+
+  public getCalls(
+    offset: number,
+    limit: number
+  ): Observable<{ calls: CallModel[]; hasNextPage: boolean }> {
+    const query = `{
+      paginatedCalls(offset:${offset}, limit: ${limit}) {
+        nodes {
+          id,
+          direction,
+          from,
+          to,
+          is_archived,
+          call_type,
+          created_at
+        },
+        hasNextPage,
+      }
+    }`;
+    return this._apollo
+      .query<{ paginatedCalls: { nodes: CallModel[]; hasNextPage: boolean } }>({
+        query: gql`
+          ${query}
+        `,
+      })
+      .pipe(
+        map((res) => ({
+          calls: res.data.paginatedCalls.nodes,
+          hasNextPage: res.data.paginatedCalls.hasNextPage,
+        }))
+      );
   }
 }
