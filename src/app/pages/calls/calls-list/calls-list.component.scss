@@ -9,10 +9,18 @@
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 8;
+    &--secondary {
+      background-color: var(--grey-50);
+      border-bottom: 0.1em solid var(--green-500);
+    }
   }
 
   &__content {
     margin-top: 4.5em;
+    &--edit {
+      margin-top: 8.5em;
+    }
   }
 
   &__footer {
@@ -25,7 +33,7 @@
 
   .call-list {
     width: 100%;
-    padding: 0.6em;
+    padding: 0.6em 0;
     &__item {
       width: 100%;
     }
@@ -38,12 +46,15 @@
     justify-content: center;
     gap: 0.5em;
     border-bottom: 0.1em solid var(--grey-400);
-    padding: 0.5em 0;
+    padding: 0.5em 1em;
     &:last-child {
       border-bottom: none;
     }
+    &--archived {
+      background-color: var(--green-200);
+    }
     &__icon {
-      background-color: var(--grey-200);
+      border: 0.1em solid var(--grey-300);
       padding: 0.2em;
       border-radius: 50%;
     }

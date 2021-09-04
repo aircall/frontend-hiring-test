@@ -55,7 +55,6 @@ export class ErrorInterceptor implements HttpInterceptor {
   }
 
   Error401Handler() {
-    // Auto logout if 401 response returned from api
     this._auth.logOut();
   }
 }

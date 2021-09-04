@@ -29,4 +29,8 @@ export class RestAPIProvider implements IRequestProvider {
   public getCalls(offset: number, limit: number): Observable<any> {
     return new Observable();
   }
+
+  public archiveCall(id: string): Observable<{ id: string }> {
+    return new Observable();
+  }
 }

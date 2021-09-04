@@ -92,4 +92,25 @@ export class GraphQLProvider implements IRequestProvider {
         }))
       );
   }
+
+  public archiveCall(id: string): Observable<{ id: string }> {
+    const query = `
+    mutation {
+      archiveCall(id: "${id}") {
+        id
+      }
+    }
+    `;
+    return this._apollo
+      .mutate<{
+        archiveCall: {
+          id: string;
+        };
+      }>({
+        mutation: gql`
+          ${query}
+        `,
+      })
+      .pipe(map((res) => res.data?.archiveCall || { id: '' }));
+  }
 }

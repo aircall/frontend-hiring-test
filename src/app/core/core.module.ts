@@ -27,6 +27,16 @@ import { CallsService } from './services/calls/calls.service';
             link: httpLink.create({
               uri: environment.apiURL.GraphQL,
             }),
+            defaultOptions: {
+              watchQuery: {
+                fetchPolicy: 'no-cache',
+                errorPolicy: 'ignore',
+              },
+              query: {
+                fetchPolicy: 'no-cache',
+                errorPolicy: 'all',
+              },
+            },
           },
         };
       },

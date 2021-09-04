@@ -7,10 +7,10 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { CallsListComponent } from './calls-list.component';
 import { CallsListRoutes } from './calls-list.routing';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FilterByFieldPipe } from '@shared/pipes/filter-by-field.pipe';
 
 @NgModule({
@@ -24,6 +24,7 @@ import { FilterByFieldPipe } from '@shared/pipes/filter-by-field.pipe';
     MatToolbarModule,
     MatButtonToggleModule,
     MatMenuModule,
+    MatCheckboxModule,
   ],
 })
 export class CallsListModule {}

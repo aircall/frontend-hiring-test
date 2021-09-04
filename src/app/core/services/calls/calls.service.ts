@@ -9,4 +9,8 @@ export class CallsService {
   public getCalls(offset: number, limit: number): Observable<any> {
     return this._requestService.getCalls(offset, limit);
   }
+
+  public archiveCall(id: string): Observable<any> {
+    return this._requestService.archiveCall(id);
+  }
 }

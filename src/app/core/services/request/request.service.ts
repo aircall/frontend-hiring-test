@@ -53,4 +53,8 @@ export class RequestService {
   public getCalls(offset: number, limit: number): Observable<any> {
     return this.provider.getCalls(offset, limit);
   }
+
+  public archiveCall(id: string): Observable<any> {
+    return this.provider.archiveCall(id);
+  }
 }
