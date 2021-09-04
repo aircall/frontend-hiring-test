@@ -37,12 +37,15 @@ export class LoginComponent {
   public onSubmit(): void {
     this._notificationService.setLoader();
     this._authService.auth(this.authData).subscribe(
-      (res) => {
+      (_) => {
         this._notificationService.clearLoading();
         this._router.navigate(['/private/calls/list']);
       },
-      (err) => {
-        console.error(err);
+      (_) => {
+        this._notificationService.clearLoading();
+        this._notificationService.showSnackMessage(
+          'Hmm... Something has gone wrong'
+        );
       }
     );
   }

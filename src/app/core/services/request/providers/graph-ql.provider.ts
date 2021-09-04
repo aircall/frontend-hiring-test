@@ -113,4 +113,32 @@ export class GraphQLProvider implements IRequestProvider {
       })
       .pipe(map((res) => res.data?.archiveCall || { id: '' }));
   }
+
+  public getCallById(id: string): Observable<any> {
+    const query = `
+    query {
+      call(id: "${id}") {
+        id
+        direction,
+        from,
+        to,
+        duration,
+        via,
+        is_archived,
+        call_type,
+        created_at,
+        notes {
+          id,
+          content
+        }
+      }
+    }`;
+    return this._apollo
+      .query<{ call: any }>({
+        query: gql`
+          ${query}
+        `,
+      })
+      .pipe(map((res) => res.data?.call));
+  }
 }

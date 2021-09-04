@@ -17,8 +17,8 @@ export class CallsListComponent implements OnInit {
   public calls: CallModel[] = [];
   public offset: number = 0;
   public callDirectionIcon = {
-    inbound: { icon: 'call_received', color: 'primary' },
-    outbound: { icon: 'call_made', color: 'accent' },
+    inbound: { icon: 'arrow_downward', color: 'primary' },
+    outbound: { icon: 'arrow_upward', color: 'accent' },
   };
   public callTypes = callTypes;
   public selectedCallType: CALL_TYPE | null = null;
@@ -59,11 +59,17 @@ export class CallsListComponent implements OnInit {
         .filter((key) => this.selectedCalls[key])
         .map((key) => this._callsService.archiveCall(key));
 
-      forkJoin(observables).subscribe((res) => {
-        this.offset = 0;
-        this.calls = [];
-        this._requestToCalls();
-      });
+      forkJoin(observables).subscribe(
+        (_) => {
+          this.offset = 0;
+          this.calls = [];
+          this._requestToCalls();
+        },
+        (_) =>
+          this._notificationService.showSnackMessage(
+            'Hmm... Something has gone wrong'
+          )
+      );
     }
     this.isEditMode = false;
     callsId.forEach((key) => {
@@ -73,13 +79,21 @@ export class CallsListComponent implements OnInit {
 
   private _requestToCalls(): void {
     this._notificationService.setLoader();
-    this._callsService.getCalls(this.offset, this._limit).subscribe((res) => {
-      res.calls.forEach((el: CallModel) => {
-        this.selectedCalls[el.id] = false;
-      });
-      this.calls = [...this.calls, ...res.calls];
-      this.hasNextPage = res.hasNextPage;
-      this._notificationService.clearLoading();
-    });
+    this._callsService.getCalls(this.offset, this._limit).subscribe(
+      (res) => {
+        res.calls.forEach((el: CallModel) => {
+          this.selectedCalls[el.id] = false;
+        });
+        this.calls = [...this.calls, ...res.calls];
+        this.hasNextPage = res.hasNextPage;
+        this._notificationService.clearLoading();
+      },
+      (_) => {
+        this._notificationService.clearLoading();
+        this._notificationService.showSnackMessage(
+          'Hmm... Something has gone wrong'
+        );
+      }
+    );
   }
 }

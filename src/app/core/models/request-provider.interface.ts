@@ -7,4 +7,5 @@ export interface IRequestProvider {
   refreshToken: () => Observable<string>;
   getCalls: (offset: number, limit: number) => Observable<any>;
   archiveCall: (id: string) => Observable<any>;
+  getCallById: (id: string) => Observable<any>;
 }

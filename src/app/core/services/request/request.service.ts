@@ -7,10 +7,10 @@ import { localStorageKeys } from '@core/constants/local-storage-keys.constant';
 import { IAuth } from '@core/models/auth.interface';
 import { REQUEST_PROVIDER_TYPE } from '@core/models/request-provider.enum';
 import { IRequestProvider } from '@core/models/request-provider.interface';
+import { IUser } from '@core/models/user.interface';
 
 import { GraphQLProvider } from './providers/graph-ql.provider';
 import { RestAPIProvider } from './providers/rest-api.provider';
-import { IUser } from '@core/models/user.interface';
 
 @Injectable()
 export class RequestService {
@@ -56,5 +56,9 @@ export class RequestService {
 
   public archiveCall(id: string): Observable<any> {
     return this.provider.archiveCall(id);
+  }
+
+  public getCallById(id: string): Observable<any> {
+    return this.provider.getCallById(id);
   }
 }

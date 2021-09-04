@@ -1,1 +1,58 @@
-<p>call-details works!</p>
+<div class="page-call-details">
+	<mat-toolbar color="primary" class="page-call-details__toolbar">
+		<mat-toolbar-row class="mat-elevation-z2">
+			<button mat-icon-button (click)="goBack()">
+				<mat-icon>arrow_back</mat-icon>
+			</button>
+		</mat-toolbar-row>
+	</mat-toolbar>
+	<div class="page-call-details__main call-details" *ngIf="callDetails">
+		<div class="call-details__header call-header">
+			<div class="call-header__icon">
+				<mat-icon [color]="callDirectionIcon[callDetails.direction].color">
+					{{callDirectionIcon[callDetails.direction].icon}}</mat-icon>
+			</div>
+			<div class="call-header__title">
+				{{callDetails.to}}
+			</div>
+		</div>
+		<mat-tab-group mat-stretch-tabs class=" call-details__content call-info">
+			<mat-tab label="Details">
+				<div class="call-info__item">
+					<div>From</div>
+					<div>{{callDetails.from}}</div>
+				</div>
+				<div class="call-info__item">
+					<div>Via</div>
+					<div>{{callDetails.via}}</div>
+				</div>
+				<div class="call-info__item">
+					<div>Type</div>
+					<div>{{callDetails.call_type | uppercase}}</div>
+				</div>
+				<div class="call-info__item">
+					<div>Duration</div>
+					<div>{{callDetails.created_at | date}}</div>
+				</div>
+				<div class="call-info__item">
+					<div>Duration</div>
+					<div>{{(callDetails.duration / 1000) |number: '1.0-2'}}</div>
+				</div>
+			</mat-tab>
+			<mat-tab label="Notes">
+				<div class="notes-content">
+					<mat-card *ngFor="let note of callDetails.notes">
+						<mat-card-content>
+							<p>{{note.content}}</p>
+						</mat-card-content>
+					</mat-card>
+				</div>
+			</mat-tab>
+		</mat-tab-group>
+	</div>
+	<div class="page-call-details__footer" *ngIf="callDetails">
+		<button mat-flat-button [color]="callDetails.is_archived ? 'accent': 'primary' " (click)="editCall()">
+			{{callDetails.is_archived ? 'UNARCHIVE': 'ARCHIVE'}}
+		</button>
+	</div>
+</div>
