@@ -339,7 +339,7 @@ Example
 
 ## Submission
 
-We don’t provide any boilerplate as a simple [CRA](https://create-react-app.dev/) will be enough here. Feel free to create a repository and send us the link once you’re ready. If the repository is private, please invite @litil and @kamalbennani.
+We don’t provide any boilerplate as a simple [CRA](https://create-react-app.dev/) will be enough here. Please create a repository and submit your technical test through this [form](https://forms.gle/1TG1snJoGgvPKox5A).
 
 We'll try to review it in the next 48 hours and get back to you to talk about your code!
 
