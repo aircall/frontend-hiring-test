@@ -130,7 +130,13 @@ input LoginInput {
 
 interface AuthResponseType {
   access_token: String!
-  user: UserType
+  refresh_token: String!
+  user: UserType!
+}
+
+interface DeprecatedAuthResponseType {
+  access_token: String!
+  user: UserType!
 }
 ```
 
@@ -142,17 +148,37 @@ Once you are correctly authenticated you need to pass the Authorization header f
 }
 ```
 
-Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the `refreshToken` mutation before the token gets expired.
+**New Refresh Token Mutation (RECOMMENDED)**
 
-`refreshToken` allows you to ask for a new fresh token based on your existing access_token
+Note that the `access_token` is only available for 10 minutes and the `refresh_token` is available for 1 hour. You need to ask for another fresh access token by calling the `refreshTokenV2` mutation passing along the `refresh_token` in the `Authorization` header like so:
 
-```graphql
-refreshToken: AuthResponseType!
+```JSON
+{
+  "Authorization": "Bearer <REFRESH_TOKEN>"
+}
 ```
 
-This will send you the same response as the `login` mutation.
+```graphql
+mutation refreshTokenV2: AuthResponseType!
+```
 
-You must use the new token for the new requests made to the API.
+**Deprecated Refresh Token Mutation**
+
+Note that the `access_token` is only available for 10 minutes. You need to ask for another fresh token by calling the refreshToken mutation before the token gets expired passing along the `access_token` in the `Authorization` header.
+
+Like so:
+
+```JSON
+{
+  "Authorization": "Bearer <ACCESS_TOKEN>"
+}
+```
+
+```graphql
+mutation refreshToken: DeprecatedAuthResponseType!
+```
+
+You must use the new tokens for the new requests made to the API.
 
 `archiveCall` as the name implies it either archive or unarchive a given call.If the call doesn't exist, it'll throw an error.
 
@@ -236,13 +262,22 @@ To be able to grab a valid JWT token, you need to call the following endpoint:
 
 `POST` `/auth/login` receives the username and password in the body and returns the access_token and the user identity.
 
-```
-/auth/login
+Body 
 
-// body
+```JSON
 {
-  username: String!
-  password: String!
+  "username": String!,
+  "password": String!
+}
+```
+
+Response
+
+```JSON
+{
+  "access_token": String!,
+  "refresh_token": String!,
+  "user": UserType!
 }
 ```
 
@@ -254,13 +289,37 @@ Once you are correctly authenticated you need to pass the Authorization header f
 }
 ```
 
-Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the `/auth/refresh-token` endpoint before the token gets expired.
+**New Refresh Token Endpoint (RECOMMENDED)**
 
-`POST` `/auth/refresh-token` allows you to ask for a new fresh token based on your existing access_token
+Note that the `access_token` is only available for 10 minutes and the `refresh_token` is available for 1 hour. You need to ask for another fresh access token by calling the `/auth/refresh-token-v2` endpoint passing along the `refresh_token` in the `Authorization` header 
 
-This will return the same response as the `/auth/login` resource.
+Like so:
 
-You must use the new token for the new requests made to the API.
+```JSON
+`POST` `/auth/refresh-token-v2`
+
+Header
+{
+  "Authorization": "Bearer <REFRESH_TOKEN>"
+}
+```
+
+**Deprecated Refresh Token Endpoint**
+
+Note that the `access_token` is only available for 10 minutes. You need to ask for another fresh token by calling the `/auth/refresh-token` endpoint before the token gets expired.passing along the `access_token` in the `Authorization` header.
+
+Like so:
+
+```JSON
+`POST` `/auth/refresh-token`
+
+Header
+{
+  "Authorization": "Bearer <ACCESS_TOKEN>"
+}
+```
+
+You must use the new tokens for the new requests made to the API.
 
 `POST` `/calls/:id/note` create a note and add it prepend it to the call's notes list.
 
