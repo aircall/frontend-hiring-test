@@ -173,15 +173,13 @@ input AddNoteInput {
 
 #### Subscriptions
 
-To be able to listen for the mutations/changes done on a given call, you can call the `onUpdateCall` using an actibity ID.
+To be able to listen for the mutations/changes done on a call, you can call the run the `onUpdateCall` subscription.
 
-`onUpdateCall` receives the call ID as the 1st parameter and returns a call instance.
-
-```
-onUpdateCall(id: ID): Call!
+```graphql
+onUpdateCall: Call!
 ```
 
-Now, whenever a call data changed either via the `addNote` or `archiveCall` mutations, you will receive a subscription event informing you of this change.
+Now, we whenever an call is changed via the `addNote` or `archiveCall` mutations, you will receive a subscription event informing you of this change.
 
 _Don't forget to pass the Authorization header with the right access token in order to be able to listen for these changes_
 
