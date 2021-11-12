@@ -70,7 +70,8 @@ type Note {
 
 ### GraphQL API
 
-Base URL: https://frontend-test-api.aircall.io/graphql
+GraphQL URL (Http): https://frontend-test-api.aircall.io/graphql
+Subscription URL (Websocket): wss://frontend-test-api.aircall.io/websocket
 
 #### Authentication
 
