@@ -70,9 +70,9 @@ type Note {
 
 ### GraphQL API
 
-GraphQL URL (HTTP): https://frontend-test-api.aircall.io/graphql
+GraphQL URL (HTTP): https://frontend-test-api.aircall.dev/graphql
 
-Subscription URL (Websocket - Real-time): wss://frontend-test-api.aircall.io/websocket
+Subscription URL (Websocket - Real-time): wss://frontend-test-api.aircall.dev/websocket
 
 #### Authentication
 
@@ -213,7 +213,7 @@ _Don't forget to pass the Authorization header with the right access token in or
 
 ### REST API
 
-Base URL: https://frontend-test-api.aircall.io
+Base URL: https://frontend-test-api.aircall.dev
 
 #### Authentication
 
@@ -353,7 +353,7 @@ This event will be called each time you add a note or archive a call.
 Note that, you need to use Pusher SDK in order to listen for this event.
 
 Because this channel is private you need to authenticate first, to do that, you need to make 
-- `APP_AUTH_ENDPOINT` point to: `https://frontend-test-api.aircall.io/pusher/auth`
+- `APP_AUTH_ENDPOINT` point to: `https://frontend-test-api.aircall.dev/pusher/auth`
 - set `APP_KEY` to `d44e3d910d38a928e0be`
 - and set `APP_CLUSTER` to `eu`
 
