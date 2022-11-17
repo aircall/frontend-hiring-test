@@ -1,38 +1,47 @@
-# :phone: Phone
+# :phone: Aircall Frontend Hiring Test
 
-This test is a part of our hiring process at Aircall for the Frontend Engineer position. It should take you between 3 to 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
+This test is a part of our hiring process at [Aircall](https://aircall.io/) for the Frontend Engineer position.
 
-*Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io.*
+*Feel free to have a look at our open positions [here](https://aircall.io/careers/) and to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io.*
 
 ## Context
 
-Aircall is on a mission to revolutionize the business phone industry! This test is about (re) building a small part of Aircall’s main application. You’ll use dedicated APIs providing mocked data for that.
+Aircall is on a mission to revolutionize the business phone industry! This test is about (re) building a small part of Aircall’s main application. We provide you with dedicated APIs, documented below, so that you'll only have to focus on the frontend apps. 
 
 ## Exercise
 
-The application can be built using any Frontend Framework/Library such as React, Angular, Vue. We do use React on our main apps and the website is built using Vue.
+### Expectations
 
-You can also choose whatever Design System you'd like to build the application, but we provide you with our own sweet, lovely and homemade Design System called tractor :tractor:
+The objective is to build a small part of Aircall's main application, our phone app. We ask you to use our GraphQL or Rest API to display a list of calls and their details.
+
+Of course, you can think about more features to add on top of that. Some are mandatory, some are seen as bonuses and some are a waste of time. While reviewing your test, we will of course focus first on the mandatory items, so please be pragmatic. You can refer to the breakdown below to have a better understanding of what's expected:
+
+- the application must:
+  - have a basic authention screen. We provide the authentication API. Please think twice about how you handle the authentication token, we'll deeply review it. 
+  - display a paginated list of calls that you’ll retrieve from the API
+  - display the details of a call, on a different page (different route), when the user clicks on a call from the list. Please note that we expect this view to display all the date related to the call itself, not an extract from the list. Improvements such as caching and error handling are more than welcome here.
+  - provide basic pagination and filtering features. You can for instance filters calls on their call direction, or call types or whether the've been archived or not. Implementing one filter is enough, we don't expect you to build a complex filtering system allowing users to filter on every properties of a call. 
+  - let users group calls by date, meaning that calls made on a same day should appear within the same section. 
+
+- as a bonus, the application could:
+  - let users archive one or several calls.
+  - handle real-time events, meaning that whenever a call is archived or a note is being added to a call, these changes should be reflected on the UI immediately. To test that the app handle real-time events, we usually open 2 tabs. We perform an action, like archiving a call, from one tab and expect this action to be reflected in the UI in the second tab. 
+  - be tested, through unit test and/or e2e tests.
+  - be deployed somewhere, like on Netlify or on Vercel. You can even prove that you're familiar with CI/CD by building a pipeline building, testing and deploying the app. 
+  - be written with Typescript.
+  - be well documented.
+
+Bonuses might look appealling but please make sure to implement mandatory features first as we'll focus our review on them. 
+
+### Stack
+
+The application can be built using any frontend framework/library such as React, Angular, Vue, or even vanilla JS. Even though we do use React on our main apps and Vue for our website, we won't judge you if you decide to use another tool. 
+
+You can also choose whatever design system you'd like to build the application, or none if it better suits you. We provide you with our own sweet, lovely and homemade design system called tractor :tractor:
 - Storybook: [here](http://tractor.aircall.io/)
 - NPM Repository [here](https://www.npmjs.com/package/@aircall/tractor).
 
-_NB: You can also build your own components from scratch._
-
-This application must:
-- Display a paginated list of calls that you’ll retrieve from the API.
-- Display the call details view if the user clicks on a call. the view should display all the data related to the call itself.
-- Be able to archive one or several calls
-- Group calls by date
-- Handle real-time events (Whenever a call is archived or a note is being added to a call, these changes should be reflected on the UI immediately)
-
-Bonus:
-- Use Typescript
-- Provide filtering feature, to filter calls by type (archived, missed …)
-… and many others! Don’t be afraid to use new or unknown libraries, we’d love to learn new things!  
-
-
-**Important Note**: We want you to build this small app as you'd have done it for your current job. (UI, UX, tests, documentation matters).
-
+Again, we won't judge you on the design system you'll choose, only on the quality of the implementation, user interface and user experience.
 
 ## APIs
 
