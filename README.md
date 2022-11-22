@@ -1,404 +1,67 @@
-# :phone: Phone
+# :phone: Aircall Frontend Hiring Test
 
-This test is a part of our hiring process at Aircall for the Frontend Engineer position. It should take you between 3 to 5 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
+Backed by over $220 million of investment since 2015, Aircall creates technology that fuels accessible, transparent and collaborative communication to empower our base of 14,000+ customers (and growing) to make authentic, human connections. With over 1.3M calls per day, we focus on user experience, collaboration and integration with other software. With over 1.3M calls per day, we focus on user experience, collaboration and integration with other software.
 
-*Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io.*
+We are looking for engaged and passionate frontend software engineers to join our growing engineering team.
+
+_Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io._
 
 ## Context
 
-Aircall is on a mission to revolutionize the business phone industry! This test is about (re) building a small part of Aircall’s main application. You’ll use dedicated APIs providing mocked data for that.
+We ask all candidates to take either a home test or a live coding one. We've created a basic application, listing calls and displaying their details, as a support for both tests.
 
 ## Exercise
 
-The application can be built using any Frontend Framework/Library such as React, Angular, Vue. We do use React on our main apps and the website is built using Vue.
+### Current state of the application
 
-You can also choose whatever Design System you'd like to build the application, but we provide you with our own sweet, lovely and homemade Design System called tractor :tractor:
-- Storybook: [here](http://tractor.aircall.io/)
-- NPM Repository [here](https://www.npmjs.com/package/@aircall/tractor).
+We provide an application with very basic features:
 
-_NB: You can also build your own components from scratch._
+- authentication (accepting random username/password)
+- listing calls, with pagination
+- displaying call details
 
-This application must:
-- Display a paginated list of calls that you’ll retrieve from the API.
-- Display the call details view if the user clicks on a call. the view should display all the data related to the call itself.
-- Be able to archive one or several calls
-- Group calls by date
-- Handle real-time events (Whenever a call is archived or a note is being added to a call, these changes should be reflected on the UI immediately)
+The application is not production readyIt contains several issues and existing features could be improved a lot. That's on purpose, we'll ask you to work on that. More info in the next section.
 
-Bonus:
-- Use Typescript
-- Provide filtering feature, to filter calls by type (archived, missed …)
-… and many others! Don’t be afraid to use new or unknown libraries, we’d love to learn new things!  
+### Expectations
 
+As said above, the application is far from being production ready. We'll ask you to fix some known issues, improve existing features and add new ones.
 
-**Important Note**: We want you to build this small app as you'd have done it for your current job. (UI, UX, tests, documentation matters).
+You won't have time to fix everything, and we don't expect you to. Also, we adjust our expectations depending on your seniority. Here's what expected for each level of seniority:
 
+- **junior software engineer**
+  - improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that.
+  - add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
+  - group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
+- **software engineer**
+  - add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
+  - group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
+  - fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
+  - fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new GraphQL requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
+  - add unit tests for the `date` helper functions.
+- **senior software engineer**
+  - fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
+  - fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new GraphQL requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
+  - add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
+  - implement the archive call feature and add real-time support. Meaning that if you open the app in 2 tabs, archive a call from the first tab, the second tab must reflect this change. Create a PR for this feature as if you were submitting it to our team, for it to be merged and released in production. As we try to work asynchonously, writing skills are important to us.
+- **staff engineer and above**
+  - same expectations as for senior software engineer
+  - write a plan describing what would be required for this app to be released into production, keeping the same features set, and how you would implement it. Potential topics to be addressed here are: testing, CI/CD, documentation, performances, scaling, developer experience... We don't expect you to address all of them, focus on the ones that matters the most for you.
+
+### Stack
+
+The application relies on a quite common stack. It's a React/Typescript application, created with `create-react-app`, and using a GraphQL API. It uses our own lovely UI library, called Tractor. It's a public library, you can have access to its [Storybook](http://tractor.aircall.io/) and [NPM](https://www.npmjs.com/package/@aircall/tractor) page.
+
+If you joined us, you'd work on a very similar stack.
 
 ## APIs
 
-We’ve built 2 APIs for this test, so you can choose between a REST API or a GraphQL API. Both expose the same data, so it’s really about which one you prefer.
+The application relies on a GraphQL API. You can find its documentation [here](documentation/GRAPHQL_API.md) and more information about the models [there](documentation/MODELS.md).
 
-### Model
-
-Both APIs use the same models.
-
-Call Model
-
-```
-type Call {
-  id: ID! // "unique ID of call"
-  direction: String! // "inbound" or "outbound" call
-  from: String! // Caller's number
-  to: String! // Callee's number
-  duration: Float! // Duration of a call (in seconds)
-  is_archived: Boolean! // Boolean that indicates if the call is archived or not
-  call_type: String! // The type of the call, it can be a missed, answered or voicemail.
-  via: String! // Aircall number used for the call.
-  created_at: String! // When the call has been made.
-  notes: Note[]! // Notes related to a given call
-}
-```
-
-Note Model
-
-```
-type Note {
-  id: ID!
-  content: String!
-}
-```
-
-### GraphQL API
-
-GraphQL URL (HTTP): https://frontend-test-api.aircall.dev/graphql
-
-Subscription URL (Websocket - Real-time): wss://frontend-test-api.aircall.dev/websocket
-
-#### Authentication
-
-You must first authenticate yourself before requesting the API. You can do so by executing the Login mutation. See below.
-
-#### Queries
-
-All the queries are protected by a middleware that checks if the user is authenticated with a valid JWT.
-
-`paginatedCalls` returns a list of paginated calls. You can fetch the next page of calls by changing the values of `offset` and `limit` arguments.
-
-```
-paginatedCalls(
-  offset: Float = 0
-  limit: Float = 10
-): PaginatedCalls!
-
-type PaginatedCalls {
-  nodes: [Call!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-}
-```
-
-`activitiy` returns a single call if any, otherwise it returns null.
-
-```
-call(id: Float!): Call
-```
-
-`me` returns the currently authenticated user.
-
-```
-me: UserType!
-```
-
-```
-type UserType {
-  id: String!
-  username: String!
-}
-```
-
-#### Mutations
-
-To be able to grab a valid JWT token, you need to execute the `login` mutation.
-
-`login` receives the username and password as 1st parameter and return the access_token and the user identity.
-
-```graphql
-login(input: LoginInput!): AuthResponseType!
-
-input LoginInput {
-  username: String!
-  password: String!
-}
-
-interface AuthResponseType {
-  access_token: String!
-  refresh_token: String!
-  user: UserType!
-}
-
-interface DeprecatedAuthResponseType {
-  access_token: String!
-  user: UserType!
-}
-```
-
-Once you are correctly authenticated you need to pass the Authorization header for all the next calls to the GraphQL API.
-
-```JSON
-{
-  "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
-}
-```
-
-**New Refresh Token Mutation (RECOMMENDED)**
-
-Note that the `access_token` is only available for 10 minutes and the `refresh_token` is available for 1 hour. You need to ask for another fresh access token by calling the `refreshTokenV2` mutation passing along the `refresh_token` in the `Authorization` header like so:
-
-```JSON
-{
-  "Authorization": "Bearer <REFRESH_TOKEN>"
-}
-```
-
-```graphql
-mutation refreshTokenV2: AuthResponseType!
-```
-
-**Deprecated Refresh Token Mutation**
-
-Note that the `access_token` is only available for 10 minutes. You need to ask for another fresh token by calling the refreshToken mutation before the token gets expired passing along the `access_token` in the `Authorization` header.
-
-Like so:
-
-```JSON
-{
-  "Authorization": "Bearer <ACCESS_TOKEN>"
-}
-```
-
-```graphql
-mutation refreshToken: DeprecatedAuthResponseType!
-```
-
-You must use the new tokens for the new requests made to the API.
-
-`archiveCall` as the name implies it either archive or unarchive a given call.If the call doesn't exist, it'll throw an error.
-
-```
-archiveCall(id: ID!): Call!
-```
-
-`addNote` create a note and add it prepend it to the call's notes list.
-
-```
-addNote(input: AddNoteInput!): Call!
-
-input AddNoteInput {
-  activityId: ID!
-  content: String!
-}
-```
-
-#### Subscriptions
-
-To be able to listen for the mutations/changes done on a call, you can call the run the `onUpdateCall` subscription.
-
-```graphql
-onUpdateCall: Call!
-```
-
-Now, we whenever an call is changed via the `addNote` or `archiveCall` mutations, you will receive a subscription event informing you of this change.
-
-_Don't forget to pass the Authorization header with the right access token in order to be able to listen for these changes_
-
-### REST API
-
-Base URL: https://frontend-test-api.aircall.dev
-
-#### Authentication
-
-You must first authenticate yourself before requesting the API. You can do so by sending a POST request to `/auth/login`. See below.
-
-#### GET endpoints
-
-All the endpoints are protected by a middleware that checks if the user is authenticated with a valid JWT.
-
-`GET` `/calls` returns a list of paginated calls. You can fetch the next page of calls by changing the values of `offset` and `limit` arguments.
-
-```
-/calls?offset=<number>&limit=<number>
-```
-
-Response:
-```
-{
-  nodes: [Call!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-}
-```
-
-`GET` `/calls/:id` return a single call if any, otherwise it returns null.
-
-```
-/calls/:id<uuid>
-```
-
-`GET` `/me` return the currently authenticated user.
-
-```
-/me
-```
-
-Response
-```
-{
-  id: String!
-  username: String!
-}
-```
-
-#### POST endpoints
-
-To be able to grab a valid JWT token, you need to call the following endpoint:
-
-`POST` `/auth/login` receives the username and password in the body and returns the access_token and the user identity.
-
-Body 
-
-```JSON
-{
-  "username": String!,
-  "password": String!
-}
-```
-
-Response
-
-```JSON
-{
-  "access_token": String!,
-  "refresh_token": String!,
-  "user": UserType!
-}
-```
-
-Once you are correctly authenticated you need to pass the Authorization header for all the next calls to the REST API.
-
-```JSON
-{
-  "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
-}
-```
-
-**New Refresh Token Endpoint (RECOMMENDED)**
-
-Note that the `access_token` is only available for 10 minutes and the `refresh_token` is available for 1 hour. You need to ask for another fresh access token by calling the `/auth/refresh-token-v2` endpoint passing along the `refresh_token` in the `Authorization` header 
-
-Like so:
-
-```JSON
-`POST` `/auth/refresh-token-v2`
-
-Header
-{
-  "Authorization": "Bearer <REFRESH_TOKEN>"
-}
-```
-
-**Deprecated Refresh Token Endpoint**
-
-Note that the `access_token` is only available for 10 minutes. You need to ask for another fresh token by calling the `/auth/refresh-token` endpoint before the token gets expired.passing along the `access_token` in the `Authorization` header.
-
-Like so:
-
-```JSON
-`POST` `/auth/refresh-token`
-
-Header
-{
-  "Authorization": "Bearer <ACCESS_TOKEN>"
-}
-```
-
-You must use the new tokens for the new requests made to the API.
-
-`POST` `/calls/:id/note` create a note and add it prepend it to the call's notes list.
-
-```
-`/calls/:id/note`
-
-Body
-{
-  content: String!
-}
-```
-
-It returns the `Call` as a response or an error if the note doesn't exist.
-
-#### PUT endpoints
-
-`PUT` `/calls/:id/archive` as the name implies it either archive or unarchive a given call. If the call doesn't exist, it'll throw an error.
-
-```
-PUT /calls/:id/archive
-```
-
-#### Real-time
-
-In order to be aware of the changes done on a call, you need to subscribe to this private channel: `private-aircall` and listen for the following event: `update-call` which will return the call payload.
-
-This event will be called each time you add a note or archive a call.
-
-Note that, you need to use Pusher SDK in order to listen for this event.
-
-Because this channel is private you need to authenticate first, to do that, you need to make 
-- `APP_AUTH_ENDPOINT` point to: `https://frontend-test-api.aircall.dev/pusher/auth`
-- set `APP_KEY` to `d44e3d910d38a928e0be`
-- and set `APP_CLUSTER` to `eu`
-
-#### Errors
-
-The REST API can return a different type of errors:
-
-`400` `BAD_REQUEST` error, happens when you provide some data which doesn't respect a given shape.
-
-Example
-```
-{
-  "statusCode": 400,
-  "message": [
-    "content must be a string",
-    "content should not be empty"
-  ],
-  "error": "Bad Request"
-}
-```
-
-`401` `UNAUTHORIZED` error, happens when the user is not authorized to perform an action or if his token is no longer valid
-
-Example
-```
-{
-  "statusCode": 401,
-  "message": "Unauthorized"
-}
-```
-
-`404` `NOT_FOUND` error, happens when the user requests a resource that no longer exists.
-
-Example
-```
-{
-  "statusCode": 404,
-  "message": "The call does not exist!",
-  "error": "Not Found"
-}
-```
+We've previously built a REST API for this test as well. While we suggest you to work with the GraphQL API, you could switch to the REST API if you'd like. You'd find its documentation [here](documentation/REST_API.md).
 
 ## Submission
 
-We don’t provide any boilerplate as a simple [CRA](https://create-react-app.dev/) will be enough here. Please create a repository and submit your technical test through this [form](https://forms.gle/1TG1snJoGgvPKox5A).
+Please fork this repository and submit your technical test through this [form](https://forms.gle/1TG1snJoGgvPKox5A).
 
 We'll try to review it in the next 48 hours and get back to you to talk about your code!
 
