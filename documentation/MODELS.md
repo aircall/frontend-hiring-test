@@ -1,6 +1,6 @@
 # API Models
 
-Both the GraphQL and the REST use the same models.
+Both the GraphQL and the REST API use the same models.
 
 ### Call Model
 
