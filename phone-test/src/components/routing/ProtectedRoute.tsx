@@ -1,4 +1,14 @@
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+
+// Use this wrapper on Routes as a guards to validate is user is authenticated 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  // TODO check that the user is authenticated before displaying the route
+
+  const { isAuth } = useAuth();
+
+  if(!isAuth()) {
+    return <><Navigate to="/login" /></>
+  }
+
   return <>{children}</>;
 };

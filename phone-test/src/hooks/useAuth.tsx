@@ -3,10 +3,13 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
+import { Constants } from '../constants/constants';
 
 const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
+  login: ({ }) => { },
+  logout: () => { },
+  isAuth: () => Boolean(false),
+  user:  { } as UserType
 });
 
 export interface AuthPRoviderProps {
@@ -14,8 +17,11 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
+  // this is when user refresh the page, if we don't want to use local storage for the current user we can refactor using the endpoint "me"
+  const [userStorage, setUserStorage] = useLocalStorage('current_user', undefined);
+  const [user, setUser] = useState(userStorage);
+  // const [status, setStatus] = useState(AppStatus.LOADING);
+  const [tokenExpiration, setTokenExpiration] = useLocalStorage('token_expiration', undefined);
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
@@ -27,9 +33,13 @@ export const AuthProvider = () => {
       variables: { input: { username, password } },
       onCompleted: ({ login }: any) => {
         const { access_token, refresh_token, user } = login;
+        const expirationToken = new Date(new Date().getTime() + Constants.tokenExpirationMinutes * 60000);
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
         setUser(user);
+        setUserStorage(user);
+        setTokenExpiration(expirationToken)
+        // setStatus(AppStatus.LOADED)
         console.log('redirect to calls');
         navigate('/calls');
       }
@@ -43,12 +53,24 @@ export const AuthProvider = () => {
     navigate('/login', { replace: true });
   };
 
+  // Returns true if user is authenticated 
+  const isAuth = () : boolean => {
+    if (localStorage.getItem('access_token') != null && localStorage.getItem('access_token') != undefined) {
+      return true;
+    }
+    return false;
+  };
+
+
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      isAuth,
+      user
     };
-  }, []);
+  }, [user]);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />

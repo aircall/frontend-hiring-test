@@ -1,11 +1,17 @@
 import { useQuery } from '@apollo/client';
-import { useParams } from 'react-router-dom';
-import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
-import { Box, Typography } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { GET_CALL_DETAILS } from '../../gql/queries/getCallDetails';
+import { Box, Button, Spacer, Typography } from '@aircall/tractor';
+import { formatDate, formatDuration } from '../../helpers/dates';
+import { Constants } from '../../constants/constants';
 
 export const CallDetailsPage = () => {
+  const navigate = useNavigate();
+  const [search] = useSearchParams();
   const { callId } = useParams();
+  const pageQueryParams = search.get('page');
+  const size = search.get('size');
+  const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
     variables: {
       id: callId
@@ -17,11 +23,22 @@ export const CallDetailsPage = () => {
 
   const { call } = data;
 
+
+  const handleCallOnClickBack = () => {
+    navigate(`/calls?page=${activePage}&size=${size}`);
+  };
+
+
+
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls Details
       </Typography>
+      <Spacer space="s" marginLeft="10">
+        <Button mode="link">New Note</Button>
+        <Button mode="link" onClick={handleCallOnClickBack}>Back to Calls</Button>
+      </Spacer>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
         <div>{`ID: ${call.id}`}</div>
         <div>{`Type: ${call.call_type}`}</div>
@@ -33,7 +50,7 @@ export const CallDetailsPage = () => {
         <div>{`To: ${call.to}`}</div>
         <div>{`Via: ${call.via}`}</div>
         {call.notes?.map((note: Note, index: number) => {
-          return <div>{`Note ${index + 1}: ${note.content}`}</div>;
+          return <div key={note.id}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
     </>

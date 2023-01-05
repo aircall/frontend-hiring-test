@@ -15,3 +15,9 @@ interface Note {
   id: string;
   content: string;
 }
+
+interface PaginatedCalls {
+  nodes: [Call!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+}

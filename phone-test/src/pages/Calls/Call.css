@@ -1,0 +1,15 @@
+.call-date-section {
+    color: #00B388;
+    background-color: transparent;
+    border-color: transparent;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    height: 26px;
+    text-align: end;
+    width: 100%;
+}
+
+.call-date-card {
+    margin-bottom: 7px;
+}
