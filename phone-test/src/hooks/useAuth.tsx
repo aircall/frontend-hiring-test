@@ -2,8 +2,9 @@ import { createContext, useContext, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
-import { useMutation } from '@apollo/client';
-import { Constants } from '../constants/constants';
+import { ApolloClient, NormalizedCacheObject, useMutation } from '@apollo/client';
+import { AppStatus, Constants } from '../constants/constants';
+import AuthService from '../services/auth.services';
 
 const AuthContext = createContext({
   login: ({ }) => { },
@@ -41,7 +42,7 @@ export const AuthProvider = () => {
         setTokenExpiration(expirationToken)
         // setStatus(AppStatus.LOADED)
         console.log('redirect to calls');
-        navigate('/calls');
+        window.document.location.href = '/calls';
       }
     });
   };
@@ -67,7 +68,7 @@ export const AuthProvider = () => {
       login,
       logout,
       isAuth,
-      user
+      user,
     };
   }, [user]);
 

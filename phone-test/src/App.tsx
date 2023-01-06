@@ -34,6 +34,7 @@ function App() {
 
   const client = AuthService.getClient();
 
+
   return (
     <Tractor injectStyle theme={darkTheme}>
       <ApolloProvider client={client}>

@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../../gql/queries';
 import {
@@ -22,6 +22,8 @@ import { useEffect, useState } from 'react';
 import './Call.css';
 import { MenuItem } from '../../components/MenuItem';
 import { groupByDate } from '../../helpers/calls.group';
+import { UPDATED_CALLS } from '../../gql/subscriptions/updatedCalls';
+import AuthService from '../../services/auth.services';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -44,18 +46,57 @@ export const CallsListPage = () => {
   const [directionFilter, setDirectionFilter] = useState<CallDirection>();
   const [calls, setCalls] = useState<any>();
 
-
+  //Get the calls list
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * callsPerPage,
       limit: callsPerPage
     },
-    onCompleted: (data) => handleCalls((data.paginatedCalls as PaginatedCalls).nodes),
+    onCompleted: (data) => {
+      callList = (data.paginatedCalls as PaginatedCalls).nodes;
+      handleCalls(callList);
+    }
   });
+  let callList: Call[] = data ? (data.paginatedCalls as PaginatedCalls).nodes : [];
+
+  //Listen for new updates from backend
+  const { data: wsData, loading: wsLoading } = useSubscription(
+    UPDATED_CALLS,
+    {
+      variables: {},
+      onData: (res) => handleUpdatedCalls(res),
+      onError: (e) => {
+        console.log(e);
+      },
+      onComplete: () => {
+        console.log('ubscription has been closed successfully');
+      }
+    });
 
 
   const { totalCount } = data ? data.paginatedCalls : 0;
 
+  //Get the updated call from ws and render the new list
+  const handleUpdatedCalls = (res: any) => {
+    const call = res?.data?.data?.onUpdatedCall;
+    if (call) {
+      const list = callList;
+      const index = list.findIndex(x => x.id == call.id);
+      if (index != -1) {
+        const newList = [
+          ...list.slice(0, index),
+          call,
+          ...list.slice(index + 1),
+        ];
+        callList = newList;
+        handleCalls(callList);
+      }
+    }
+
+  }
+
+  // Sort list by created date before grouping 
+  // Sorting must be implemented on backend since it is server side pagination but backend doesn't support it
   const handleCalls = (list: Call[]) => {
 
     let sortList = [...list].sort(function (a, b) {
@@ -75,7 +116,7 @@ export const CallsListPage = () => {
 
   useEffect(() => {
     if (loading === false && data) {
-      handleCalls((data.paginatedCalls as PaginatedCalls).nodes);
+      handleCalls(callList);
     }
   }, [directionFilter])
 

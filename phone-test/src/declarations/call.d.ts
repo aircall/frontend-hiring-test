@@ -21,3 +21,8 @@ interface PaginatedCalls {
   totalCount: Int!
   hasNextPage: Boolean!
 }
+
+interface AddNoteInput {
+  activityId: ID!
+  content: String!
+}
