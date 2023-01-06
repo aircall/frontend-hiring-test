@@ -53,6 +53,7 @@ export const CallDetailsPage = () => {
 
   // Show modal to add a new note on the call
   const showModal = () => {
+    setNote('');
     toggleModal(true);
   };
 

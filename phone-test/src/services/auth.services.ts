@@ -1,8 +1,6 @@
 import { ApolloClient, InMemoryCache, createHttpLink, split } from '@apollo/client';
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { setContext } from '@apollo/client/link/context';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
-import { createClient } from 'graphql-ws';
 import { Constants } from '../constants/constants';
 import { REFRESH_TOKEN } from '../gql/mutations/refreshToken';
 import { getMainDefinition } from '@apollo/client/utilities';
@@ -33,24 +31,7 @@ const getClient = function () {
         isTokenValidOrUndefined: isTokenValid,
         fetchAccessToken: async () => {
 
-            const accessToken = localStorage.getItem('refresh_token');
-            const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
-
-            const { print } = require('graphql')
-            const bodyString = print(REFRESH_TOKEN)
-
-            const response = await fetch(Constants.env.api_url, {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'Authorization': accessToken ? `Bearer ${parsedToken}` : ''
-                },
-                body: JSON.stringify({
-                    query: bodyString,
-                }),
-            });
-            const json = await response.json();
-            return json;
+           return onRefreshToken();
         },
         handleFetch: (access_token: any) => {
             localStorage.setItem('access_token', JSON.stringify(access_token));
@@ -71,6 +52,24 @@ const getClient = function () {
         },
     });
 
+    //call server to get the new access token using the refresh token
+    const onRefreshToken = async () => {
+        const { print } = require('graphql')
+        const bodyString = print(REFRESH_TOKEN)
+
+        const response = await fetch(Constants.env.api_url, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': getRefreshToken()
+            },
+            body: JSON.stringify({
+                query: bodyString,
+            }),
+        });
+        const json = await response.json();
+        return json;
+    }
 
 
     const httpLink = createHttpLink({
@@ -83,6 +82,13 @@ const getClient = function () {
     //     url: Constants.env.ws_url,
     // }));
 
+    const getRefreshToken = () => {
+        const accessToken = localStorage.getItem('refresh_token');
+        const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
+
+        return accessToken ? `Bearer ${parsedToken}` : '';
+    }
+
     const getToken = () => {
         // get the authentication token from local storage if it exists
         const accessToken = localStorage.getItem('access_token');
@@ -92,13 +98,13 @@ const getClient = function () {
     }
 
     const subscriptionMiddleware = {
-        applyMiddleware: function(req: any, next: any) {
-          // Get the current context
-          const context = req.getContext();
-          context.connectionParams.authorization = getToken();
-          next()
+        applyMiddleware: function (req: any, next: any) {
+            // Get the current context
+            const context = req.getContext();
+            context.connectionParams.authorization = getToken();
+            next()
         },
-      };
+    };
 
 
     const sc = new SubscriptionClient(Constants.env.ws_url, {
@@ -106,11 +112,27 @@ const getClient = function () {
         timeout: 30000,
         connectionParams: () => ({
             authorization: getToken(),
-          }),
+        }),
     });
     sc.use([subscriptionMiddleware]);
+
+    //before reconnecting here ask if token has expired, if yes get the new token
+    sc.onReconnecting(async () => {
+
+        if (!isTokenValid()) {
+            const json = await onRefreshToken();
+            const newToken = json?.data?.refreshTokenV2?.access_token;
+            if (newToken) {
+                const expirationToken = new Date(new Date().getTime() + Constants.tokenExpirationMinutes * 60000);
+                localStorage.setItem('token_expiration', JSON.stringify(expirationToken));
+                localStorage.setItem('access_token', JSON.stringify(newToken));
+            }
+            console.log(json);
+         
+        }
+    })
     const wsLink = new WebSocketLink(sc);
-   
+
 
     // The split function takes three parameters:
     //
