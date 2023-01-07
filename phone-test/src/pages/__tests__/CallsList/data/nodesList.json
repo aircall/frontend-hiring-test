@@ -1,0 +1,67 @@
+[
+  {
+    "__typename": "Call",
+    "id": "0dcd2d5b-aa10-4183-abc3-a43a3e8d78f9",
+    "direction": "inbound",
+    "from": "+33195854191",
+    "to": "+33146280137",
+    "duration": 93339,
+    "is_archived": true,
+    "call_type": "answered",
+    "via": "+33172559688",
+    "created_at": "2023-01-01T10:21:32.124Z",
+    "notes": []
+  },
+  {
+    "__typename": "Call",
+    "id": "3183aab6-65b3-486e-8545-08df8e8b1008",
+    "direction": "outbound",
+    "from": "+33158466158",
+    "to": "+33199161002",
+    "duration": 43299,
+    "is_archived": false,
+    "call_type": "missed",
+    "via": "+33103147192",
+    "created_at": "2023-01-03T07:52:06.634Z",
+    "notes": []
+  },
+  {
+    "__typename": "Call",
+    "id": "c069216b-e588-403a-96a5-da1b0a6b69c8",
+    "direction": "outbound",
+    "from": "+33104006537",
+    "to": "+33137497744",
+    "duration": 67089,
+    "is_archived": true,
+    "call_type": "voicemail",
+    "via": "+33148535883",
+    "created_at": "2022-12-30T15:15:43.310Z",
+    "notes": []
+  },
+  {
+    "__typename": "Call",
+    "id": "7be52ef2-5799-4088-8fc4-c2fbffba39a2",
+    "direction": "outbound",
+    "from": "+33119387169",
+    "to": "+33176531152",
+    "duration": 25836,
+    "is_archived": false,
+    "call_type": "voicemail",
+    "via": "+33142371129",
+    "created_at": "2023-01-01T07:40:22.139Z",
+    "notes": []
+  },
+  {
+    "__typename": "Call",
+    "id": "28f9a8c0-8981-4bf9-a2cb-b37d2384507e",
+    "direction": "outbound",
+    "from": "+33126040436",
+    "to": "+33191762817",
+    "duration": 71036,
+    "is_archived": true,
+    "call_type": "answered",
+    "via": "+33127545750",
+    "created_at": "2023-01-04T13:00:36.899Z",
+    "notes": []
+  }
+]
