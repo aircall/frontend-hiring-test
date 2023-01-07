@@ -37,7 +37,7 @@ You won't have time to fix everything, and we don't expect you to. Also, we adju
   - group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
   - fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
   - fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
-  - add unit tests for the `date` helper functions.
+  - [X] add unit tests for the `date` helper functions.
 - **senior software engineer**
   - fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
   - fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
