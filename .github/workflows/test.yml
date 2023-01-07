@@ -1,0 +1,33 @@
+name: Test before merge
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test before merge
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: phone-test
+
+    strategy:
+      matrix:
+        node-version: [19.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: c-hive/gha-yarn-cache@v1
+      - name: Yarn Install
+        run: |
+          yarn install
+      - name: Yarn Test
+        run: |
+          yarn test
