@@ -30,10 +30,12 @@ export const CallsListPage = () => {
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+  const sizeQueryParams = search.get('size');
+  const callsPerPage = !!sizeQueryParams ? parseInt(sizeQueryParams) : CALLS_PER_PAGE;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * callsPerPage,
+      limit: callsPerPage
     }
     // onCompleted: () => handleRefreshToken(),
   });
@@ -48,8 +50,26 @@ export const CallsListPage = () => {
     navigate(`/calls/${callId}`);
   };
 
-  const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+  const handlePageChange = (page: number, size: number = callsPerPage) => {
+    let url = `/calls/?page=${page ? page : 1}`;
+    if (size !== CALLS_PER_PAGE) url += `&size=${size}`;
+
+    navigate(url);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    /**
+     * Get the total sum of calls before the current page.
+     *
+     * The intention is to resize the lists but keeping track of the current position
+     * so the user doesn't lose track of those calls he has already viewed.
+     *
+     * That's why we add 1 to the total list to make sure we
+     * take into count the position of the very first call in the current list.
+     */
+    const prevCallsToCurrentList = (activePage - 1) * callsPerPage;
+    const newPage = (prevCallsToCurrentList + 1) / newPageSize;
+    handlePageChange(Math.ceil(newPage), newPageSize);
   };
 
   return (
@@ -114,8 +134,9 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={callsPerPage}
             onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>
