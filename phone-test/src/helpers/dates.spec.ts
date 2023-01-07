@@ -18,10 +18,10 @@ describe('dates helpers', () => {
   });
 
   const successfulSampleData = [
-    ['2022-11-16T13:37:05.822Z', 'Nov 16 - 14:37'],
+    ['2022-11-16T13:37:05.822Z', 'Nov 16 - 13:37'],
     ['2022-11-16', 'Nov 16 - 00:00'],
     [new Date('January 10, 2002 01:02:03'), 'Jan 10 - 01:02'],
-    [1234567890, 'Jan 15 - 07:56']
+    [1234567890, 'Jan 15 - 06:56']
   ];
   test.each(successfulSampleData)(
     'Get a valid formatted date (success) - With value: %s',
