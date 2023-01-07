@@ -57,6 +57,21 @@ export const CallsListPage = () => {
     navigate(url);
   };
 
+  const handlePageSizeChange = (newPageSize: number) => {
+    /**
+     * Get the total sum of calls before the current page.
+     *
+     * The intention is to resize the lists but keeping track of the current position
+     * so the user doesn't lose track of those calls he has already viewed.
+     *
+     * That's why we add 1 to the total list to make sure we
+     * take into count the position of the very first call in the current list.
+     */
+    const prevCallsToCurrentList = (activePage - 1) * callsPerPage;
+    const newPage = (prevCallsToCurrentList + 1) / newPageSize;
+    handlePageChange(Math.ceil(newPage), newPageSize);
+  };
+
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
@@ -121,9 +136,7 @@ export const CallsListPage = () => {
             activePage={activePage}
             pageSize={callsPerPage}
             onPageChange={handlePageChange}
-            onPageSizeChange={(newPageSize: number) => {
-              handlePageChange(activePage, newPageSize);
-            }}
+            onPageSizeChange={handlePageSizeChange}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>
