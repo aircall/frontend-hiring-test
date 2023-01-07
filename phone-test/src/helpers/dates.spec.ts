@@ -14,6 +14,7 @@ describe('dates helpers', () => {
    * I would consider this a bug on the function.
    * */
   test.each(['abc', undefined, {}])('Format call duration (failure) - With value: %s', duration => {
+    // @ts-expect-error
     expect(() => formatDuration(duration)).toThrowError(/invalid time/i);
   });
 
@@ -25,8 +26,11 @@ describe('dates helpers', () => {
   ];
   test.each(successfulSampleData)(
     'Get a valid formatted date (success) - With value: %s',
+    // @ts-expect-error
     (date, expectedDate) => {
+      // @ts-expect-error
       expect(() => formatDate(date)).not.toThrowError();
+      // @ts-expect-error
       expect(formatDate(date)).toEqual(expectedDate);
     }
   );
@@ -37,6 +41,7 @@ describe('dates helpers', () => {
    * */
   const failSampleData = ['T13:37:05.822Z', 'abc', undefined];
   test.each(failSampleData)('Get a valid formatted date (failure) - With value: %s', date => {
+    // @ts-expect-error
     expect(() => formatDate(date)).toThrowError();
   });
 });
