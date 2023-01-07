@@ -30,10 +30,12 @@ export const CallsListPage = () => {
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+  const sizeQueryParams = search.get('size');
+  const callsPerPage = !!sizeQueryParams ? parseInt(sizeQueryParams) : CALLS_PER_PAGE;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * callsPerPage,
+      limit: callsPerPage
     }
     // onCompleted: () => handleRefreshToken(),
   });
@@ -48,8 +50,11 @@ export const CallsListPage = () => {
     navigate(`/calls/${callId}`);
   };
 
-  const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+  const handlePageChange = (page: number, size: number = callsPerPage) => {
+    let url = `/calls/?page=${page ? page : 1}`;
+    if (size !== CALLS_PER_PAGE) url += `&size=${size}`;
+
+    navigate(url);
   };
 
   return (
@@ -114,8 +119,11 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={callsPerPage}
             onPageChange={handlePageChange}
+            onPageSizeChange={(newPageSize: number) => {
+              handlePageChange(activePage, newPageSize);
+            }}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>
