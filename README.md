@@ -29,7 +29,7 @@ As said above, the application is far from being production ready. We'll ask you
 You won't have time to fix everything, and we don't expect you to. Also, we adjust our expectations depending on your seniority. Here's what expected for each level of seniority:
 
 - **junior software engineer**
-  - improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that.
+  - [X] improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that.
   - add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
   - group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
 - **software engineer**
