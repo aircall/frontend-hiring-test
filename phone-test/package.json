@@ -63,6 +63,9 @@
   "jest": {
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!lodash-es)"
+    ],
+    "testMatch": [
+      "**/*.(spec|test).(js|jsx|ts|tsx)"
     ]
   }
 }
