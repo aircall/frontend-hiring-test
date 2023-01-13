@@ -1,4 +1,4 @@
-import { formatDate, formatDuration } from './dates';
+import { formatDate, formatDuration } from '../dates';
 
 describe('dates helpers', () => {
   test.each([
