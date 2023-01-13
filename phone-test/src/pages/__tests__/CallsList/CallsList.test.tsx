@@ -12,7 +12,7 @@ const requestMocks = [
     request: {
       query: PAGINATED_CALLS,
       variables: {
-        offset: (1 - 1) * 5, // Page 1 / Size 5
+        offset: 0, // Page 1 / Size 5
         limit: 5
       }
     },
@@ -69,7 +69,7 @@ const requestMocks = [
     request: {
       query: PAGINATED_CALLS,
       variables: {
-        offset: (1 - 1) * 25, // Page 1 / Size 25
+        offset: 0, // Page 1 / Size 25
         limit: 25
       }
     },
@@ -107,7 +107,7 @@ const requestMocks = [
     request: {
       query: PAGINATED_CALLS,
       variables: {
-        offset: (1 - 1) * 50, // Page 1 / Size 50
+        offset: 0, // Page 1 / Size 50
         limit: 50
       }
     },
