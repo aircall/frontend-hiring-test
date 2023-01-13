@@ -1,8 +1,8 @@
 import { Tractor } from '@aircall/tractor';
 import { ApolloProvider } from '@apollo/client';
-import { fireEvent, render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { client } from '../../../App';
+import client from '../../../auth';
 import { AuthProvider } from '../../../hooks/useAuth';
 import { darkTheme } from '../../../style/theme/darkTheme';
 import { ProtectedLayout } from '../ProtectedLayout';
@@ -32,11 +32,11 @@ describe('ProtectedLayout Case', () => {
   test('Logout removing tokens and redirecting', async () => {
     render(<TestingComponent />);
 
-    localStorage.setItem('access_token', 'dummy access token');
-    localStorage.setItem('refresh_token', 'dummy refresh token');
+    window.localStorage.setItem('access_token', 'dummy access token');
+    window.localStorage.setItem('refresh_token', 'dummy refresh token');
 
-    expect(localStorage.getItem('access_token')).not.toBeNull();
-    expect(localStorage.getItem('refresh_token')).not.toBeNull();
+    expect(window.localStorage.getItem('access_token')).not.toBeNull();
+    expect(window.localStorage.getItem('refresh_token')).not.toBeNull();
     expect(screen.getByText(/a single page/i)).toBeInTheDocument();
 
     const logoutLink = screen.getByText(/logout/i);
@@ -47,7 +47,7 @@ describe('ProtectedLayout Case', () => {
     expect(loginText).toBeInTheDocument();
     expect(screen.getByText(/successfully logged out/i)).toBeInTheDocument();
 
-    expect(localStorage.getItem('access_token')).toBeNull();
-    expect(localStorage.getItem('refresh_token')).toBeNull();
+    expect(window.localStorage.getItem('access_token')).toBeNull();
+    expect(window.localStorage.getItem('refresh_token')).toBeNull();
   });
 });

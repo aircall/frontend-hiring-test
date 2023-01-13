@@ -5,8 +5,9 @@ import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
 const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
+  login: ({ username, password }: { username: string; password: string }) => {},
+  logout: () => {},
+  isAuthenticated: () => Boolean(false)
 });
 
 export interface AuthPRoviderProps {
@@ -22,7 +23,7 @@ export const AuthProvider = () => {
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
+  const login = ({ username, password }: { username: string; password: string }) => {
     return loginMutation({
       variables: { input: { username, password } },
       onCompleted: ({ login }: any) => {
@@ -43,12 +44,21 @@ export const AuthProvider = () => {
     navigate('/login', { replace: true });
   };
 
+  /**
+   * Check if user is currently authenticated.
+   */
+  const isAuthenticated = () => {
+    return !!window.localStorage.getItem('access_token');
+  };
+
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      isAuthenticated
     };
   }, []);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />
