@@ -14,9 +14,11 @@ import { LoginPage } from '../pages/Login/Login';
 const routes = (
   <Route element={<AuthProvider />}>
     <Route path="/login" element={<LoginPage />} />
-    <Route path="/calls" element={<ProtectedLayout />}>
-      <Route path="/calls" element={<CallsListPage />} />
-      <Route path="/calls/:callId" element={<CallDetailsPage />} />
+    <Route path="" element={<ProtectedRoute />}>
+      <Route path="/calls" element={<ProtectedLayout />}>
+        <Route path="/calls" element={<CallsListPage />} />
+        <Route path="/calls/:callId" element={<CallDetailsPage />} />
+      </Route>
     </Route>
   </Route>
 );
