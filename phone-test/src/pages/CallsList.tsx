@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import {
@@ -9,10 +9,12 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination
+  Pagination,
+  Button
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ARCHIVE_CALL } from '../gql/mutations';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -32,6 +34,7 @@ export const CallsListPage = () => {
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const sizeQueryParams = search.get('size');
   const callsPerPage = !!sizeQueryParams ? parseInt(sizeQueryParams) : CALLS_PER_PAGE;
+  const [archive] = useMutation(ARCHIVE_CALL);
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * callsPerPage,
@@ -71,6 +74,22 @@ export const CallsListPage = () => {
     const prevCallsToCurrentList = (activePage - 1) * callsPerPage;
     const newPage = (prevCallsToCurrentList + 1) / newPageSize;
     handlePageChange(Math.ceil(newPage), newPageSize);
+  };
+
+  /**
+   * Archive/Unarchive calls
+   * @param e: HTMLButtonElement
+   * @param callId: string ex: 12345-6789
+   */
+  const handleArchive = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, callId: string) => {
+    e.stopPropagation();
+
+    archive({
+      variables: { id: callId },
+      onCompleted: x => {
+        console.log(x);
+      }
+    });
   };
 
   return (
@@ -124,8 +143,13 @@ export const CallsListPage = () => {
                   <Typography variant="caption">{date}</Typography>
                 </Box>
               </Grid>
-              <Box px={4} py={2}>
+              <Box px={4} py={2} display="flex" style={{ justifyContent: 'space-between' }}>
                 <Typography variant="caption">{notes}</Typography>
+                <Button mode="link" onClick={e => handleArchive(e, call.id)}>
+                  <Typography variant="caption">
+                    {call.is_archived ? 'unarchive' : 'archive'}
+                  </Typography>
+                </Button>
               </Box>
             </Box>
           );

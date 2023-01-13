@@ -1,6 +1,6 @@
 import { Tractor } from '@aircall/tractor';
 import { MockedProvider } from '@apollo/client/testing';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ARCHIVE_CALL } from '../../../gql/mutations';
@@ -31,11 +31,14 @@ const requestMocks = [
   },
   {
     request: {
-      query: ARCHIVE_CALL
+      query: ARCHIVE_CALL,
+      variables: {
+        id: nodesList[0].id
+      }
     },
     result: {
       data: {
-        onUpdateCall: nodesList[1]
+        archiveCall: { ...nodesList[0], is_archived: !nodesList[0].is_archived }
       }
     }
   }
@@ -57,10 +60,12 @@ describe('Archive Call Case', () => {
 
     const prevClickArchiveOptions = await screen.findAllByText('archive');
 
-    const archiveButton = prevClickArchiveOptions[0];
+    const archiveButton = screen.getAllByRole('button', { name: /archive/i })[0];
     userEvent.click(archiveButton);
 
-    const postClickArchiveOptions = await screen.findAllByText('archive');
-    expect(prevClickArchiveOptions.length).not.toEqual(postClickArchiveOptions.length);
+    await waitFor(async () => {
+      const postClickArchiveOptions = await screen.findAllByText('archive');
+      expect(prevClickArchiveOptions.length).not.toEqual(postClickArchiveOptions.length);
+    });
   });
 });
