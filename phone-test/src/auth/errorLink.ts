@@ -8,17 +8,16 @@ const getRefreshToken = () => {
   return accessToken ? JSON.parse(accessToken) : undefined;
 };
 
-let refreshingToken = '';
+let isRefreshing = false;
 /**
  * Refresh expired access token
  * @returns Promise with new access token
  */
 const getNewToken = async () => {
   const refreshToken = getRefreshToken();
-  if (refreshingToken === refreshToken) {
-    return Promise.reject('Got in a loop refreshing same expired token');
+  if (isRefreshing) {
+    return Promise.reject('Got in a loop refreshing. Needs to be logged out.');
   }
-  refreshingToken = refreshToken;
 
   /**
    * Use "refresh token" as "access token" momentarily so we can still make use
@@ -27,11 +26,13 @@ const getNewToken = async () => {
    * */
   window.localStorage.setItem('access_token', JSON.stringify(refreshToken));
 
+  isRefreshing = true;
   const {
     data: { refreshTokenV2 }
   } = await client.mutate({
     mutation: REFRESH_TOKEN
   });
+  isRefreshing = false;
 
   // Set new access token
   const accessToken = refreshTokenV2.access_token;
@@ -39,7 +40,8 @@ const getNewToken = async () => {
 };
 
 /**
- * Error handler for `Apollo`. Will refresh access token if graphql fails to authorize (401)
+ * Error handler for `Apollo`.
+ * Will refresh access token if graphql fails to authorize (401)
  */
 const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   if (graphQLErrors) {
@@ -48,7 +50,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
       if (exception.status === 401) {
         return fromPromise(
           getNewToken().catch(() => {
-            localStorage.clear();
+            window.localStorage.clear();
             window.location.reload();
           })
         ).flatMap(() => {
