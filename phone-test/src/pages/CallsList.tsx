@@ -57,10 +57,11 @@ export const CallsListPage = () => {
     navigate(url);
   };
 
+  /**
+   * Get the total sum of calls before the current page.
+   */
   const handlePageSizeChange = (newPageSize: number) => {
     /**
-     * Get the total sum of calls before the current page.
-     *
      * The intention is to resize the lists but keeping track of the current position
      * so the user doesn't lose track of those calls he has already viewed.
      *
@@ -94,6 +95,7 @@ export const CallsListPage = () => {
           return (
             <Box
               key={call.id}
+              id={call.id}
               bg="black-a30"
               borderRadius={16}
               cursor="pointer"
