@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { Box, Flex, Spacer, Grid, useToast } from '@aircall/tractor';
+import { Box, Flex, Spacer, Grid, useToast, Button } from '@aircall/tractor';
 import logo from '../../logo.png';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -24,9 +24,9 @@ export const ProtectedLayout = () => {
         </Link>
         <Spacer space="m" alignItems="center">
           <span>{`Welcome {username}!`}</span>
-          <Link onClick={onLogout} to="/login">
+          <Button mode="link" onClick={onLogout}>
             logout
-          </Link>
+          </Button>
         </Spacer>
       </Flex>
       <Grid w="500px" mx="auto" rowGap={2}>
