@@ -1,3 +1,18 @@
+# NOTES
+I have marked on the expectations those tasks I have completed along the test, however, ideally I would have put more time into the real-time support with WebSocket. The feature has been done and it works but I would have looked for a better solution when keeping it alive refreshing the access token.
+
+I have tried to follow a realistic approach of development when working on those tasks, branching and adding a small GitHub action to test those branches before merging. Also, for the test, I have left all those branches available on my fork to allow anyone to follow my approach and the time I have put into this test.
+
+## Plan for a production-ready app
+Part of that plane requirements would be:
+- 3 (or at least 2) different environments and branches: master/main, staging and development with continue deployment.
+- Commits template to ensure it contains all required details.
+- Blocking `master` and `staging` from direct commits allowing only those from `development`.
+- Automation of tests after and before merging for all branches as a requirement for merge.
+- Support `React Testing Library` unit and integration testing with some `Cypress` integration tests.
+- Integration of `Sentry`.
+- Integration of `Eslint` and `Prettier` with shared workspace settings.
+
 # :phone: Aircall Frontend Hiring Test
 
 Backed by over $220 million of investment since 2015, Aircall creates technology that fuels accessible, transparent and collaborative communication to empower our base of 14,000+ customers (and growing) to make authentic, human connections. With over 1.3M calls per day, we focus on user experience, collaboration and integration with other software.
