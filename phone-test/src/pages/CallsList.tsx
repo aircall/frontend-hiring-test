@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import {
@@ -15,6 +15,7 @@ import {
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ARCHIVE_CALL } from '../gql/mutations';
+import { ON_UPDATED_CALL } from '../gql/subscription/updateCall';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -34,13 +35,18 @@ export const CallsListPage = () => {
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const sizeQueryParams = search.get('size');
   const callsPerPage = !!sizeQueryParams ? parseInt(sizeQueryParams) : CALLS_PER_PAGE;
-  const [archive] = useMutation(ARCHIVE_CALL);
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
+
+  useSubscription(ON_UPDATED_CALL);
+  const [archiveMutation] = useMutation(ARCHIVE_CALL);
+  const { loading, error, data, subscribeToMore } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * callsPerPage,
       limit: callsPerPage
     }
-    // onCompleted: () => handleRefreshToken(),
+  });
+
+  subscribeToMore({
+    document: ON_UPDATED_CALL
   });
 
   if (loading) return <p>Loading calls...</p>;
@@ -84,11 +90,8 @@ export const CallsListPage = () => {
   const handleArchive = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, callId: string) => {
     e.stopPropagation();
 
-    archive({
-      variables: { id: callId },
-      onCompleted: x => {
-        console.log(x);
-      }
+    archiveMutation({
+      variables: { id: callId }
     });
   };
 
