@@ -2,14 +2,14 @@ import { Tractor } from '@aircall/tractor';
 import { ApolloProvider } from '@apollo/client';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import client from '../../../auth';
+import apolloClient from '../../../auth';
 import { AuthProvider } from '../../../hooks/useAuth';
 import { darkTheme } from '../../../style/theme/darkTheme';
 import { ProtectedLayout } from '../ProtectedLayout';
 
 const TestingComponent = () => (
   <Tractor injectStyle theme={darkTheme}>
-    <ApolloProvider client={client}>
+    <ApolloProvider client={apolloClient}>
       <MemoryRouter initialEntries={['/page']}>
         <Routes>
           <Route element={<AuthProvider />}>

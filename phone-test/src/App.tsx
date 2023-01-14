@@ -6,12 +6,12 @@ import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
 import { ApolloProvider } from '@apollo/client';
 import router from './routes';
-import client from './auth';
+import apolloClient from './auth';
 
 function App() {
   return (
     <Tractor injectStyle theme={darkTheme}>
-      <ApolloProvider client={client}>
+      <ApolloProvider client={apolloClient}>
         <RouterProvider router={router} />
         <GlobalAppStyle />
       </ApolloProvider>

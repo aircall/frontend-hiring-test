@@ -1,15 +1,11 @@
 import { setContext } from '@apollo/client/link/context';
+import { getAccessToken } from './token';
 
-const authLink = setContext((_, { headers }) => {
-  const accessToken = window.localStorage.getItem('access_token');
-  const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
-
-  return {
-    headers: {
-      ...headers,
-      authorization: accessToken ? `Bearer ${parsedToken}` : ''
-    }
-  };
-});
+const authLink = setContext((_, { headers }) => ({
+  headers: {
+    ...headers,
+    authorization: getAccessToken()
+  }
+}));
 
 export default authLink;
