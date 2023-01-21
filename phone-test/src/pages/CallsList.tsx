@@ -78,6 +78,7 @@ export const CallsListPage = () => {
               borderRadius={16}
               cursor="pointer"
               onClick={() => handleCallOnClick(call.id)}
+              data-testid="call-item"
             >
               <Grid
                 gridTemplateColumns="32px 1fr max-content"

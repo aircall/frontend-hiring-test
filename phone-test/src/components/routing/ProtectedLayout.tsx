@@ -13,7 +13,7 @@ export const ProtectedLayout = () => {
         </Link>
         <Spacer space="m" alignItems="center">
           <span>{`Welcome {username}!`}</span>
-          <Link to="/login" onClick={logout}>
+          <Link to="/login" onClick={logout} data-testid="logout">
             logout
           </Link>
         </Spacer>

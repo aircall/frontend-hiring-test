@@ -22,7 +22,7 @@ export const CallDetailsPage = () => {
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls Details
       </Typography>
-      <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
+      <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16} data-testid="call-detail">
         <div>{`ID: ${call.id}`}</div>
         <div>{`Type: ${call.call_type}`}</div>
         <div>{`Created at: ${formatDate(call.created_at)}`}</div>
