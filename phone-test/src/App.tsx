@@ -5,16 +5,20 @@ import {
   InMemoryCache,
   ApolloProvider,
   createHttpLink,
-  fromPromise
+  fromPromise,
+  split
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider
 } from 'react-router-dom';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 
 import './App.css';
 import { LoginPage } from './pages/Login/Login';
@@ -29,6 +33,27 @@ import { REFRESH_TOKEN } from './gql/mutations';
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
 });
+
+const subscriptionClient = new SubscriptionClient('wss://frontend-test-api.aircall.dev/websocket', {
+  reconnect: true,
+  connectionParams: async () => {
+    const accessToken = localStorage.getItem('access_token');
+    const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
+    return {
+      authorization: accessToken ? `Bearer ${parsedToken}` : ''
+    };
+  }
+});
+const wsLink = new WebSocketLink(subscriptionClient);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+  },
+  wsLink,
+  httpLink
+);
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -90,7 +115,7 @@ const errorLink = onError(({ forward, graphQLErrors, operation }) => {
   }
 });
 
-const links = [authLink, errorLink, httpLink];
+const links = [authLink, errorLink, splitLink];
 const client = new ApolloClient({
   link: ApolloLink.from(links),
   cache: new InMemoryCache()

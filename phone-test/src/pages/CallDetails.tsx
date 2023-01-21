@@ -1,9 +1,10 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { Box, Button, Icon, SpinnerOutlined, Typography, useToast } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { ARCHIVE_CALL } from '../gql/mutations';
+import { CALL_SUBSCRIPTION } from '../gql/subscriptions';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -16,6 +17,8 @@ export const CallDetailsPage = () => {
   });
 
   const [archiveCall, { loading: archiveCallLoading }] = useMutation(ARCHIVE_CALL);
+
+  useSubscription(CALL_SUBSCRIPTION);
 
   if (loading) return <p>Loading call details...</p>;
   if (error) return <p>ERROR</p>;
