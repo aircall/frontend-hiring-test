@@ -40,7 +40,7 @@ You won't have time to fix everything, and we don't expect you to. Also, we adju
   - add unit tests for the `date` helper functions.
 - **senior software engineer**
   - ✅ fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
-  - fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
+  - ✅ fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
   - add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
   - implement the archive call feature and add real-time support. Meaning that if you open the app in 2 tabs, archive a call from the first tab, the second tab must reflect this change. Create a PR for this feature as if you were submitting it to our team, for it to be merged and released in production. As we try to work asynchonously, writing skills are important to us.
 - **staff engineer and above**

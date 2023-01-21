@@ -1,17 +1,30 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { Tractor } from '@aircall/tractor';
+import {
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+  fromPromise
+} from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider
+} from 'react-router-dom';
+
+import './App.css';
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
-import { Tractor } from '@aircall/tractor';
-
-import './App.css';
 import { ProtectedLayout } from './components/routing/ProtectedLayout';
 import { darkTheme } from './style/theme/darkTheme';
-import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
+import { REFRESH_TOKEN } from './gql/mutations';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -31,8 +44,55 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const getNewAccessToken = async () => {
+  const refreshToken = localStorage.getItem('refresh_token');
+
+  if (!refreshToken) {
+    throw new Error('Cannot get new access_token because refresh_token is missing');
+  }
+
+  // Set the refresh_token as access_token
+  // so that it is used as Authorization header during the mutation
+  localStorage.setItem('access_token', refreshToken);
+  const {
+    data: { refreshTokenV2 }
+  } = await client.mutate({ mutation: REFRESH_TOKEN });
+  return refreshTokenV2.access_token;
+};
+
+const errorLink = onError(({ forward, graphQLErrors, operation }) => {
+  if (graphQLErrors) {
+    const hasUnauthorizedError = graphQLErrors.some(error => {
+      const { status } = error.extensions.exception as { status: number };
+      return status === 401;
+    });
+    if (hasUnauthorizedError) {
+      return fromPromise(
+        getNewAccessToken().catch(() => {
+          // If the token refresh fails,
+          // clear LocalStorage and redirect to login page
+          localStorage.clear();
+          window.location.href = '/login';
+        })
+      )
+        .filter(value => Boolean(value))
+        .flatMap(accessToken => {
+          localStorage.setItem('access_token', JSON.stringify(accessToken));
+          operation.setContext({
+            headers: {
+              ...operation.getContext().headers,
+              authorization: `Bearer ${accessToken}`
+            }
+          });
+          return forward(operation);
+        });
+    }
+  }
+});
+
+const links = [authLink, errorLink, httpLink];
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: ApolloLink.from(links),
   cache: new InMemoryCache()
 });
 
