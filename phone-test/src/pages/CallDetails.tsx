@@ -1,12 +1,14 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
-import { Box, Button, Icon, SpinnerOutlined, Typography } from '@aircall/tractor';
+import { Box, Button, Icon, SpinnerOutlined, Typography, useToast } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { ARCHIVE_CALL } from '../gql/mutations';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
+  const { showToast } = useToast();
+
   const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
     variables: {
       id: callId
@@ -24,8 +26,18 @@ export const CallDetailsPage = () => {
   const onArchive = async () => {
     try {
       await archiveCall({ variables: { id } });
+      showToast({
+        message: `The call was successfully ${isArchived ? 'restored' : 'archived'}.`,
+        variant: 'success',
+        dismissIn: 2500
+      });
     } catch (err) {
       console.error(err);
+      showToast({
+        message: 'An error occurred. Please try again later.',
+        variant: 'error',
+        dismissIn: 2500
+      });
     }
   };
 
