@@ -32,3 +32,12 @@ const getValidDate = (date: Date | string) => {
 export const formatDate = (date: string) => {
   return format(getValidDate(date), 'LLL d - HH:mm');
 };
+
+/**
+ * extracts day from a date, as a string.
+ * @param date ex: 2022-11-16T13:37:05.822Z
+ * @returns human readable date
+ */
+export const getday = (date: string) => {
+  return format(getValidDate(date), 'LLL dd')
+}

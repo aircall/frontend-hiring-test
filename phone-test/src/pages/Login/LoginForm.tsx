@@ -25,6 +25,8 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
     <Form
       onSubmit={e => {
         e.preventDefault();
+        localStorage.setItem('email', email)
+        localStorage.setItem('password', password)
         onSubmit(email, password);
       }}
       width="100%"

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 
@@ -13,12 +12,11 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
-  const navigate = useNavigate();
 
   const onSubmit = async (email: string, password: string) => {
     try {
       setFormState('Pending');
-      await login({ username: email, password });
+      await login({ username: email, password, navigateToCalls: true });
       removeToast(LOGIN_REJECTED);
     } catch (error) {
       console.log(error);

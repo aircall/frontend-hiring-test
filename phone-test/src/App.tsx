@@ -12,6 +12,7 @@ import { GlobalAppStyle } from './style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
+import { ErrorElement } from './pages/ErrorElement';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -38,7 +39,8 @@ const client = new ApolloClient({
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<AuthProvider />}>
+    <Route element={<AuthProvider />} errorElement={<ErrorElement/>}>
+      <Route path="/" element={<LoginPage />}/>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/calls" element={<ProtectedLayout />}>
         <Route path="/calls" element={<CallsListPage />} />
