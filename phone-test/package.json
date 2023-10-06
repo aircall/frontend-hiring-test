@@ -30,7 +30,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "e2e": "yarn playwright test",
+    "e2e:ui": "yarn playwright test --ui"
   },
   "eslintConfig": {
     "extends": [
@@ -59,5 +61,9 @@
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.38.1",
+    "playwright": "^1.38.1"
   }
 }

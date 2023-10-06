@@ -1,15 +1,17 @@
 interface LoginInput {
-  username: String;
-  password: String;
+  username: string;
+  password: string;
 }
 
 interface AuthResponseType {
-  access_token: String;
-  refresh_token: String;
+  access_token: string;
+  refresh_token: string;
   user: UserType;
 }
 
 interface DeprecatedAuthResponseType {
-  access_token: String;
+  access_token: string;
   user: UserType;
 }
+
+type LoggingInState = 'loading' | 'done';

@@ -1,4 +1,4 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
@@ -9,44 +9,138 @@ import { ProtectedLayout } from './components/routing/ProtectedLayout';
 import { darkTheme } from './style/theme/darkTheme';
 import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+  GraphQLRequest,
+  Observable,
+  FetchResult,
+  ApolloLink
+} from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
 import { AuthProvider } from './hooks/useAuth';
+import { LogoutPage } from './pages/Logout/Logout';
+import { GraphQLError } from 'graphql';
+import { REFRESH_TOKEN } from './gql/mutations';
+import { getStorageItem, setStorageItem } from './helpers/storage';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
 });
 
-const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const accessToken = localStorage.getItem('access_token');
-  const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
+function isRefreshRequest(operation: GraphQLRequest) {
+  return operation.operationName === 'refreshToken';
+}
 
-  // return the headers to the context so httpLink can read them
+function returnTokenDependingOnOperation(operation: GraphQLRequest) {
+  if (isRefreshRequest(operation)) return getStorageItem<string>('refresh_token')[0];
+  else return getStorageItem<string>('access_token')[0];
+}
+
+const authLink = setContext((operation, { headers }) => {
+  const token = returnTokenDependingOnOperation(operation);
+
   return {
     headers: {
       ...headers,
-      authorization: accessToken ? `Bearer ${parsedToken}` : ''
+      authorization: token ? `Bearer ${token}` : undefined
     }
   };
 });
 
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
-});
+const refreshToken = async () => {
+  try {
+    const { data } = await client.mutate<{
+      refreshTokenV2: AuthResponseType;
+    }>({
+      mutation: REFRESH_TOKEN
+    });
+
+    const accessToken = data?.refreshTokenV2.access_token;
+
+    if (data) {
+      const refreshToken = data?.refreshTokenV2.refresh_token;
+      const user = data?.refreshTokenV2.user;
+      setStorageItem('access_token', accessToken ?? '');
+      setStorageItem('refresh_token', refreshToken);
+      setStorageItem('user', user);
+    }
+
+    return accessToken;
+  } catch (err) {
+    localStorage.clear();
+    throw err;
+  }
+};
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<AuthProvider />}>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedLayout />}>
-        <Route path="/calls" element={<CallsListPage />} />
-        <Route path="/calls/:callId" element={<CallDetailsPage />} />
+    <>
+      <Route element={<AuthProvider />}>
+        <Route index element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/logout" element={<LogoutPage />} />
+        <Route path="/calls" element={<ProtectedLayout />}>
+          <Route path="/calls" element={<CallsListPage />} />
+          <Route path="/calls/:callId" element={<CallDetailsPage />} />
+        </Route>
       </Route>
-    </Route>
+    </>
   )
 );
+
+const errorLink = onError(({ graphQLErrors, operation, forward }) => {
+  if (graphQLErrors) {
+    const errorToHandle = graphQLErrors
+      .filter(error => error.extensions.code === 'INTERNAL_SERVER_ERROR')
+      .at(0);
+
+    const observableToReturn = errorToHandle
+      ? () => {
+          if (operation.operationName === 'refreshToken') return undefined;
+
+          const observable = new Observable<FetchResult<Record<string, unknown>>>(observer => {
+            (async () => {
+              try {
+                const accessToken = await refreshToken();
+
+                if (!accessToken) {
+                  throw new GraphQLError('no access token');
+                }
+
+                const subscriber = {
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
+                  complete: observer.complete.bind(observer)
+                };
+
+                forward(operation).subscribe(subscriber);
+              } catch (err) {
+                observer.error(err);
+                router.navigate('/login', {
+                  replace: true
+                });
+              }
+            })();
+          });
+
+          return observable;
+        }
+      : undefined;
+
+    return observableToReturn?.();
+  }
+});
+
+const client = new ApolloClient({
+  link: ApolloLink.from([errorLink, authLink, httpLink]),
+  cache: new InMemoryCache({
+    resultCaching: false
+  })
+});
 
 function App() {
   return (

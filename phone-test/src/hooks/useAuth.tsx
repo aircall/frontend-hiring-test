@@ -1,12 +1,27 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
+import { useRefValue } from './useRefValue';
 
-const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
+type LoginParam = {
+  username: string;
+  password: string;
+};
+
+type AuthContextType = {
+  login: (args: LoginParam) => unknown;
+  logout: () => unknown;
+  user: AuthResponseType['user'] | null;
+  status: LoggingInState;
+};
+
+const AuthContext = createContext<AuthContextType>({
+  login: () => {},
+  logout: () => {},
+  user: null,
+  status: 'loading'
 });
 
 export interface AuthPRoviderProps {
@@ -14,41 +29,60 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
-  const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
-  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
-  const [loginMutation] = useMutation(LOGIN);
+  // const [user, setUser] = useState<AuthResponseType['user'] | null>(null);
+  const { state } = useLocation();
+  const [accessToken, setAccessToken] = useLocalStorage<string>('access_token', null);
+  const [refreshToken, setRefreshToken] = useLocalStorage<string>('refresh_token', null);
+  const [user, setUser] = useLocalStorage<AuthResponseType['user']>('user', null);
+  const [status, setStatus] = useState<LoggingInState>(
+    accessToken && refreshToken && user ? 'done' : 'loading'
+  );
+  const [loginMutation] = useMutation<{ login: AuthResponseType }, { input: LoginInput }>(LOGIN);
   const navigate = useNavigate();
+  const stateRef = useRefValue(state);
 
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
-    return loginMutation({
-      variables: { input: { username, password } },
-      onCompleted: ({ login }: any) => {
-        const { access_token, refresh_token, user } = login;
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
-        setUser(user);
-        console.log('redirect to calls');
-        navigate('/calls');
-      }
-    });
-  };
+  const login = useCallback(
+    ({ username, password }: LoginParam) => {
+      return loginMutation({
+        variables: { input: { username, password } },
+        onCompleted: ({ login }) => {
+          const { access_token, refresh_token, user } = login;
+          setAccessToken(access_token);
+          setRefreshToken(refresh_token);
+          setUser(user);
+          setStatus('done');
+          const redirectTo =
+            typeof stateRef.current?.redirectTo === 'string'
+              ? stateRef.current.redirectTo
+              : '/calls';
+          console.log('redirect to ' + redirectTo);
+          navigate(redirectTo, {
+            replace: true
+          });
+        }
+      });
+    },
+    [loginMutation, navigate, setAccessToken, setRefreshToken, setUser, stateRef]
+  );
 
   // call this function to sign out logged in user
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
-    navigate('/login', { replace: true });
-  };
+    setUser(null);
+    navigate('/', { replace: true });
+  }, [navigate, setAccessToken, setRefreshToken, setUser]);
 
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      user,
+      status
     };
-  }, []);
+  }, [login, logout, user, status]);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />

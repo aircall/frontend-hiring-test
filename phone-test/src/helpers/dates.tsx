@@ -32,3 +32,7 @@ const getValidDate = (date: Date | string) => {
 export const formatDate = (date: string) => {
   return format(getValidDate(date), 'LLL d - HH:mm');
 };
+
+export const truncDate = (date: Date | string): string => {
+  return format(getValidDate(date), 'dd-MM-yyyy');
+};
