@@ -1,8 +1,10 @@
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
-import { CallsListPage } from './pages/CallsList';
-import { CallDetailsPage } from './pages/CallDetails';
+import { CallsListPage } from './pages/List/CallsList';
+import { CallDetailsPage } from './pages/CallDetails/CallDetails';
 import { Tractor } from '@aircall/tractor';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { WebSocketLink } from '@apollo/client/link/ws';
 
 import './App.css';
 import { ProtectedLayout } from './components/routing/ProtectedLayout';
@@ -17,7 +19,8 @@ import {
   GraphQLRequest,
   Observable,
   FetchResult,
-  ApolloLink
+  ApolloLink,
+  split
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
@@ -26,6 +29,7 @@ import { LogoutPage } from './pages/Logout/Logout';
 import { GraphQLError } from 'graphql';
 import { REFRESH_TOKEN } from './gql/mutations';
 import { getStorageItem, setStorageItem } from './helpers/storage';
+import { getMainDefinition } from '@apollo/client/utilities';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -135,8 +139,29 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   }
 });
 
+const wsClient = new SubscriptionClient(`wss://frontend-test-api.aircall.dev/websocket`, {
+  reconnect: true,
+  connectionParams: () => {
+    const token = getStorageItem<string>('access_token')[0];
+    return {
+      authorization: token ? `Bearer ${token}` : undefined
+    };
+  }
+});
+
+const wsLink = new WebSocketLink(wsClient);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+  },
+  wsLink,
+  httpLink
+);
+
 const client = new ApolloClient({
-  link: ApolloLink.from([errorLink, authLink, httpLink]),
+  link: ApolloLink.from([errorLink, authLink, splitLink]),
   cache: new InMemoryCache({
     resultCaching: false
   })

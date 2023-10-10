@@ -1,19 +1,34 @@
 import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
+import { GET_CALL_DETAILS } from '../../gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
+import { formatDate, formatDuration } from '../../helpers/dates';
+import { CallDetailsForm } from './CallDetailsForm';
+import { ON_UPDATED_CALL } from '../../gql/subscriptions';
+import { useCallback } from 'react';
 
 export const CallDetailsPage = () => {
-  const { callId } = useParams();
-  const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
+  const { callId = '' } = useParams();
+  const { loading, error, data, subscribeToMore } = useQuery<
+    {
+      call: Call;
+    },
+    { id: string }
+  >(GET_CALL_DETAILS, {
     variables: {
       id: callId
     }
   });
 
+  const subscribeToUpdated = useCallback(() => {
+    subscribeToMore({
+      document: ON_UPDATED_CALL,
+      onError: error => console.log(error)
+    });
+  }, [subscribeToMore]);
+
   if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
+  if (error || !data?.call) return <p>ERROR</p>;
 
   const { call } = data;
 
@@ -36,6 +51,11 @@ export const CallDetailsPage = () => {
           return <div key={note.id}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
+      <CallDetailsForm
+        id={call.id}
+        isArchived={call.is_archived}
+        subscribeToUpdates={subscribeToUpdated}
+      />
     </>
   );
 };

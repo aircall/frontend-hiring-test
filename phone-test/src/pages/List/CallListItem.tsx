@@ -1,5 +1,5 @@
 import { Typography } from '@aircall/tractor';
-import { List } from '../components/common/List';
+import { List } from '../../components/common/List';
 import { CallListItemInnerList } from './CallListItemInnerList';
 
 type CallListItemProps = {

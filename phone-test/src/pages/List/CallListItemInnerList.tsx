@@ -6,7 +6,7 @@ import {
   Icon,
   Typography
 } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
+import { formatDate, formatDuration } from '../../helpers/dates';
 
 type CallListItemInnerListProps = {
   call: Call;

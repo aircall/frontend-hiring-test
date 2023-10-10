@@ -1,11 +1,11 @@
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
 import { Typography, Spacer, Pagination, Select } from '@aircall/tractor';
-import { truncDate } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { groupBy } from '../helpers/collections';
-import { List } from '../components/common/List';
+import { PAGINATED_CALLS } from '../../gql/queries';
+import { truncDate } from '../../helpers/dates';
+import { groupBy } from '../../helpers/collections';
+import { List } from '../../components/common/List';
 import { CallListItem } from './CallListItem';
 
 export const PaginationWrapper = styled.div`
