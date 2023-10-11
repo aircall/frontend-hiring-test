@@ -5,6 +5,7 @@ import { Typography, Pagination } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ARCHIVE } from '../gql/mutations/archive';
 import { CallComponent } from '../components/Call';
+import { useBroadcastChannel } from '../hooks/useBroadcastChannel';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -29,15 +30,18 @@ export const CallsListPage = () => {
     }
     // onCompleted: () => handleRefreshToken(),
   });
-
   const [archiveCall] = useMutation(ARCHIVE);
+  const { broadcast } = useBroadcastChannel('updateList', (data: MessageEvent<any>) => {
+    if (data.data.archived) {
+      refetch()
+    }
+  });
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
   if (!data) return <p>Not found</p>;
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
-  console.log(totalCount, calls.filter((call: any) => call.is_archived))
 
   const handleCallOnClick = (callId: Call['id']) => {
     navigate(`/calls/${callId}`);
@@ -52,6 +56,7 @@ export const CallsListPage = () => {
     archiveCall({
       variables: { id },
       onCompleted: (data) => {
+        broadcast({ archived: true })
         refetch()
       }
     })
