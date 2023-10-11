@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import { Typography, Pagination } from '@aircall/tractor';
+import { Typography, Pagination, useToast } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ARCHIVE } from '../gql/mutations/archive';
 import { CallComponent } from '../components/Call';
@@ -21,6 +21,7 @@ const CALLS_PER_PAGE = 5;
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data, refetch } = useQuery(PAGINATED_CALLS, {
@@ -54,10 +55,18 @@ export const CallsListPage = () => {
   const handleArchiveCall = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: Call['id']) => {
     e.stopPropagation();
     archiveCall({
-      variables: { id },
+      variables: { id: { id: 'lol' } },
       onCompleted: (data) => {
         broadcast({ archived: true })
         refetch()
+      },
+      onError: (error) => {
+        showToast({
+          id: 'ARCHIVE_FAIL',
+          message: error.message,
+          variant: 'error',
+          dismissIn: 3000,
+        })
       }
     })
   }
