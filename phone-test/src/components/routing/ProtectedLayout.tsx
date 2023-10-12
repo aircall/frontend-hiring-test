@@ -4,7 +4,7 @@ import logo from '../../logo.png';
 import { useAuth } from '../../hooks/useAuth';
 
 export const ProtectedLayout = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   return (
     <Box minWidth="100vh" p={4}>
@@ -13,7 +13,7 @@ export const ProtectedLayout = () => {
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome {username}!`}</span>
+          <span>{`Welcome ${user?.username}!`}</span>
           <Button size='xSmall' onClick={logout}>Logout</Button>
         </Spacer>
       </Flex>
