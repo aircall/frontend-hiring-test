@@ -1,5 +1,6 @@
-import { ArchiveFilled, Box, DiagonalDownOutlined, DiagonalUpOutlined, Flex, Grid, Icon, IconButton, Spacer, Tag, Tooltip, Typography } from "@aircall/tractor";
+import { ArchiveFilled, Box, DiagonalDownOutlined, DiagonalUpOutlined, Flex, Grid, Icon, IconButton, Spacer, SpinnerOutlined, Tag, Tooltip, Typography } from "@aircall/tractor";
 import { formatDate, formatDuration } from '../../helpers/dates';
+import { useState } from "react";
 
 interface CallComponentProps {
   calls: Array<Call>;
@@ -8,6 +9,13 @@ interface CallComponentProps {
 }
 
 const CallComponent = ({ calls, handleCallOnClick, handleArchiveCall }: CallComponentProps): JSX.Element => {
+  const [archivingCallId, setArchivingCallId] = useState('');
+
+  const onArchiveCall = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, callId: string): void => {
+    setArchivingCallId(callId);
+    handleArchiveCall(e, callId)
+  }
+
   return (
     <Spacer space={3} direction="vertical">
       {calls.map((call: Call) => {
@@ -22,6 +30,7 @@ const CallComponent = ({ calls, handleCallOnClick, handleArchiveCall }: CallComp
         const duration = formatDuration(call.duration / 1000);
         const date = formatDate(call.created_at);
         const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+        const isArchiving = archivingCallId === call.id ? true : false;
 
         return (
           <Box
@@ -58,7 +67,7 @@ const CallComponent = ({ calls, handleCallOnClick, handleArchiveCall }: CallComp
               <Typography variant="caption">{notes}</Typography>
               {call.is_archived ? <Tag.Root cursor="pointer" size="small" variant="primary"> Archived </Tag.Root> : 
               <Tooltip title="Archive the call" side="right" mouseEnterDelay={20} mouseLeaveDelay={100}>
-                <IconButton size={24} color="primary-500" component={ArchiveFilled} onClick={(e) => handleArchiveCall(e, call.id)}/>
+                <IconButton spin={isArchiving} size={24} color="primary-500" component={ isArchiving ? SpinnerOutlined : ArchiveFilled} onClick={(e) => onArchiveCall(e, call.id)}/>
               </Tooltip>
               }
             </Flex>

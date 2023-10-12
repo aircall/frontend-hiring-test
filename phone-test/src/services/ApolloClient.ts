@@ -1,7 +1,12 @@
-import { ApolloClient, InMemoryCache, createHttpLink, split } from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink, from, split } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { onError } from "@apollo/client/link/error";
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+ console.log(graphQLErrors, networkError)
+});
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql',
@@ -42,7 +47,7 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  link: authLink.concat(splitLink),
+  link: from([errorLink, authLink.concat(splitLink)]),
   cache: new InMemoryCache(),
 });
 

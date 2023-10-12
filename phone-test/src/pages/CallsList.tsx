@@ -25,8 +25,11 @@ export const CallsListPage = () => {
   const { showToast } = useToast();
   const pageQueryParams = search.get('page');
   const [calls, setCalls] = useState<Array<Call>>([]);
+  const [skipSubscription, setSkipSubscription] = useState(true);
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
-  const { data: updatedCall, loading: load, error: err } = useSubscription(UPDATE_CALL)
+  const { data: updatedCall, loading: load, error: err } = useSubscription(UPDATE_CALL, {
+    skip: skipSubscription
+  });
   const [archiveCall] = useMutation(ARCHIVE);
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -45,7 +48,8 @@ export const CallsListPage = () => {
         const targetCallIndex = newState.findIndex(call => call.id === updatedCall.onUpdatedCall.id)
         newState[targetCallIndex] = updatedCall.onUpdatedCall
         return newState;
-      })
+      });
+      setSkipSubscription(true);
     }
   }, [updatedCall])
 
@@ -65,6 +69,7 @@ export const CallsListPage = () => {
 
   const handleArchiveCall = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: Call['id']) => {
     e.stopPropagation();
+    setSkipSubscription(false);
     archiveCall({
       variables: { id },
       onError: (error) => {
