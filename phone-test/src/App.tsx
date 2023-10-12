@@ -11,6 +11,7 @@ import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { AuthProvider } from './hooks/useAuth';
 
 const httpLink = createHttpLink({
@@ -38,9 +39,13 @@ const client = new ApolloClient({
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<AuthProvider />}>
+    <Route path ='/'>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedLayout />}>
+      <Route path="/calls" element={
+        <ProtectedRoute>
+          <ProtectedLayout />
+        </ProtectedRoute>
+      }>
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
@@ -52,8 +57,10 @@ function App() {
   return (
     <Tractor injectStyle theme={darkTheme}>
       <ApolloProvider client={client}>
-        <RouterProvider router={router} />
-        <GlobalAppStyle />
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <GlobalAppStyle />
+        </AuthProvider>
       </ApolloProvider>
     </Tractor>
   );

@@ -55,7 +55,7 @@ export const CallsListPage = () => {
   const handleArchiveCall = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: Call['id']) => {
     e.stopPropagation();
     archiveCall({
-      variables: { id: { id: 'lol' } },
+      variables: { id },
       onCompleted: (data) => {
         broadcast({ archived: true })
         refetch()

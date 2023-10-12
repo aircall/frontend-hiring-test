@@ -10,7 +10,7 @@ import { useAuth } from '../../hooks/useAuth';
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
 export const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
   const navigate = useNavigate();
@@ -29,6 +29,12 @@ export const LoginPage = () => {
       });
     }
   };
+
+  React.useEffect(() => {
+    if (user?.username) {
+      navigate('/calls', { replace: true });
+    }
+  }, [user])
 
   return (
     <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5}>

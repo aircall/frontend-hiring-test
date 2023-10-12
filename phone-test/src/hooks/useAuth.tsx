@@ -1,37 +1,49 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
-const AuthContext = createContext({
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
+interface AuthContextObject {
+  login: (credentials: LoginCredentials) => void;
+  logout: () => void;
+  accessToken: string;
+  user: {
+    username: string;
+    id: string;
+  } | null;
+}
+
+export const AuthContext = createContext<AuthContextObject>({
   login: ({}) => {},
-  logout: () => {}
+  logout: () => {},
+  accessToken: '',
+  user: null
 });
 
 export interface AuthPRoviderProps {
   children: React.ReactNode;
 }
 
-export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
+export const AuthProvider = ({ children }: AuthPRoviderProps) => {
+  const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
-  const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
+  const login = ({ username, password }: LoginCredentials) => {
     return loginMutation({
       variables: { input: { username, password } },
       onCompleted: ({ login }: any) => {
         const { access_token, refresh_token, user } = login;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
-        setUser(user);
+        setUser({ ...user });
         console.log('redirect to calls');
-        navigate('/calls');
       }
     });
   };
@@ -40,18 +52,21 @@ export const AuthProvider = () => {
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
-    navigate('/login', { replace: true });
+    setUser(null);
   };
 
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      accessToken,
+      user
     };
-  }, []);
+  }, [user, accessToken]);
+
   return (
     <AuthContext.Provider value={value}>
-      <Outlet />
+      {children}
     </AuthContext.Provider>
   );
 };
