@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }: AuthPRoviderProps) => {
         const { access_token, refresh_token, user } = login;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
+        setSessionExpired(false);
         setUser({ ...user });
         console.log('redirect to calls');
       }

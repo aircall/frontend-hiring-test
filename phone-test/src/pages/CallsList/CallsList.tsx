@@ -48,11 +48,15 @@ export const CallsListPage = () => {
     },
     onError: (error) => {
       // call refresh token when we get an error of unauthorized.
-      refresh().then(() => refetch()).catch(() => {
+      refresh().then(() => {
+        refetch();
+      }).catch(() => {
+        // logout user on 2nd refresh.
         logout(true);
       })
     }
   });
+
   const refresh = useRefresh()
 
   useEffect(() => {
@@ -67,9 +71,7 @@ export const CallsListPage = () => {
     }
   }, [updatedCall])
 
-  if (loading) return <p>Loading calls...</p>;
-  // if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
+  if (loading || !data) return <p>Loading calls...</p>;
 
   const { totalCount } = data?.paginatedCalls;
 

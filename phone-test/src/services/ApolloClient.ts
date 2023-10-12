@@ -3,12 +3,14 @@ import { setContext } from "@apollo/client/link/context";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 
+export const REFRESH = 'REFRESH';
+
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql',
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://frontend-test-api.aircall.dev/websocket`,
+  uri: 'wss://frontend-test-api.aircall.dev/websocket',
   options: {
     reconnect: true,
   }
@@ -21,11 +23,12 @@ const authLink = setContext((_, { headers }) => {
   const parsedAccessToken = accessToken ? JSON.parse(accessToken) : undefined;
   const parsedRefreshToken = refreshToken ? JSON.parse(refreshToken) : undefined;
 
+  // handling refresh token scenario
   if (headers?.refresh) {
     return {
       headers: {
         ...headers,
-        authorization: headers.refresh === 'refresh' ? `Bearer ${parsedRefreshToken}` : ''
+        authorization: headers.refresh === REFRESH ? `Bearer ${parsedRefreshToken}` : ''
       }
     }
   }
@@ -52,9 +55,7 @@ const splitLink = split(
   httpLink,
 );
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   link: authLink.concat(splitLink),
   cache: new InMemoryCache(),
 });
-
-export default client;

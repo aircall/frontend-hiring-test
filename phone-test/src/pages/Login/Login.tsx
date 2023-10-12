@@ -35,7 +35,6 @@ export const LoginPage = () => {
     if (user?.username) {
       navigate('/calls', { replace: true });
     }
-    console.log(sessionExpired)
     if (sessionExpired) {
       showToast({
         id: SESSION_EXPIRED,
