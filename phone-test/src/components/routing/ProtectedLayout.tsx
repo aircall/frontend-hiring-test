@@ -14,7 +14,7 @@ export const ProtectedLayout = () => {
         </Link>
         <Spacer space="m" alignItems="center">
           <span>{`Welcome ${user?.username}!`}</span>
-          <Button size='xSmall' onClick={logout}>Logout</Button>
+          <Button size='xSmall' onClick={() => logout()}>Logout</Button>
         </Spacer>
       </Flex>
       <Grid w="500px" mx="auto" rowGap={2}>

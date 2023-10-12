@@ -9,8 +9,9 @@ interface LoginCredentials {
 }
 interface AuthContextObject {
   login: (credentials: LoginCredentials) => void;
-  logout: () => void;
+  logout: (sessionExpired?: boolean) => void;
   accessToken: string;
+  sessionExpired: boolean;
   user: {
     username: string;
     id: string;
@@ -21,6 +22,7 @@ export const AuthContext = createContext<AuthContextObject>({
   login: ({}) => {},
   logout: () => {},
   accessToken: '',
+  sessionExpired: false,
   user: null
 });
 
@@ -30,6 +32,7 @@ export interface AuthPRoviderProps {
 
 export const AuthProvider = ({ children }: AuthPRoviderProps) => {
   const [user, setUser] = useState(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
@@ -49,10 +52,11 @@ export const AuthProvider = ({ children }: AuthPRoviderProps) => {
   };
 
   // call this function to sign out logged in user
-  const logout = () => {
+  const logout = (sessionExpired = false) => {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
+    setSessionExpired(sessionExpired);
   };
 
   const value = useMemo(() => {
@@ -60,7 +64,8 @@ export const AuthProvider = ({ children }: AuthPRoviderProps) => {
       login,
       logout,
       accessToken,
-      user
+      user,
+      sessionExpired
     };
   }, [user, accessToken]);
 

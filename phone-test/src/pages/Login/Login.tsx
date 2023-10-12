@@ -8,9 +8,10 @@ import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
+const SESSION_EXPIRED = 'SESSION_EXPIRED';
 
 export const LoginPage = () => {
-  const { login, user } = useAuth();
+  const { login, user, sessionExpired } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
   const navigate = useNavigate();
@@ -33,6 +34,15 @@ export const LoginPage = () => {
   React.useEffect(() => {
     if (user?.username) {
       navigate('/calls', { replace: true });
+    }
+    console.log(sessionExpired)
+    if (sessionExpired) {
+      showToast({
+        id: SESSION_EXPIRED,
+        message: 'Session expired. Please login again',
+        variant: 'warning',
+        dismissIn: 3000,
+      });
     }
   }, [user])
 

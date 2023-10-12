@@ -1,7 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
-import { CallsListPage } from './pages/CallsList';
-import { CallDetailsPage } from './pages/CallDetails';
+import { CallsListPage } from './pages/CallsList/CallsList';
+import { CallDetailsPage } from './pages/CallDetails/CallDetails';
 import { Tractor } from '@aircall/tractor';
 
 import './App.css';
