@@ -13,6 +13,14 @@ const wsLink = new WebSocketLink({
   uri: 'wss://frontend-test-api.aircall.dev/websocket',
   options: {
     reconnect: true,
+    connectionParams: () => {
+      const accessToken = localStorage.getItem('access_token');
+      const parsedAccessToken = accessToken ? JSON.parse(accessToken) : undefined;
+
+      return {
+        authorization: accessToken ? `Bearer ${parsedAccessToken}` : ''
+      }
+    }
   }
 });
 
@@ -22,7 +30,6 @@ const authLink = setContext((_, { headers }) => {
   const refreshToken = localStorage.getItem('refresh_token');
   const parsedAccessToken = accessToken ? JSON.parse(accessToken) : undefined;
   const parsedRefreshToken = refreshToken ? JSON.parse(refreshToken) : undefined;
-
   // handling refresh token scenario
   if (headers?.refresh) {
     return {
@@ -35,7 +42,6 @@ const authLink = setContext((_, { headers }) => {
 
   // return the headers to the context so httpLink can read them
   return {
-    authorization: accessToken ? `Bearer ${parsedAccessToken}` : '',
     headers: {
       ...headers,
       authorization: accessToken ? `Bearer ${parsedAccessToken}` : ''

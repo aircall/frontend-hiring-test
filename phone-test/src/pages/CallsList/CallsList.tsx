@@ -7,7 +7,6 @@ import { ARCHIVE } from '../../gql/mutations/archive';
 import { CallComponent } from '../../components/Call';
 import { useEffect, useState } from 'react';
 import { UPDATE_CALL } from '../../gql/subscriptions/updateCall';
-import { REFRESH_TOKEN } from '../../gql/mutations/refreshToken';
 import { useRefresh } from '../../hooks/useRefresh';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -29,12 +28,9 @@ export const CallsListPage = () => {
   const { showToast } = useToast();
   const pageQueryParams = search.get('page');
   const [calls, setCalls] = useState<Array<Call>>([]);
-  const [skipSubscription, setSkipSubscription] = useState(true);
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
 
-  const { data: updatedCall } = useSubscription(UPDATE_CALL, {
-    skip: skipSubscription
-  });
+  const { data: updatedCall } = useSubscription(UPDATE_CALL);
 
   const [archiveCall] = useMutation(ARCHIVE);
 
@@ -67,7 +63,6 @@ export const CallsListPage = () => {
         newState[targetCallIndex] = updatedCall.onUpdatedCall
         return newState;
       });
-      setSkipSubscription(true);
     }
   }, [updatedCall])
 
@@ -85,7 +80,6 @@ export const CallsListPage = () => {
 
   const handleArchiveCall = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: Call['id']) => {
     e.stopPropagation();
-    setSkipSubscription(false);
     archiveCall({
       variables: { id },
       onError: (error) => {
