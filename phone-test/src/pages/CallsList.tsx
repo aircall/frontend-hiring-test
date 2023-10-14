@@ -13,6 +13,8 @@ import {
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useEffect } from 'react';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -28,6 +30,7 @@ const CALLS_PER_PAGE = 5;
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
+  const { getAccessToken } = useAuth();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
@@ -37,6 +40,12 @@ export const CallsListPage = () => {
     }
     // onCompleted: () => handleRefreshToken(),
   });
+
+  useEffect(() => {
+    setInterval(() => {
+      getAccessToken();
+    }, 600000);
+  }, []);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;

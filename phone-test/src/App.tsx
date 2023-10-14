@@ -12,6 +12,7 @@ import { GlobalAppStyle } from './style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
+import { ProtectedRoute } from './components/routing/ProtectedRoute';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -20,13 +21,16 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const accessToken = localStorage.getItem('access_token');
+  const refreshToken = localStorage.getItem('refresh_token');
   const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
-
+  const parsedRefreshToken = refreshToken ? JSON.parse(refreshToken) : undefined;
+  const {   operationName = ''  } = _;
+  const token = operationName === 'refreshTokenV2' ? parsedRefreshToken : parsedToken;
   // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
-      authorization: accessToken ? `Bearer ${parsedToken}` : ''
+      authorization: token ? `Bearer ${token}` : ''
     }
   };
 });
@@ -40,8 +44,22 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedLayout />}>
-        <Route path="/calls" element={<CallsListPage />} />
+      <Route
+        path="/calls"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route
+          path="/calls"
+          element={
+            <ProtectedRoute>
+              <CallsListPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
     </Route>

@@ -1,12 +1,14 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { LOGIN } from '../gql/mutations';
+import { GET_ACCESS_TOKEN, LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
 const AuthContext = createContext({
   login: ({}) => {},
-  logout: () => {}
+  logout: () => {},
+  accessToken: '',
+  getAccessToken: () => {}
 });
 
 export interface AuthPRoviderProps {
@@ -19,6 +21,7 @@ export const AuthProvider = () => {
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
+  const [accessTokenMutation] = useMutation(GET_ACCESS_TOKEN);
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
@@ -43,12 +46,25 @@ export const AuthProvider = () => {
     navigate('/login', { replace: true });
   };
 
+  const getAccessToken = () => {
+    return accessTokenMutation({
+      onCompleted: ({ data }: any) => {
+        const { access_token, refresh_token } = data;
+        setAccessToken(access_token);
+        setRefreshToken(refresh_token);
+        console.log('redirect to refresh');
+      }
+    });
+  };
+
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      accessToken,
+      getAccessToken
     };
-  }, []);
+  }, [accessToken]);
   return (
     <AuthContext.Provider value={value}>
       <Outlet />
