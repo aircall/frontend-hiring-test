@@ -48,8 +48,8 @@ export const AuthProvider = () => {
 
   const getAccessToken = () => {
     return accessTokenMutation({
-      onCompleted: ({ data }: any) => {
-        const { access_token, refresh_token } = data;
+      onCompleted: ({ refreshTokenV2 }: any) => {
+        const { access_token, refresh_token } = refreshTokenV2;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
         console.log('redirect to refresh');
