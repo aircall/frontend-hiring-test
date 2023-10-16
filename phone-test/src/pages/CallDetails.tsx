@@ -2,17 +2,22 @@ import { useMutation, useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { ARCHIVE_CALLS, GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { Box, Button, Typography } from '@aircall/tractor';
+import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
+import { Box, Typography } from '@aircall/tractor';
+import { useNavigate } from 'react-router-dom';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useEffect } from 'react';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
+  const navigate = useNavigate();
   const { loading, error, data, startPolling, stopPolling } = useQuery(GET_CALL_DETAILS, {
     variables: {
       id: callId
     },
     pollInterval: 1000
   });
+  
   const [archiveCalls] = useMutation(ARCHIVE_CALLS);
 
   useEffect(() => {
@@ -21,6 +26,10 @@ export const CallDetailsPage = () => {
       stopPolling();
     };
   }, [startPolling, stopPolling]);
+
+  if (error?.message === 'Unauthorized') {
+    navigate('/login');
+  }
 
   if (loading) return <p>Loading call details...</p>;
   if (error) return <p>ERROR</p>;

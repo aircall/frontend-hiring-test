@@ -30,7 +30,6 @@ const CALLS_PER_PAGE = 5;
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
-  const { getAccessToken } = useAuth();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
@@ -38,14 +37,11 @@ export const CallsListPage = () => {
       offset: (activePage - 1) * CALLS_PER_PAGE,
       limit: CALLS_PER_PAGE
     }
-    // onCompleted: () => handleRefreshToken(),
   });
 
-  useEffect(() => {
-    setInterval(() => {
-      getAccessToken();
-    }, 600000);
-  }, []);
+  if (error?.message === 'Unauthorized') {
+    navigate('/login');
+  }
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
