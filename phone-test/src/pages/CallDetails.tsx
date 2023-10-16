@@ -2,15 +2,21 @@ import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
+import { useNavigate } from 'react-router-dom';
 import { formatDate, formatDuration } from '../helpers/dates';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
+  const navigate = useNavigate();
   const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
     variables: {
       id: callId
     }
   });
+
+  if (error?.message === 'Unauthorized') {
+    navigate('/login');
+  }
 
   if (loading) return <p>Loading call details...</p>;
   if (error) return <p>ERROR</p>;

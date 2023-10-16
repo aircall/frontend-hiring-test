@@ -24,7 +24,7 @@ const authLink = setContext((_, { headers }) => {
   const refreshToken = localStorage.getItem('refresh_token');
   const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
   const parsedRefreshToken = refreshToken ? JSON.parse(refreshToken) : undefined;
-  const {   operationName = ''  } = _;
+  const { operationName = '' } = _;
   const token = operationName === 'refreshTokenV2' ? parsedRefreshToken : parsedToken;
   // return the headers to the context so httpLink can read them
   return {
@@ -52,14 +52,7 @@ export const router = createBrowserRouter(
           </ProtectedRoute>
         }
       >
-        <Route
-          path="/calls"
-          element={
-            <ProtectedRoute>
-              <CallsListPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
     </Route>
