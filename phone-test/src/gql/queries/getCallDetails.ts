@@ -9,3 +9,12 @@ export const GET_CALL_DETAILS = gql`
     }
   }
 `;
+
+export const ARCHIVE_CALLS = gql`
+  ${CALL_FIELDS}
+  mutation ArchiveCall($id: ID!) {
+    archiveCall(id: $id) {
+      ...CallFields
+    }
+  }
+`;
