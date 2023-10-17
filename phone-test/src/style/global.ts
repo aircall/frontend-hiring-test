@@ -16,6 +16,7 @@ export const GlobalAppStyle = createGlobalStyle`
     place-items: center;
     grid-template-rows: 1fr;
     width: 100vw;
+    height: 100vh;
     overflow-y: auto;
   }
 
