@@ -23,7 +23,7 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
+const CALLS_PER_PAGE = 50;
 
 export const CallsListPage = () => {
   const [search] = useSearchParams();

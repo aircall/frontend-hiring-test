@@ -2,9 +2,9 @@ import { createGlobalStyle } from '@xstyled/styled-components';
 
 export const GlobalAppStyle = createGlobalStyle`
   html, body {
+    height: 100%;
     overflow: hidden;
     width: 100%;
-    height: 100%;
   }
 
   body {
@@ -13,10 +13,10 @@ export const GlobalAppStyle = createGlobalStyle`
 
   #root {
     display: grid;
-    place-items: center;
     grid-template-rows: 1fr;
-    width: 100vw;
     overflow-y: auto;
+    place-items: center;
+    width: 100vw;
   }
 
   ::-webkit-scrollbar {

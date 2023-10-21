@@ -19,6 +19,7 @@ export const LoginPage = () => {
     try {
       setFormState('Pending');
       await login({ username: email, password });
+      navigate('/calls');
       removeToast(LOGIN_REJECTED);
     } catch (error) {
       console.log(error);

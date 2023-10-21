@@ -1,25 +1,39 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { createContext, useContext, useState } from 'react';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
-import { useMutation } from '@apollo/client';
+import { FetchResult, useMutation } from '@apollo/client';
 
-const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
-});
+interface AuthContextValue {
+  accessToken?: string;
+  login: (credentials: { username: string; password: string }) => Promise<FetchResult<any>>;
+  logout: VoidFunction;
+  refreshToken?: string;
+  user?: {
+    id: string;
+    username: string;
+  };
+}
 
-export interface AuthPRoviderProps {
+const authContextInitialValue: AuthContextValue = {
+  accessToken: '',
+  login: credentials => Promise.resolve({}),
+  logout: () => undefined,
+  refreshToken: '',
+  user: undefined
+};
+
+const AuthContext = createContext<AuthContextValue>(authContextInitialValue);
+
+interface AuthPRoviderProps {
   children: React.ReactNode;
 }
 
-export const AuthProvider = () => {
+export const AuthProvider = ({ children }: AuthPRoviderProps) => {
   const [user, setUser] = useState();
   const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
-  const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
   const login = ({ username, password }: any) => {
@@ -30,8 +44,6 @@ export const AuthProvider = () => {
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
         setUser(user);
-        console.log('redirect to calls');
-        navigate('/calls');
       }
     });
   };
@@ -40,22 +52,21 @@ export const AuthProvider = () => {
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
-    navigate('/login', { replace: true });
   };
 
-  const value = useMemo(() => {
-    return {
-      login,
-      logout
-    };
-  }, []);
   return (
-    <AuthContext.Provider value={value}>
-      <Outlet />
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        login,
+        logout,
+        refreshToken,
+        user
+      }}
+    >
+      {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

@@ -1,6 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
-import logo from '../../logo.png';
+import logo from '../../assets/logo.png';
 
 export const ProtectedLayout = () => {
   return (
