@@ -13,6 +13,7 @@ import {
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -23,19 +24,23 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 50;
-
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+  const pageSizeOptions = [
+    { label: '5', value: 5 },
+    { label: '10', value: 10 },
+    { label: '20', value: 20 },
+    { label: '40', value: 40 }
+  ];
+  const [selectedPageSize, setSelectedPageSize] = useState<number>(pageSizeOptions[0].value);
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * selectedPageSize,
+      limit: selectedPageSize
     }
-    // onCompleted: () => handleRefreshToken(),
   });
 
   if (loading) return <p>Loading calls...</p>;
@@ -50,6 +55,12 @@ export const CallsListPage = () => {
 
   const handlePageChange = (page: number) => {
     navigate(`/calls/?page=${page}`);
+  };
+
+  const handlePageSizeChange = (pageSizeValue: number) => {
+    if (!pageSizeValue) return;
+    setSelectedPageSize(pageSizeValue);
+    handlePageChange(1);
   };
 
   return (
@@ -114,8 +125,10 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
             onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            pageSize={selectedPageSize}
+            pageSizeOptions={pageSizeOptions}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>
