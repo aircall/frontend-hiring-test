@@ -30,12 +30,10 @@ interface AuthPRoviderProps {
 
 export const AuthProvider = ({ children }: AuthPRoviderProps) => {
   const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
 
-  // call this function when you want to authenticate the user
   const login = ({ username, password }: any) => {
     return loginMutation({
       variables: { input: { username, password } },
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }: AuthPRoviderProps) => {
     });
   };
 
-  // call this function to sign out logged in user
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);

@@ -1,8 +1,17 @@
-import { Outlet, Link } from 'react-router-dom';
-import { Flex, Spacer, Grid } from '@aircall/tractor';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Flex, Spacer, Grid, Button } from '@aircall/tractor';
 import logo from '../../assets/logo.png';
+import { useAuth } from '../../hooks/useAuth';
 
 export const ProtectedLayout = () => {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <Flex flexDirection="column" maxWidth={768} p={4} w="100%">
       <Flex justifyContent="space-between" alignItems="center">
@@ -10,8 +19,10 @@ export const ProtectedLayout = () => {
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome {username}!`}</span>
-          <Link to="/login">logout</Link>
+          <span>Welcome {user?.username}!</span>
+          <Button onClick={handleLogout} size="xSmall" variant="primary">
+            Logout
+          </Button>
         </Spacer>
       </Flex>
       <Grid mx="auto" rowGap={2} w="100%">
