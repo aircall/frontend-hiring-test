@@ -2,25 +2,27 @@ import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import {
-  Grid,
-  Icon,
-  Typography,
-  Spacer,
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination
+  Flex,
+  Grid,
+  Icon,
+  Pagination,
+  Spacer,
+  Typography
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Filters } from '../components/filters/Filters';
 
 export const PaginationWrapper = styled.div`
   > div {
-    width: inherit;
-    margin-top: 20px;
     display: flex;
     justify-content: center;
+    margin-top: 20px;
+    width: inherit;
   }
 `;
 
@@ -36,18 +38,37 @@ export const CallsListPage = () => {
     { label: '40', value: 40 }
   ];
   const [selectedPageSize, setSelectedPageSize] = useState<number>(pageSizeOptions[0].value);
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
+  const callTypeOptions = [
+    { label: 'Answered', value: 'answered' },
+    { label: 'Missed', value: 'missed' },
+    { label: 'Voicemail', value: 'voicemail' }
+  ];
+  const [selectedCallType, setSelectedCallType] = useState<Call['call_type'] | 'all'>('all');
+  const callDirectionOptions = [
+    { label: 'Inbound', value: 'inbound' },
+    { label: 'Outbound', value: 'outbound' }
+  ];
+  const [selectedCallDirection, setSelectedCallDirection] = useState<Call['direction'] | 'all'>(
+    'all'
+  );
+  const [calls, setCalls] = useState<Array<Call>>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
+  const { loading, error, data } = useQuery<{
+    paginatedCalls: {
+      totalCount: number;
+      nodes: Call[];
+    };
+  }>(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * selectedPageSize,
       limit: selectedPageSize
+    },
+    onCompleted: data => {
+      setCalls(data.paginatedCalls.nodes);
+      setTotalCount(data.paginatedCalls.totalCount);
     }
   });
-
-  if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
-
-  const { totalCount, nodes: calls } = data.paginatedCalls;
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -63,11 +84,54 @@ export const CallsListPage = () => {
     handlePageChange(1);
   };
 
+  const handleCallTypeChange = (callType: Call['call_type'] | 'all') => {
+    setSelectedCallType(callType);
+  };
+
+  const handleCallDirectionChange = (direction: Call['direction'] | 'all') => {
+    setSelectedCallDirection(direction);
+  };
+
+  useEffect(() => {
+    if (!data) return;
+
+    const unfilteredCalls = data.paginatedCalls.nodes;
+    const filteredCalls = unfilteredCalls.filter(({ call_type, direction }) => {
+      const hasSelectedCallType = call_type === selectedCallType || selectedCallType === 'all';
+      const hasSelectedCallDirection =
+        direction === selectedCallDirection || selectedCallDirection === 'all';
+      return hasSelectedCallType && hasSelectedCallDirection;
+    });
+
+    setCalls(filteredCalls);
+  }, [data, selectedCallType, selectedCallDirection]);
+
+  if (loading) return <p>Loading calls...</p>;
+  if (error) return <p>ERROR</p>;
+  if (!data) return <p>Not found</p>;
   return (
     <>
-      <Typography variant="displayM" textAlign="center" py={3}>
-        Calls History
-      </Typography>
+      <Flex justifyContent="space-between" alignItems="center" w="100%">
+        <Typography variant="displayM" textAlign="center" py={3}>
+          Calls History
+        </Typography>
+        <Filters
+          filterGroups={[
+            {
+              title: 'CALL TYPE',
+              onChange: handleCallTypeChange as any,
+              options: callTypeOptions,
+              selected: selectedCallType
+            },
+            {
+              title: 'DIRECTION',
+              onChange: handleCallDirectionChange as any,
+              options: callDirectionOptions,
+              selected: selectedCallDirection
+            }
+          ]}
+        />
+      </Flex>
       <Spacer space={3} direction="vertical">
         {calls.map((call: Call) => {
           const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
@@ -81,7 +145,6 @@ export const CallsListPage = () => {
           const duration = formatDuration(call.duration / 1000);
           const date = formatDate(call.created_at);
           const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
-
           return (
             <Box
               key={call.id}
@@ -120,7 +183,6 @@ export const CallsListPage = () => {
           );
         })}
       </Spacer>
-
       {totalCount && (
         <PaginationWrapper>
           <Pagination

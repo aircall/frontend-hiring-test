@@ -1,10 +1,10 @@
 import { Outlet, Link } from 'react-router-dom';
-import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
+import { Flex, Spacer, Grid } from '@aircall/tractor';
 import logo from '../../assets/logo.png';
 
 export const ProtectedLayout = () => {
   return (
-    <Box minWidth="100vh" p={4}>
+    <Flex flexDirection="column" maxWidth={768} p={4} w="100%">
       <Flex justifyContent="space-between" alignItems="center">
         <Link to="/calls">
           <img src={logo} alt="Aircall" width="32px" height="32px" />
@@ -14,9 +14,9 @@ export const ProtectedLayout = () => {
           <Link to="/login">logout</Link>
         </Spacer>
       </Flex>
-      <Grid w="500px" mx="auto" rowGap={2}>
+      <Grid mx="auto" rowGap={2} w="100%">
         <Outlet />
       </Grid>
-    </Box>
+    </Flex>
   );
 };
