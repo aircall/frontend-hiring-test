@@ -23,13 +23,15 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
+const CALLS_PER_PAGE = 25;
 
 export const CallsListPage = () => {
-  const [search] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const pageQueryParams = search.get('page');
+  const pageQueryParams = searchParams.get('page');
+  const callsPerPage = parseInt(searchParams.get('cpe') || CALLS_PER_PAGE.toString());
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * CALLS_PER_PAGE,
@@ -42,14 +44,30 @@ export const CallsListPage = () => {
   if (error) return <p>ERROR</p>;
   if (!data) return <p>Not found</p>;
 
-  const { totalCount, nodes: calls } = data.paginatedCalls;
+  const { totalCount, nodes: calls } = data?.paginatedCalls;
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    console.log(page, Math.ceil(totalCount / callsPerPage), totalCount, callsPerPage)
+    if (page === activePage || page < 1 || page > Math.ceil(totalCount / callsPerPage)) return;
+    setSearchParams(params => {
+      params.set('page', page.toString());
+      return params;
+    });
+
+    navigate(`/calls/?${searchParams.toString()}`);
+  };
+
+  const handlePageSizeChange = (pageSize: number) => {
+    setSearchParams(params => {
+      params.set('page', '1');
+      if (pageSize === CALLS_PER_PAGE || !pageSize) params.delete('cpe');
+      else params.set('cpe', pageSize.toString());
+      return params;
+    });
   };
 
   return (
@@ -114,8 +132,10 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={callsPerPage}
             onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            defaultPageSize={CALLS_PER_PAGE}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>
