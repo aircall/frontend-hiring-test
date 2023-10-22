@@ -13,6 +13,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
 import { ErrorBoundary } from './components/Error/ErrorBoundary';
+import { ProtectedRoute } from './components/routing/ProtectedRoute';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -41,7 +42,7 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />} errorElement={<ErrorBoundary />}>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedLayout />}>
+      <Route path="/calls" element={<ProtectedRoute><ProtectedLayout /></ProtectedRoute>}>
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>

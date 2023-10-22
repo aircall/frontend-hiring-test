@@ -4,7 +4,7 @@ import logo from '../../logo.png';
 
 export const ProtectedLayout = () => {
   return (
-    <Box minWidth="100vh" p={4}>
+    <Box minWidth="50vh" p={4} >
       <Flex justifyContent="space-between" alignItems="center">
         <Link to="/calls">
           <img src={logo} alt="Aircall" width="32px" height="32px" />
