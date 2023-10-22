@@ -1,21 +1,12 @@
+import { Flex, Pagination, Spacer, Typography } from '@aircall/tractor';
 import { useQuery } from '@apollo/client';
-import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
-import {
-  Box,
-  DiagonalDownOutlined,
-  DiagonalUpOutlined,
-  Flex,
-  Grid,
-  Icon,
-  Pagination,
-  Spacer,
-  Typography
-} from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import styled from 'styled-components';
+import { CallGroup } from '../components/callGroup/CallGroup';
 import { Filters } from '../components/filters/Filters';
+import { PAGINATED_CALLS } from '../gql/queries';
+import { formatDate } from '../helpers/dates';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -51,7 +42,7 @@ export const CallsListPage = () => {
   const [selectedCallDirection, setSelectedCallDirection] = useState<Call['direction'] | 'all'>(
     'all'
   );
-  const [calls, setCalls] = useState<Array<Call>>([]);
+  const [groupedCalls, setGroupedCalls] = useState<{ [date: string]: Array<Call> }>();
   const [totalCount, setTotalCount] = useState<number>(0);
 
   const { loading, error, data } = useQuery<{
@@ -65,10 +56,26 @@ export const CallsListPage = () => {
       limit: selectedPageSize
     },
     onCompleted: data => {
-      setCalls(data.paginatedCalls.nodes);
       setTotalCount(data.paginatedCalls.totalCount);
     }
   });
+
+  const groupCallsByDate = (calls: Array<Call>) => {
+    return calls.reduce((groupedCalls: { [date: string]: Array<Call> }, call) => {
+      const date = formatDate(call.created_at, { withoutTime: true });
+      const isDateAlreadyGrouped = Object.keys(groupedCalls).includes(date);
+
+      return isDateAlreadyGrouped
+        ? {
+            ...groupedCalls,
+            [date]: [...groupedCalls[date], call]
+          }
+        : {
+            ...groupedCalls,
+            [date]: [call]
+          };
+    }, {});
+  };
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -94,7 +101,6 @@ export const CallsListPage = () => {
 
   useEffect(() => {
     if (!data) return;
-
     const unfilteredCalls = data.paginatedCalls.nodes;
     const filteredCalls = unfilteredCalls.filter(({ call_type, direction }) => {
       const hasSelectedCallType = call_type === selectedCallType || selectedCallType === 'all';
@@ -102,17 +108,17 @@ export const CallsListPage = () => {
         direction === selectedCallDirection || selectedCallDirection === 'all';
       return hasSelectedCallType && hasSelectedCallDirection;
     });
-
-    setCalls(filteredCalls);
+    const groupedCalls = groupCallsByDate(filteredCalls);
+    setGroupedCalls(groupedCalls);
   }, [data, selectedCallType, selectedCallDirection]);
 
-  if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
+  if (loading) return <Typography variant="displayM">Loading calls...</Typography>;
+  if (error) return <Typography variant="displayM">ERROR</Typography>;
+  if (!data) return <Typography variant="displayM">Not found</Typography>;
   return (
     <>
       <Flex justifyContent="space-between" alignItems="center" w="100%">
-        <Typography variant="displayM" textAlign="center" py={3}>
+        <Typography variant="displayM" textAlign="center" py={4}>
           Calls History
         </Typography>
         <Filters
@@ -132,56 +138,16 @@ export const CallsListPage = () => {
           ]}
         />
       </Flex>
-      <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
-          const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-          const title =
-            call.call_type === 'missed'
-              ? 'Missed call'
-              : call.call_type === 'answered'
-              ? 'Call answered'
-              : 'Voicemail';
-          const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-          const duration = formatDuration(call.duration / 1000);
-          const date = formatDate(call.created_at);
-          const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
-          return (
-            <Box
-              key={call.id}
-              bg="black-a30"
-              borderRadius={16}
-              cursor="pointer"
-              onClick={() => handleCallOnClick(call.id)}
-            >
-              <Grid
-                gridTemplateColumns="32px 1fr max-content"
-                columnGap={2}
-                borderBottom="1px solid"
-                borderBottomColor="neutral-700"
-                alignItems="center"
-                px={4}
-                py={2}
-              >
-                <Box>
-                  <Icon component={icon} size={32} />
-                </Box>
-                <Box>
-                  <Typography variant="body">{title}</Typography>
-                  <Typography variant="body2">{subtitle}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" textAlign="right">
-                    {duration}
-                  </Typography>
-                  <Typography variant="caption">{date}</Typography>
-                </Box>
-              </Grid>
-              <Box px={4} py={2}>
-                <Typography variant="caption">{notes}</Typography>
-              </Box>
-            </Box>
-          );
-        })}
+      <Spacer space={4} direction="vertical">
+        {groupedCalls &&
+          Object.keys(groupedCalls).map((date: string) => (
+            <CallGroup
+              calls={groupedCalls[date]}
+              date={date}
+              key={date}
+              onCall={handleCallOnClick}
+            />
+          ))}
       </Spacer>
       {totalCount && (
         <PaginationWrapper>

@@ -29,6 +29,9 @@ const getValidDate = (date: Date | string) => {
  * @param date ex: 2022-11-16T13:37:05.822Z
  * @returns human readable date
  */
-export const formatDate = (date: string) => {
-  return format(getValidDate(date), 'LLL d - HH:mm');
+export const formatDate = (
+  date: string,
+  options: { withoutTime: boolean } = { withoutTime: false }
+) => {
+  return format(getValidDate(date), options.withoutTime ? 'LLL d' : 'LLL d - HH:mm');
 };
