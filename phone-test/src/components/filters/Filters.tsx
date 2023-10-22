@@ -37,7 +37,7 @@ export const Filters = ({ filterGroups }: FiltersProps) => {
     >
       <Menu>
         {filterGroups.map(({ onChange, options, selected, title }) => (
-          <MenuItemGroup>
+          <MenuItemGroup key={selected}>
             <Typography
               color={theme.colors['primary-500']}
               p={12}
