@@ -19,11 +19,11 @@ export const CallDetailsPage = () => {
 
   return (
     <>
-      <Typography variant="displayM" textAlign="center" py={3}>
+      <Typography variant="displayM" textAlign="center" py={3} className="title">
         Calls Details
       </Typography>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
-        <div>{`ID: ${call.id}`}</div>
+        <div id="callid">{`ID: ${call.id}`}</div>
         <div>{`Type: ${call.call_type}`}</div>
         <div>{`Created at: ${formatDate(call.created_at)}`}</div>
         <div>{`Direction: ${call.direction}`}</div>
