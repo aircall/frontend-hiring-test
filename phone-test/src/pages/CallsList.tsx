@@ -12,8 +12,9 @@ import {
 } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { CallListItem, CallsFilterBar, EmptyCallListItem } from '../components/calls';
+import { CallListItem, CallsFilterBar } from '../components/calls';
 import Spinner from 'components/spinner/spinner';
+import EmptyItem from 'components/calls/EmptyItem/EmptyItem';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -134,7 +135,7 @@ export const CallsListPage = () => {
       <CallsFilterBar />
       <Box overflow="auto" minWidth={400} paddingTop={5}>
         {loading && <Spinner />}
-        {noCalls && <EmptyCallListItem />}
+        {noCalls && <EmptyItem text="There's no calls"/>}
         <Accordion.Root defaultSelected={1}>
           {differentDates.map((day: string, index: number) => (
             <Accordion.Item id={index} key={day}>

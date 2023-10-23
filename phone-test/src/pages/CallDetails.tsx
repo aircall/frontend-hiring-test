@@ -7,6 +7,7 @@ import { ARCHIVE_CALL } from 'gql/mutations/archive';
 import { useEffect } from 'react';
 import { useCustomToast } from 'hooks/useCustomToast';
 import Spinner from 'components/spinner/spinner';
+import { EmptyCallListItem } from 'components/calls';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -21,6 +22,7 @@ export const CallDetailsPage = () => {
   // Refecth data when tab is visible
   useEffect(() => {
     const handleVisibilityChange = () => {
+      console.log('visibility change');
       if (!document.hidden) {
         refetch();
       }
@@ -45,7 +47,8 @@ export const CallDetailsPage = () => {
   }
 
   const { call } = data;
-
+  if (!call) return <EmptyCallListItem text="Call info not found" />;
+  
   const handleArchive = async () => {
     archiveMutation({
       variables: {
