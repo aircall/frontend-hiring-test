@@ -1,6 +1,21 @@
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import ProtectedLayout from './ProtectedLayout';
 
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+export const ProtectedRoute = () => {
   // TODO check that the user is authenticated before displaying the route
+  const { user, status } = useAuth();
+  const navigate = useNavigate();
 
-  return <>{children}</>;
+  useEffect(() => {
+    if (status !== 'Idle') return;
+    if (!user && window.location.pathname !== '/login') navigate('/login');
+  }, [user, status]);
+
+  return (
+    <ProtectedLayout>
+      <Outlet />
+    </ProtectedLayout>
+  );
 };

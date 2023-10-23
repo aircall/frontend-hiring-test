@@ -7,19 +7,35 @@ import {
   Grid,
   Icon,
   SpinnerOutlined,
-  TextFieldInput
+  TextFieldInput,
+  toasts
 } from '@aircall/tractor';
 
-import { FormState } from './Login.decl';
+import { useAuth } from '../../hooks/useAuth';
+import { NotificationVariants } from '@aircall/tractor/es/components/Notification';
 
-interface LoginFormProps {
-  onSubmit: (email: string, password: string) => void;
-  formState: FormState;
-}
+const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
-export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
+export const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login, status } = useAuth();
+
+  const onSubmit = async (email: string, password: string) => {
+    try {
+      // throw new Error('Test Error');
+      await login({ username: email, password });
+      removeToast(LOGIN_REJECTED);
+    } catch (error) {
+      console.log(error);
+
+      showToast({
+        id: LOGIN_REJECTED,
+        message: 'Invalid email or password',
+        variant: 'error'
+      });
+    }
+  };
 
   return (
     <Form
@@ -29,10 +45,13 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
       }}
       width="100%"
     >
+      {/* <Button variant="primary" onClick={()=>showToast({id: LOGIN_REJECTED, message: 'Invalid email or password', variant: 'error'})}>Show Toast</Button> */}
       <Grid columnGap={4} rowGap={5} gridTemplateColumns="1fr">
         <FormItem label="Email" name="email">
           <TextFieldInput
             placeholder="job@aircall.io"
+            type="email"
+            required
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
@@ -41,15 +60,26 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
           <TextFieldInput
             type="password"
             value={password}
+            required
             onChange={e => setPassword(e.target.value)}
           />
         </FormItem>
         <FormItem>
           <Button block type="submit">
-            {formState === 'Pending' ? <Icon component={SpinnerOutlined} spin /> : 'Login'}
+            {status === "Loading" ? <Icon component={SpinnerOutlined} spin /> : 'Login'}
           </Button>
         </FormItem>
       </Grid>
     </Form>
   );
 };
+
+function removeToast(LOGIN_REJECTED: string) {
+  toasts.removeToast(LOGIN_REJECTED);
+}
+
+function showToast(arg0: { id: any; message: string; variant: NotificationVariants }) {
+  console.log('showToast');
+  
+  toasts.showToast(arg0);
+}

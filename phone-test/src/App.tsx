@@ -11,7 +11,7 @@ import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/Error/ErrorBoundary';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 
@@ -42,7 +42,7 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />} errorElement={<ErrorBoundary />}>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedRoute><ProtectedLayout /></ProtectedRoute>}>
+      <Route path="/calls" element={<ProtectedRoute />}>
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>

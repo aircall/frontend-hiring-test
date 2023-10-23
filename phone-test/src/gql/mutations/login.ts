@@ -14,3 +14,17 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const REFRESH_TOKEN = gql`
+  ${USER_FIELDS}
+
+  mutation RefreshTokenV2 {
+    refreshTokenV2 {
+      access_token
+      refresh_token
+      user {
+        ...UserFields
+      }
+    }
+  }
+`;
