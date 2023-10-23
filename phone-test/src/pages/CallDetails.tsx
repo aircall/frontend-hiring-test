@@ -5,6 +5,8 @@ import { ArchiveFilled, ArrowLeftFilled, Box, Button, Spacer, Typography } from 
 import { formatDate, formatDuration } from 'helpers/dates';
 import { ARCHIVE_CALL } from 'gql/mutations/archive';
 import { useEffect } from 'react';
+import Spinner from 'components/spinner/spinner';
+import { useCustomToast } from 'hooks/useCustomToast';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -13,6 +15,8 @@ export const CallDetailsPage = () => {
       id: callId
     }
   });
+  const { showToast } = useCustomToast();
+
   const [archiveMutation] = useMutation(ARCHIVE_CALL);
 
   // Refecth data when tab is visible
@@ -29,22 +33,29 @@ export const CallDetailsPage = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [refetch]);
-  
-  if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
+
+  if (loading) return <Spinner />;
+  if (error) {
+    showToast({
+      id: 'CALL_DETAILS_ERROR',
+      message: 'There was an error fetching the call details',
+      variant: 'error'
+    });
+    console.error(error.message);
+    return <></>;
+  }
 
   const { call } = data;
 
   const handleArchive = async () => {
-      archiveMutation({
-        variables: {
-          id: callId
-        },
-        onError: (error) => {
-          console.log(error);
-        }
-      });
-
+    archiveMutation({
+      variables: {
+        id: callId
+      },
+      onError: error => {
+        console.log(error);
+      }
+    });
   };
 
   return (

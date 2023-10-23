@@ -7,12 +7,11 @@ import {
   Grid,
   Icon,
   SpinnerOutlined,
-  TextFieldInput,
-  toasts
+  TextFieldInput
 } from '@aircall/tractor';
 
 import { useAuth } from '../../hooks/useAuth';
-import { NotificationVariants } from '@aircall/tractor/es/components/Notification';
+import { useCustomToast } from 'hooks/useCustomToast';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
@@ -20,15 +19,13 @@ export const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, status } = useAuth();
+  const { showToast, removeToast } = useCustomToast();
 
   const onSubmit = async (email: string, password: string) => {
     try {
-      // throw new Error('Test Error');
       await login({ username: email, password });
       removeToast(LOGIN_REJECTED);
     } catch (error) {
-      console.log(error);
-
       showToast({
         id: LOGIN_REJECTED,
         message: 'Invalid email or password',
@@ -66,7 +63,7 @@ export const LoginForm = () => {
         </FormItem>
         <FormItem>
           <Button block type="submit">
-            {status === "Loading" ? <Icon component={SpinnerOutlined} spin /> : 'Login'}
+            {status === 'Loading' ? <Icon component={SpinnerOutlined} spin /> : 'Login'}
           </Button>
         </FormItem>
       </Grid>
@@ -74,12 +71,12 @@ export const LoginForm = () => {
   );
 };
 
+/* It doesn't work without hooks
 function removeToast(LOGIN_REJECTED: string) {
   toasts.removeToast(LOGIN_REJECTED);
 }
 
 function showToast(arg0: { id: any; message: string; variant: NotificationVariants }) {
-  console.log('showToast');
-  
   toasts.showToast(arg0);
 }
+*/

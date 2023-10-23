@@ -7,13 +7,13 @@ import {
   Box,
   Pagination,
   Accordion,
-  SpinnerOutlined,
   Flex,
-  ArrowDownFilled
+  ArrowDownFilled,
 } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { CallListItem, CallsFilterBar, EmptyCallListItem } from '../components/calls';
+import Spinner from 'components/spinner/spinner';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -29,19 +29,34 @@ const CALLS_PER_PAGE = 25;
 export const CallsListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const pageQueryParams = searchParams.get('page');
+  const activePage = parseInt(searchParams.get('page') || '1');
   const directionQueryParams = searchParams.get('dir') || '';
   const typeQueryParams = searchParams.get('type');
-  const callsPerPage = parseInt(searchParams.get('cpe') || CALLS_PER_PAGE.toString());
   const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
-  const activePage = parseInt(pageQueryParams || '1');
+
+  const pageSizeOptions = [
+    { value: CALLS_PER_PAGE, label: CALLS_PER_PAGE.toString() },
+    { value: 50, label: '50' },
+    { value: 100, label: '100' }
+  ];
+
+  const pageSizeValidator = () => {
+    const pageSize = parseInt(searchParams.get('cpe') || '');
+    const sizeExists = pageSizeOptions.some(option => option.value === pageSize);
+
+    return sizeExists ? pageSize : CALLS_PER_PAGE;
+  };
+
+  // Handle page size (manually changed in URL) to avoid big requests (if they're not handled on the server side)
+  // and possible DoS attacks.
+  const callsPerPage = pageSizeValidator();
 
   // Adding this to achieve pagination on the client side. Ideally, this should be done on the server side
   // by using filter and sort variables in the query.
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: 0,
-      limit: 1000 
+      limit: 1000
     }
   });
 
@@ -72,8 +87,8 @@ export const CallsListPage = () => {
     });
   }, [filteredCalls]);
 
-  const groupedCalls = sortedCalls
-    .reduce((acc: { [key: string]: Call[] }, call: Call, index: number) => {
+  const groupedCalls = sortedCalls.reduce(
+    (acc: { [key: string]: Call[] }, call: Call, index: number) => {
       if (index < (activePage - 1) * callsPerPage || index >= activePage * callsPerPage) return acc;
       const date = new Date(call.created_at);
       const day = date.toLocaleDateString();
@@ -83,11 +98,11 @@ export const CallsListPage = () => {
         acc[day].push(call);
       }
       return acc;
-    }, {});
+    },
+    {}
+  );
 
-  if (loading) return <SpinnerOutlined />;
   if (error) return <p>ERROR</p>;
-  if (!data) return <EmptyCallListItem />;
 
   const handlePageChange = (page: number) => {
     if (page === activePage) return;
@@ -108,19 +123,30 @@ export const CallsListPage = () => {
     });
   };
 
+  const differentDates = Object.keys(groupedCalls);
+  const noCalls = (!differentDates.length || !data) && !loading;
+
   return (
-    <>
+    <Box maxHeight="90vh">
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
       <CallsFilterBar />
-      <Box overflow="auto" minWidth={400} paddingTop={5} maxHeight="80vh">
+      <Box overflow="auto" minWidth={400} paddingTop={5}>
+        {loading && <Spinner />}
+        {noCalls && <EmptyCallListItem />}
         <Accordion.Root defaultSelected={1}>
-          {Object.keys(groupedCalls).map((day: string, index: number) => (
+          {differentDates.map((day: string, index: number) => (
             <Accordion.Item id={index} key={day}>
               <Accordion.Header>
                 <Flex justifyContent="center" alignItems="center">
-                  <Typography variant="heading2" textAlign="center" color="grey" paddingTop={2}>
+                  <Typography
+                    variant="heading2"
+                    textAlign="center"
+                    color="grey"
+                    paddingTop={2}
+                    cursor="pointer"
+                  >
                     {day}
                   </Typography>
                   <ArrowDownFilled size={20} />
@@ -137,8 +163,8 @@ export const CallsListPage = () => {
           ))}
         </Accordion.Root>
       </Box>
-      {Array.isArray(calls) && calls.length && (
-        <Box>
+      {Array.isArray(sortedCalls) && !!sortedCalls.length && (
+        <Box maxHeight="10%">
           <PaginationWrapper>
             <Pagination
               activePage={activePage}
@@ -147,10 +173,11 @@ export const CallsListPage = () => {
               onPageSizeChange={handlePageSizeChange}
               defaultPageSize={CALLS_PER_PAGE}
               recordsTotalCount={filteredCalls.length}
+              pageSizeOptions={pageSizeOptions}
             />
           </PaginationWrapper>
         </Box>
       )}
-    </>
+    </Box>
   );
 };
