@@ -1,5 +1,5 @@
-import type { State } from '../contexts/AuthContext.d';
-import type { Actions } from '../contexts/AuthContext.d';
+import type { State } from 'contexts/AuthContext.d';
+import type { Actions } from 'contexts/AuthContext.d';
 
 export default function authReducer(state: State, action: Actions): State {
   switch (action.type) {

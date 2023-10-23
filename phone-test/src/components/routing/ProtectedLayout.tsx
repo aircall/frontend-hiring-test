@@ -1,7 +1,7 @@
 import { Outlet, Link } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
-import logo from '../../logo.png';
-import { useAuth } from '../../hooks/useAuth';
+import logo from 'logo.png';
+import { useAuth } from 'hooks/useAuth';
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;

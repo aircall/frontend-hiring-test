@@ -1,6 +1,6 @@
 import type { LoginInput, LoginResultType } from '../declarations/auth.d';
 
-export type StatusType = 'Idle' | 'Loading' | 'Error' | 'Init'
+export type StatusType = 'Idle' | 'Loading' | 'Error'
 
 export interface State {
   user: string | null;

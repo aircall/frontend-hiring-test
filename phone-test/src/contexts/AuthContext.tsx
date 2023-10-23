@@ -2,11 +2,11 @@ import { createContext, useCallback, useEffect, useMemo, useReducer } from 'reac
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useMutation, useQuery } from '@apollo/client';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { LoginInput } from '../declarations/auth';
-import { LOGIN } from '../gql/mutations';
+import { LoginInput } from 'declarations/auth';
+import { LOGIN } from 'gql/mutations';
 import type { AuthContextType, State } from './AuthContext.d';
-import authReducer from '../reducers/authReducer';
-import { USER_ME } from '../gql/queries/user';
+import authReducer from 'reducers/authReducer';
+import { USER_ME } from 'gql/queries/user';
 
 const defaultState: State = {
   user: null,

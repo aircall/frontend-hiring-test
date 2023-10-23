@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
+import { PAGINATED_CALLS } from 'gql/queries';
 import {
   Typography,
   Spacer,

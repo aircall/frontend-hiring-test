@@ -6,7 +6,7 @@ import {
   Icon,
   Typography
 } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../../../helpers/dates';
+import { formatDate, formatDuration } from 'helpers/dates';
 import { useNavigate } from 'react-router-dom';
 
 interface CallListItemProps {

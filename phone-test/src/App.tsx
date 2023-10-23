@@ -5,15 +5,14 @@ import { CallDetailsPage } from './pages/CallDetails';
 import { Tractor } from '@aircall/tractor';
 
 import './App.css';
-import { ProtectedLayout } from './components/routing/ProtectedLayout';
-import { darkTheme } from './style/theme/darkTheme';
+import { darkTheme } from 'style/theme/darkTheme';
 import { RouterProvider } from 'react-router-dom';
-import { GlobalAppStyle } from './style/global';
+import { GlobalAppStyle } from 'style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { AuthProvider } from './contexts/AuthContext';
-import { ErrorBoundary } from './components/Error/ErrorBoundary';
-import { ProtectedRoute } from './components/routing/ProtectedRoute';
+import { AuthProvider } from 'contexts/AuthContext';
+import { ErrorBoundary } from 'components/Error/ErrorBoundary';
+import { ProtectedRoute } from 'components/routing/ProtectedRoute';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
