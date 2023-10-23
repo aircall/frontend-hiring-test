@@ -11,7 +11,6 @@ export const CallDetailsPage = () => {
       id: callId
     }
   });
-  const { call } = data;
 
   if (loading)
     return (
@@ -25,6 +24,8 @@ export const CallDetailsPage = () => {
         Error
       </Typography>
     );
+
+  const { call } = data;
 
   return (
     <>
