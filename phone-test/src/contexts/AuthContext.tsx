@@ -7,6 +7,7 @@ import { LOGIN } from 'gql/mutations';
 import type { AuthContextType, State } from './AuthContext.d';
 import authReducer from 'reducers/authReducer';
 import { USER_ME } from 'gql/queries/user';
+import { set } from 'date-fns';
 
 const defaultState: State = {
   user: null,
