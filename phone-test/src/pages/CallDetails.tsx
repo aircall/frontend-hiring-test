@@ -11,15 +11,24 @@ export const CallDetailsPage = () => {
       id: callId
     }
   });
-
-  if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
-
   const { call } = data;
+
+  if (loading)
+    return (
+      <Typography py={4} variant="displayM">
+        Loading call details...
+      </Typography>
+    );
+  if (error)
+    return (
+      <Typography py={4} variant="displayM">
+        Error
+      </Typography>
+    );
 
   return (
     <>
-      <Typography variant="displayM" textAlign="center" py={3}>
+      <Typography py={4} variant="displayM">
         Calls Details
       </Typography>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
@@ -33,7 +42,7 @@ export const CallDetailsPage = () => {
         <div>{`To: ${call.to}`}</div>
         <div>{`Via: ${call.via}`}</div>
         {call.notes?.map((note: Note, index: number) => {
-          return <div>{`Note ${index + 1}: ${note.content}`}</div>;
+          return <div key={index}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
     </>
