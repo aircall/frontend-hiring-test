@@ -60,7 +60,6 @@ export const CallsListPage = () => {
   }, [calls, directionQueryParams, typeQueryParams]);
 
   const sortedCalls = useMemo(() => {
-    console.log('sortedCalls');
     const clone = JSON.parse(JSON.stringify(filteredCalls));
 
     return clone.sort((a: Call, b: Call) => {
