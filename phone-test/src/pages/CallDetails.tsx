@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from 'gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
 import { formatDate, formatDuration } from 'helpers/dates';
+import Spinner from 'components/spinner/spinner';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -12,7 +13,7 @@ export const CallDetailsPage = () => {
     }
   });
 
-  if (loading) return <p>Loading call details...</p>;
+  if (loading) return <Spinner />;
   if (error) return <p>ERROR</p>;
 
   const { call } = data;
@@ -33,7 +34,7 @@ export const CallDetailsPage = () => {
         <div>{`To: ${call.to}`}</div>
         <div>{`Via: ${call.via}`}</div>
         {call.notes?.map((note: Note, index: number) => {
-          return <div>{`Note ${index + 1}: ${note.content}`}</div>;
+          return <div key={note.id}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
     </>

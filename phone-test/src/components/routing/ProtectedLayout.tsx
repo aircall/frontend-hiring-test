@@ -12,7 +12,7 @@ export const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
 
   return (
     <Box p={4}>
-      <Flex justifyContent="space-between" alignItems="center">
+      <Flex justifyContent="space-between" alignItems="center" maxHeight="10vh">
         <Link to="/calls">
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>

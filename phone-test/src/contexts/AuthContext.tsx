@@ -7,7 +7,6 @@ import { LOGIN } from 'gql/mutations';
 import type { AuthContextType, State } from './AuthContext.d';
 import authReducer from 'reducers/authReducer';
 import { USER_ME } from 'gql/queries/user';
-import { set } from 'date-fns';
 
 const defaultState: State = {
   user: null,
@@ -32,9 +31,10 @@ export const AuthProvider = () => {
 
   const { me: user } = data || {};
 
+  // There is no "accessToken" in dependency array because I only want to set the status at the beginning
   useEffect(() => {
     if (!accessToken) {
-      dispatch({ type: 'STATUS', payload: { status: 'Idle' } });
+       dispatch({ type: 'STATUS', payload: { status: 'Idle' } });
       console.log('No access token');
       return;
     }
@@ -42,7 +42,7 @@ export const AuthProvider = () => {
 
   useEffect(() => {
     if (loading) return;
-    
+
     if (error) {
       dispatch({ type: 'STATUS', payload: { status: 'Idle' } });
       if (accessToken) {
@@ -57,7 +57,7 @@ export const AuthProvider = () => {
       dispatch({ type: 'LOGIN', payload: { user: user.username } });
       if (window.location.pathname === '/login') navigate('/calls');
     }
-  }, [user, loading, error]);
+  }, [user, loading, error, accessToken, setAccessToken, setRefreshToken, navigate, refreshToken]);
 
   // call this function when you want to authenticate the user
   const login = useCallback(
@@ -74,21 +74,21 @@ export const AuthProvider = () => {
           navigate('/calls');
         },
         onError: (error: any) => {
-          console.error('error', error);
           dispatch({ type: 'STATUS', payload: { status: 'Error' } });
         }
       });
     },
-    [loginMutation]
+    [loginMutation, navigate, setAccessToken, setRefreshToken]
   );
 
   // call this function to sign out logged in user
   const logout = useCallback(() => {
+    console.log('logout');
     setAccessToken(undefined);
     setRefreshToken(undefined);
     dispatch({ type: 'LOGOUT' });
     navigate('/login', { replace: true });
-  }, []);
+  }, [navigate, setAccessToken, setRefreshToken]);
 
   const value = useMemo(() => {
     return {
@@ -99,7 +99,9 @@ export const AuthProvider = () => {
   }, [login, logout, state]);
 
   return (
-    <AuthContext.Provider value={value}><Outlet /></AuthContext.Provider>
+    <AuthContext.Provider value={value}>
+      <Outlet />
+    </AuthContext.Provider>
   );
 };
 

@@ -11,7 +11,7 @@ export const ProtectedRoute = () => {
   useEffect(() => {
     if (status !== 'Idle') return;
     if (!user && window.location.pathname !== '/login') navigate('/login');
-  }, [user, status]);
+  }, [user, status, navigate]);
 
   return (
     <ProtectedLayout>
