@@ -1,7 +1,8 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
-import { FetchResult, useMutation } from '@apollo/client';
+import { FetchResult, useMutation, useQuery } from '@apollo/client';
+import { ME } from '../gql/queries';
 
 interface AuthContextValue {
   accessToken?: string;
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }: AuthPRoviderProps) => {
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
+  const { data } = useQuery(ME, { skip: !accessToken });
 
   const login = ({ username, password }: any) => {
     return loginMutation({
@@ -50,6 +52,10 @@ export const AuthProvider = ({ children }: AuthPRoviderProps) => {
     setAccessToken(null);
     setRefreshToken(null);
   };
+
+  useEffect(() => {
+    if (data?.me) setUser(data.me);
+  }, [data]);
 
   return (
     <AuthContext.Provider
