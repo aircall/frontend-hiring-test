@@ -5,8 +5,8 @@ import { ArchiveFilled, ArrowLeftFilled, Box, Button, Spacer, Typography } from 
 import { formatDate, formatDuration } from 'helpers/dates';
 import { ARCHIVE_CALL } from 'gql/mutations/archive';
 import { useEffect } from 'react';
-import Spinner from 'components/spinner/spinner';
 import { useCustomToast } from 'hooks/useCustomToast';
+import Spinner from 'components/spinner/spinner';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -16,7 +16,6 @@ export const CallDetailsPage = () => {
     }
   });
   const { showToast } = useCustomToast();
-
   const [archiveMutation] = useMutation(ARCHIVE_CALL);
 
   // Refecth data when tab is visible
