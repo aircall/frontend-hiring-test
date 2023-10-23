@@ -35,10 +35,13 @@ export const CallsListPage = () => {
   const callsPerPage = parseInt(searchParams.get('cpe') || CALLS_PER_PAGE.toString());
   const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
   const activePage = parseInt(pageQueryParams || '1');
+
+  // Adding this to achieve pagination on the client side. Ideally, this should be done on the server side
+  // by using filter and sort variables in the query.
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: 0,
-      limit: 1000
+      limit: 1000 
     }
   });
 
@@ -69,7 +72,6 @@ export const CallsListPage = () => {
     });
   }, [filteredCalls]);
 
-  //
   const groupedCalls = sortedCalls
     .reduce((acc: { [key: string]: Call[] }, call: Call, index: number) => {
       if (index < (activePage - 1) * callsPerPage || index >= activePage * callsPerPage) return acc;
