@@ -13,3 +13,13 @@ interface DeprecatedAuthResponseType {
   access_token: String;
   user: UserType;
 }
+
+export type LoginResultType = {
+  data?: {
+    login: AuthResponseType;
+  };
+};
+
+export type RefreshTokenResultType = {
+  refreshTokenV2: AuthResponseType;
+};

@@ -1,18 +1,20 @@
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
+import { PAGINATED_CALLS } from 'gql/queries';
 import {
-  Grid,
-  Icon,
   Typography,
   Spacer,
   Box,
-  DiagonalDownOutlined,
-  DiagonalUpOutlined,
-  Pagination
+  Pagination,
+  Accordion,
+  Flex,
+  ArrowDownFilled,
 } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { CallListItem, CallsFilterBar } from '../components/calls';
+import Spinner from 'components/spinner/spinner';
+import EmptyItem from 'components/calls/EmptyItem/EmptyItem';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -23,103 +25,160 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
+const CALLS_PER_PAGE = 25;
 
 export const CallsListPage = () => {
-  const [search] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const pageQueryParams = search.get('page');
-  const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+  const activePage = parseInt(searchParams.get('page') || '1');
+  const directionQueryParams = searchParams.get('dir') || '';
+  const typeQueryParams = searchParams.get('type');
+  const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
+
+  const pageSizeOptions = [
+    { value: CALLS_PER_PAGE, label: CALLS_PER_PAGE.toString() },
+    { value: 50, label: '50' },
+    { value: 100, label: '100' }
+  ];
+
+  const pageSizeValidator = () => {
+    const pageSize = parseInt(searchParams.get('cpe') || '');
+    const sizeExists = pageSizeOptions.some(option => option.value === pageSize);
+
+    return sizeExists ? pageSize : CALLS_PER_PAGE;
+  };
+
+  // Handle page size (manually changed in URL) to avoid big requests (if they're not handled on the server side)
+  // and possible DoS attacks.
+  const callsPerPage = pageSizeValidator();
+
+  // Adding this to achieve pagination on the client side. Ideally, this should be done on the server side
+  // by using filter and sort variables in the query.
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: 0,
+      limit: 1000
     }
-    // onCompleted: () => handleRefreshToken(),
   });
 
-  if (loading) return <p>Loading calls...</p>;
+  const calls = data?.paginatedCalls.nodes;
+
+  useEffect(() => {
+    if (calls) {
+      let filteredCalls = [...calls];
+
+      if (directionQueryParams) {
+        filteredCalls = calls.filter((call: Call) => call.direction === directionQueryParams);
+      }
+      if (typeQueryParams) {
+        filteredCalls = calls.filter((call: Call) => call.call_type === typeQueryParams);
+      }
+
+      setFilteredCalls(filteredCalls);
+    }
+  }, [calls, directionQueryParams, typeQueryParams]);
+
+  const sortedCalls = useMemo(() => {
+    const clone = JSON.parse(JSON.stringify(filteredCalls));
+
+    return clone.sort((a: Call, b: Call) => {
+      if (a.created_at > b.created_at) return -1;
+      if (a.created_at < b.created_at) return 1;
+      return 0;
+    });
+  }, [filteredCalls]);
+
+  const groupedCalls = sortedCalls.reduce(
+    (acc: { [key: string]: Call[] }, call: Call, index: number) => {
+      if (index < (activePage - 1) * callsPerPage || index >= activePage * callsPerPage) return acc;
+      const date = new Date(call.created_at);
+      const day = date.toLocaleDateString();
+      if (!acc[day]) {
+        acc[day] = [call];
+      } else {
+        acc[day].push(call);
+      }
+      return acc;
+    },
+    {}
+  );
+
   if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
-
-  const { totalCount, nodes: calls } = data.paginatedCalls;
-
-  const handleCallOnClick = (callId: string) => {
-    navigate(`/calls/${callId}`);
-  };
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    if (page === activePage) return;
+    setSearchParams(params => {
+      params.set('page', page.toString());
+      return params;
+    });
+
+    navigate(`/calls/?${searchParams.toString()}`);
   };
 
+  const handlePageSizeChange = (pageSize: number) => {
+    setSearchParams(params => {
+      params.set('page', '1');
+      if (pageSize === CALLS_PER_PAGE || !pageSize) params.delete('cpe');
+      else params.set('cpe', pageSize.toString());
+      return params;
+    });
+  };
+
+  const differentDates = Object.keys(groupedCalls);
+  const noCalls = (!differentDates.length || !data) && !loading;
+
   return (
-    <>
+    <Box maxHeight="90vh">
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
-      <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
-          const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-          const title =
-            call.call_type === 'missed'
-              ? 'Missed call'
-              : call.call_type === 'answered'
-              ? 'Call answered'
-              : 'Voicemail';
-          const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-          const duration = formatDuration(call.duration / 1000);
-          const date = formatDate(call.created_at);
-          const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
-
-          return (
-            <Box
-              key={call.id}
-              bg="black-a30"
-              borderRadius={16}
-              cursor="pointer"
-              onClick={() => handleCallOnClick(call.id)}
-            >
-              <Grid
-                gridTemplateColumns="32px 1fr max-content"
-                columnGap={2}
-                borderBottom="1px solid"
-                borderBottomColor="neutral-700"
-                alignItems="center"
-                px={4}
-                py={2}
-              >
-                <Box>
-                  <Icon component={icon} size={32} />
-                </Box>
-                <Box>
-                  <Typography variant="body">{title}</Typography>
-                  <Typography variant="body2">{subtitle}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" textAlign="right">
-                    {duration}
+      <CallsFilterBar />
+      <Box overflow="auto" minWidth={400} paddingTop={5}>
+        {loading && <Spinner />}
+        {noCalls && <EmptyItem text="There's no calls"/>}
+        <Accordion.Root defaultSelected={1}>
+          {differentDates.map((day: string, index: number) => (
+            <Accordion.Item id={index} key={day}>
+              <Accordion.Header>
+                <Flex justifyContent="center" alignItems="center">
+                  <Typography
+                    variant="heading2"
+                    textAlign="center"
+                    color="grey"
+                    paddingTop={2}
+                    cursor="pointer"
+                  >
+                    {day}
                   </Typography>
-                  <Typography variant="caption">{date}</Typography>
-                </Box>
-              </Grid>
-              <Box px={4} py={2}>
-                <Typography variant="caption">{notes}</Typography>
-              </Box>
-            </Box>
-          );
-        })}
-      </Spacer>
-
-      {totalCount && (
-        <PaginationWrapper>
-          <Pagination
-            activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
-            onPageChange={handlePageChange}
-            recordsTotalCount={totalCount}
-          />
-        </PaginationWrapper>
+                  <ArrowDownFilled size={20} />
+                </Flex>
+              </Accordion.Header>
+              <Accordion.Body>
+                <Spacer space={3} direction="vertical" minWidth="100%">
+                  {groupedCalls[day].map((call: Call) => (
+                    <CallListItem call={call} key={call.id} />
+                  ))}
+                </Spacer>
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      </Box>
+      {Array.isArray(sortedCalls) && !!sortedCalls.length && (
+        <Box maxHeight="10%">
+          <PaginationWrapper>
+            <Pagination
+              activePage={activePage}
+              pageSize={callsPerPage}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              defaultPageSize={CALLS_PER_PAGE}
+              recordsTotalCount={filteredCalls.length}
+              pageSizeOptions={pageSizeOptions}
+            />
+          </PaginationWrapper>
+        </Box>
       )}
-    </>
+    </Box>
   );
 };
