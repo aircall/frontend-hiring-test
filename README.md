@@ -29,14 +29,14 @@ As said above, the application is far from being production ready. We'll ask you
 You won't have time to fix everything, and we don't expect you to. Also, we adjust our expectations depending on your seniority. Here's what expected for each level of seniority:
 
 - **junior software engineer**
-  ✅ Improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that.
-  ✅ Add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
-  ✅ Group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
+  - ✅ Improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that.
+  - ✅ Add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
+  - ✅ Group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
 - **software engineer**
-  ✅ All of the above
-  ✅ Fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
+  - ✅ All of the above
+  - ✅ Fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
   - Fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
-    ✅ Add unit tests for the `date` helper functions.
+  - ✅ Add unit tests for the `date` helper functions.
 - **senior software engineer**
   - All of the above
   - Add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
