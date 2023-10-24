@@ -3,10 +3,10 @@ import { useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { CallGroup } from '../components/callGroup/CallGroup';
-import { Filters } from '../components/filters/Filters';
-import { PAGINATED_CALLS } from '../gql/queries';
-import { formatDate } from '../helpers/dates';
+import { CallGroup } from '../../components/callGroup/CallGroup';
+import { Filters } from '../../components/filters/Filters';
+import { PAGINATED_CALLS } from '../../gql/queries';
+import { formatDate } from '../../helpers/dates';
 
 export const PaginationWrapper = styled.div`
   > div {

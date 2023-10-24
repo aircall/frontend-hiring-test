@@ -5,7 +5,7 @@ import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 
 import { useAuth } from '../../hooks/useAuth';
 import { FormState } from './Login.decl';
-import { LoginForm } from './LoginForm';
+import { LoginForm } from '../../components/loginForm/LoginForm';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 

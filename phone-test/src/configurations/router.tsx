@@ -7,8 +7,8 @@ import {
 } from 'react-router-dom';
 import { ProtectedLayout } from '../components/routing/ProtectedLayout';
 import { PublicLayout } from '../components/routing/PublicLayout';
-import { CallDetailsPage } from '../pages/CallDetails';
-import { CallsListPage } from '../pages/CallsList';
+import CallDetailsPage from '../pages/CallDetails';
+import CallsListPage from '../pages/CallList';
 import LoginPage from '../pages/Login';
 
 const redirectIfUser = () => {
