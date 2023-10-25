@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../../gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../../helpers/dates';
+import { formatDate, formatDuration } from '../../helpers/dates/dates';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();

@@ -7,7 +7,7 @@ import {
   Spacer,
   Typography
 } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../../helpers/dates';
+import { formatDate, formatDuration } from '../../helpers/dates/dates';
 
 interface CallGroupProps {
   calls: Array<Call>;

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { CallGroup } from '../../components/callGroup/CallGroup';
 import { Filters } from '../../components/filters/Filters';
 import { PAGINATED_CALLS } from '../../gql/queries';
-import { formatDate } from '../../helpers/dates';
+import { formatDate } from '../../helpers/dates/dates';
 
 export const PaginationWrapper = styled.div`
   > div {
