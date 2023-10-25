@@ -39,7 +39,7 @@ You won't have time to fix everything, and we don't expect you to. Also, we adju
   - ✅ Add unit tests for the `date` helper functions.
 - **senior software engineer**
   - All of the above
-  - Add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
+  - ✅ Add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
   - Implement the archive call feature and add real-time support. Meaning that if you open the app in 2 tabs, archive a call from the first tab, the second tab must reflect this change. Create a PR for this feature as if you were submitting it to our team, for it to be merged and released in production. As we try to work asynchonously, writing skills are important to us.
 - **staff engineer and above**
   - All of the above
