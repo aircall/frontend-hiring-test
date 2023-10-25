@@ -30,7 +30,7 @@ export const CallDetailsPage = () => {
   return (
     <>
       <Typography py={4} variant="displayM">
-        Calls Details
+        Call Details
       </Typography>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
         <div>{`ID: ${call.id}`}</div>
