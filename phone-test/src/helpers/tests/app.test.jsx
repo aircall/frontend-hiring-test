@@ -1,11 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import {
-  clickOnCall,
-  clickOnLogin,
-  clickOnLogout,
-  fillEmailAndPassword,
-  goToLogin
-} from './utils/actions';
+import { clickOnCall, clickOnLogin, clickOnLogout, fillEmailAndPassword } from './utils/actions';
 import { App } from './utils/environment';
 import {
   waitForCallDetailsPage,
@@ -17,8 +11,6 @@ import {
 describe('<App />', () => {
   it('should log in, tap on a call and see its details and finally log out', async () => {
     render(<App />);
-
-    goToLogin();
 
     await waitForLoginPage();
 

@@ -1,6 +1,7 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  LoaderFunction,
   Outlet,
   redirect,
   Route
@@ -11,9 +12,11 @@ import CallDetailsPage from '../pages/CallDetails';
 import CallsListPage from '../pages/CallList';
 import LoginPage from '../pages/Login';
 
-const redirectIfUser = () => {
+const redirectIfUser: LoaderFunction = ({ request }) => {
+  const { pathname } = new URL(request.url);
   const accessToken = window.localStorage.getItem('access_token');
   if (accessToken) return redirect('/calls');
+  if (pathname !== '/login') return redirect('/login');
 };
 
 export const router = createBrowserRouter(

@@ -1,16 +1,9 @@
-import { act, prettyDOM, screen } from '@testing-library/react';
+import { prettyDOM, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { router } from '../../../configurations/router';
 
 export const see = (element: HTMLElement) => console.log(prettyDOM(element));
 
 const user = userEvent.setup();
-
-export const goToLogin = () => {
-  act(() => {
-    router.navigate('/login');
-  });
-};
 
 export const fillEmailAndPassword = async (email: string, password: string) => {
   const emailInput = await screen.findByLabelText('Email');
