@@ -1,5 +1,5 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { Flex, Spacer, Grid, Button } from '@aircall/tractor';
+import { Button, Flex, Grid, Spacer } from '@aircall/tractor';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../hooks/useAuth';
 

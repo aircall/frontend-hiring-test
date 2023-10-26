@@ -6,8 +6,8 @@ import {
   redirect,
   Route
 } from 'react-router-dom';
-import { ProtectedLayout } from '../components/routing/ProtectedLayout';
-import { PublicLayout } from '../components/routing/PublicLayout';
+import { ProtectedLayout } from '../components/protectedLayout/ProtectedLayout';
+import { PublicLayout } from '../components/publicLayout/PublicLayout';
 import CallDetailsPage from '../pages/CallDetails';
 import CallsListPage from '../pages/CallList';
 import LoginPage from '../pages/Login';
@@ -19,6 +19,11 @@ const redirectIfUser: LoaderFunction = ({ request }) => {
   if (pathname !== '/login') return redirect('/login');
 };
 
+const redirectIfNoUser: LoaderFunction = () => {
+  const accessToken = window.localStorage.getItem('access_token');
+  if (!accessToken) return redirect('/login');
+};
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -26,7 +31,7 @@ export const router = createBrowserRouter(
         <Route path="/" element={<Outlet />} />
         <Route path="/login" element={<LoginPage />} />
       </Route>
-      <Route element={<ProtectedLayout />}>
+      <Route element={<ProtectedLayout />} loader={redirectIfNoUser}>
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
