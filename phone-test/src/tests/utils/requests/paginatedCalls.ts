@@ -1,4 +1,4 @@
-import { PAGINATED_CALLS } from '../../../../gql/queries';
+import { PAGINATED_CALLS } from '../../../gql/queries';
 
 const data = {
   paginatedCalls: {

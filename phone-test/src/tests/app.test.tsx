@@ -9,7 +9,7 @@ import {
 } from './utils/waitFors';
 
 describe('<App />', () => {
-  it('should log in, tap on a call and see its details and finally log out', async () => {
+  it('should log in, tap on a call, see its details and finally log out', async () => {
     render(<App />);
 
     await waitForLoginPage();

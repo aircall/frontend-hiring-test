@@ -1,4 +1,4 @@
-import { GET_CALL_DETAILS } from '../../../../gql/queries/getCallDetails';
+import { GET_CALL_DETAILS } from '../../../gql/queries/getCallDetails';
 
 const data = {
   call: {

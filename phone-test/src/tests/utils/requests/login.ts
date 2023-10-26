@@ -1,4 +1,4 @@
-import { LOGIN } from '../../../../gql/mutations';
+import { LOGIN } from '../../../gql/mutations';
 
 const data = {
   login: {
