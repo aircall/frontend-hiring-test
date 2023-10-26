@@ -1,10 +1,11 @@
 import { Flex, Pagination, Spacer, Typography } from '@aircall/tractor';
-import { useQuery } from '@apollo/client';
-import { useEffect, useState } from 'react';
+import { useMutation, useQuery } from '@apollo/client';
+import { MouseEvent, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { CallGroup } from '../../components/callGroup/CallGroup';
 import { Filters } from '../../components/filters/Filters';
+import { ARCHIVE_CALL } from '../../gql/mutations/archiveCall';
 import { PAGINATED_CALLS } from '../../gql/queries';
 import { formatDate } from '../../helpers/dates/dates';
 
@@ -42,10 +43,10 @@ export const CallsListPage = () => {
   const [selectedCallDirection, setSelectedCallDirection] = useState<Call['direction'] | 'all'>(
     'all'
   );
+  const [calls, setCalls] = useState<Array<Call>>();
   const [groupedCalls, setGroupedCalls] = useState<{ [date: string]: Array<Call> }>();
   const [totalCount, setTotalCount] = useState<number>(0);
-
-  const { loading, error, data } = useQuery<{
+  const { loading, error } = useQuery<{
     paginatedCalls: {
       totalCount: number;
       nodes: Call[];
@@ -55,10 +56,17 @@ export const CallsListPage = () => {
       offset: (activePage - 1) * selectedPageSize,
       limit: selectedPageSize
     },
-    onCompleted: data => {
-      setTotalCount(data.paginatedCalls.totalCount);
+    onCompleted: ({ paginatedCalls }) => {
+      setCalls(paginatedCalls.nodes);
+      setTotalCount(paginatedCalls.totalCount);
     }
   });
+  const [archiveCallMutation] = useMutation(ARCHIVE_CALL);
+
+  const archiveCall = (event: MouseEvent, callId: Call['id']) => {
+    event.stopPropagation();
+    archiveCallMutation({ variables: { id: callId } });
+  };
 
   const groupCallsByDate = (calls: Array<Call>) => {
     return calls.reduce((groupedCalls: { [date: string]: Array<Call> }, call) => {
@@ -77,7 +85,7 @@ export const CallsListPage = () => {
     }, {});
   };
 
-  const handleCallOnClick = (callId: string) => {
+  const handleCallOnClick = (callId: Call['id']) => {
     navigate(`/calls/${callId}`);
   };
 
@@ -100,9 +108,8 @@ export const CallsListPage = () => {
   };
 
   useEffect(() => {
-    if (!data) return;
-    const unfilteredCalls = data.paginatedCalls.nodes;
-    const filteredCalls = unfilteredCalls.filter(({ call_type, direction }) => {
+    if (!calls) return;
+    const filteredCalls = calls.filter(({ call_type, direction }) => {
       const hasSelectedCallType = call_type === selectedCallType || selectedCallType === 'all';
       const hasSelectedCallDirection =
         direction === selectedCallDirection || selectedCallDirection === 'all';
@@ -110,11 +117,11 @@ export const CallsListPage = () => {
     });
     const groupedCalls = groupCallsByDate(filteredCalls);
     setGroupedCalls(groupedCalls);
-  }, [data, selectedCallType, selectedCallDirection]);
+  }, [calls, selectedCallType, selectedCallDirection]);
 
   if (loading) return <Typography variant="displayM">Loading calls...</Typography>;
   if (error) return <Typography variant="displayM">ERROR</Typography>;
-  if (!data) return <Typography variant="displayM">Not found</Typography>;
+  if (!calls) return <Typography variant="displayM">Not found</Typography>;
   return (
     <>
       <Flex justifyContent="space-between" alignItems="center" w="100%">
@@ -145,6 +152,7 @@ export const CallsListPage = () => {
               calls={groupedCalls[date]}
               date={date}
               key={date}
+              onArchive={archiveCall}
               onCall={handleCallOnClick}
             />
           ))}

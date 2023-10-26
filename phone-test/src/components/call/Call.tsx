@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Grid, Icon, Typography } from '@aircall/tractor';
-import { ComponentType, SVGProps } from 'react';
+import { ComponentType, MouseEventHandler, SVGProps } from 'react';
 
 interface CallProps {
   date: string;
@@ -7,12 +7,23 @@ interface CallProps {
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   isArchived: boolean;
   notes: string;
+  onArchive: MouseEventHandler<HTMLButtonElement>;
   onCall: VoidFunction;
   subtitle: string;
   title: 'Missed call' | 'Call answered' | 'Voicemail';
 }
 
-export const Call = ({ date, icon, notes, onCall, subtitle, title, duration }: CallProps) => {
+export const Call = ({
+  date,
+  icon,
+  isArchived,
+  notes,
+  onArchive,
+  onCall,
+  subtitle,
+  title,
+  duration
+}: CallProps) => {
   return (
     <Box bg="black-a30" borderRadius={16} cursor="pointer" onClick={onCall}>
       <Grid
@@ -40,8 +51,14 @@ export const Call = ({ date, icon, notes, onCall, subtitle, title, duration }: C
       </Grid>
       <Flex px={4} py={2} justifyContent="space-between">
         <Typography variant="caption">{notes}</Typography>
-        <Button mode="link" size="xSmall" variant="destructive">
-          Archive
+        <Button
+          disabled={isArchived}
+          mode="link"
+          onClick={isArchived ? undefined : onArchive}
+          size="xSmall"
+          variant="destructive"
+        >
+          {isArchived ? 'Archived' : 'Archive'}
         </Button>
       </Flex>
     </Box>
