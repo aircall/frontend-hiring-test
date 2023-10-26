@@ -13,27 +13,20 @@ export const CallGroup = ({ calls, date, onCall }: CallGroupProps) => (
     <Typography variant="displayS" py={1}>
       {date}
     </Typography>
-    {calls.map((call: Call) => {
-      const date = formatDate(call.created_at);
-      const duration = formatDuration(call.duration / 1000);
-      const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-      const notes = call.notes ? `Call has ${call.notes.length} notes` : '';
-      const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-      const title =
-        call.call_type === 'missed'
-          ? 'Missed call'
-          : call.call_type === 'answered'
-          ? 'Call answered'
-          : 'Voicemail';
+    {calls.map(({ call_type, created_at, direction, duration, from, notes, to, id }: Call) => {
+      const isAnswered = call_type === 'answered';
+      const isInbound = direction === 'inbound';
+      const isMissed = call_type === 'missed';
       return (
         <Call
-          date={date}
-          duration={duration}
-          icon={icon}
-          notes={notes}
-          onCall={() => onCall(call.id)}
-          subtitle={subtitle}
-          title={title}
+          date={formatDate(created_at)}
+          duration={formatDuration(duration / 1000)}
+          icon={isInbound ? DiagonalDownOutlined : DiagonalUpOutlined}
+          key={id}
+          notes={notes ? `Call has ${notes.length} notes` : ''}
+          onCall={() => onCall(id)}
+          subtitle={isInbound ? `from ${from}` : `to ${to}`}
+          title={isMissed ? 'Missed call' : isAnswered ? 'Call answered' : 'Voicemail'}
         />
       );
     })}

@@ -1,10 +1,11 @@
-import { Box, Grid, Icon, Typography } from '@aircall/tractor';
+import { Box, Button, Flex, Grid, Icon, Typography } from '@aircall/tractor';
 import { ComponentType, SVGProps } from 'react';
 
 interface CallProps {
   date: string;
   duration: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
+  isArchived: boolean;
   notes: string;
   onCall: VoidFunction;
   subtitle: string;
@@ -37,9 +38,12 @@ export const Call = ({ date, icon, notes, onCall, subtitle, title, duration }: C
           <Typography variant="caption">{date}</Typography>
         </Box>
       </Grid>
-      <Box px={4} py={2}>
+      <Flex px={4} py={2} justifyContent="space-between">
         <Typography variant="caption">{notes}</Typography>
-      </Box>
+        <Button mode="link" size="xSmall" variant="destructive">
+          Archive
+        </Button>
+      </Flex>
     </Box>
   );
 };
