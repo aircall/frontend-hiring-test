@@ -1,5 +1,5 @@
 import { Flex, Pagination, Spacer, Typography } from '@aircall/tractor';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { MouseEvent, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { CallGroup } from '../../components/callGroup/CallGroup';
 import { Filters } from '../../components/filters/Filters';
 import { ARCHIVE_CALL } from '../../gql/mutations/archiveCall';
 import { PAGINATED_CALLS } from '../../gql/queries';
+import { CALL_UPDATED } from '../../gql/subscriptions/onUpdateCall';
 import { formatDate } from '../../helpers/dates/dates';
 
 export const PaginationWrapper = styled.div`
@@ -62,6 +63,7 @@ export const CallsListPage = () => {
     }
   });
   const [archiveCallMutation] = useMutation(ARCHIVE_CALL);
+  const { data } = useSubscription<any>(CALL_UPDATED);
 
   const archiveCall = (event: MouseEvent, callId: Call['id']) => {
     event.stopPropagation();
