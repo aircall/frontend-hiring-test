@@ -63,7 +63,9 @@ export const CallsListPage = () => {
     }
   });
   const [archiveCallMutation] = useMutation(ARCHIVE_CALL);
-  const { data } = useSubscription<any>(CALL_UPDATED);
+  const { data } = useSubscription<{
+    callUpdated: Call;
+  }>(CALL_UPDATED);
 
   const archiveCall = (event: MouseEvent, callId: Call['id']) => {
     event.stopPropagation();
