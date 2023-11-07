@@ -5,7 +5,6 @@ interface CallProps {
   date: string;
   duration: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
-  isArchived: boolean;
   notes: string;
   onCall: VoidFunction;
   subtitle: string;
