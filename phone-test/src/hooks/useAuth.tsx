@@ -1,61 +1,104 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
-import { useMutation } from '@apollo/client';
+import { FetchResult, useMutation, useQuery } from '@apollo/client';
+import { ME } from '../gql/queries';
+import { REFRESH_TOKEN_V2 } from '../gql/mutations/refreshTokenV2';
 
-const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
-});
+interface Credentials {
+  access_token: string;
+  refresh_token: string;
+  user: {
+    id: string;
+    username: string;
+  };
+}
 
-export interface AuthPRoviderProps {
+interface AuthContextValue {
+  accessToken?: string;
+  getNewAccessToken: () => Promise<FetchResult<any>>;
+  login: (credentials: { username: string; password: string }) => Promise<FetchResult<any>>;
+  logout: VoidFunction;
+  refreshToken?: string;
+  user?: Credentials['user'];
+}
+
+const authContextInitialValue: AuthContextValue = {
+  accessToken: '',
+  getNewAccessToken: () => Promise.resolve({}),
+  login: credentials => Promise.resolve({}),
+  logout: () => undefined,
+  refreshToken: '',
+  user: undefined
+};
+
+const AuthContext = createContext<AuthContextValue>(authContextInitialValue);
+
+interface AuthPRoviderProps {
   children: React.ReactNode;
 }
 
-export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
+export const AuthProvider = ({ children }: AuthPRoviderProps) => {
+  const [user, setUser] = useState<Credentials['user']>();
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
-  const [loginMutation] = useMutation(LOGIN);
-  const navigate = useNavigate();
+  const [loginMutation] = useMutation<
+    { login: Credentials },
+    { input: { username: string; password: string } }
+  >(LOGIN);
+  const [refreshTokenMutation] = useMutation<
+    { refreshTokenV2: Credentials },
+    { input: { refresh_token: string } }
+  >(REFRESH_TOKEN_V2);
+  const { data } = useQuery(ME, { skip: !accessToken });
 
-  // call this function when you want to authenticate the user
+  const setCredentials = ({ access_token, refresh_token, user }: Credentials) => {
+    console.log('setCredentials', { access_token, refresh_token, user });
+    setAccessToken(access_token);
+    setRefreshToken(refresh_token);
+    setUser(user);
+  };
+
   const login = ({ username, password }: any) => {
     return loginMutation({
       variables: { input: { username, password } },
-      onCompleted: ({ login }: any) => {
-        const { access_token, refresh_token, user } = login;
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
-        setUser(user);
-        console.log('redirect to calls');
-        navigate('/calls');
+      onCompleted: ({ login }) => {
+        setCredentials(login);
       }
     });
   };
 
-  // call this function to sign out logged in user
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
-    navigate('/login', { replace: true });
   };
 
-  const value = useMemo(() => {
-    return {
-      login,
-      logout
-    };
-  }, []);
+  const getNewAccessToken = async () => {
+    return refreshTokenMutation({
+      onCompleted: ({ refreshTokenV2 }) => {
+        setCredentials(refreshTokenV2);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (data?.me) setUser(data.me);
+  }, [data]);
+
   return (
-    <AuthContext.Provider value={value}>
-      <Outlet />
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        getNewAccessToken,
+        login,
+        logout,
+        refreshToken,
+        user
+      }}
+    >
+      {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

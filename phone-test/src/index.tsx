@@ -1,15 +1,28 @@
-import React from 'react';
+import { ApolloProvider } from '@apollo/client';
+import { AuthProvider } from './hooks/useAuth';
+import { client } from './configurations/apollo';
+import { darkTheme } from './style/theme/darkTheme';
+import { GlobalAppStyle } from './style/global';
+import { router } from './configurations/router';
+import { RouterProvider } from 'react-router-dom';
+import { StrictMode } from 'react';
+import { Tractor } from '@aircall/tractor';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
-import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <StrictMode>
+    <Tractor injectStyle theme={darkTheme}>
+      <GlobalAppStyle />
+      <ApolloProvider client={client}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ApolloProvider>
+    </Tractor>
+  </StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 
-import { FormState } from './Login.decl';
-import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
+import { FormState } from './Login.decl';
+import { LoginForm } from '../../components/loginForm/LoginForm';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
@@ -19,6 +19,7 @@ export const LoginPage = () => {
     try {
       setFormState('Pending');
       await login({ username: email, password });
+      navigate('/calls');
       removeToast(LOGIN_REJECTED);
     } catch (error) {
       console.log(error);
@@ -31,7 +32,16 @@ export const LoginPage = () => {
   };
 
   return (
-    <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5}>
+    <Spacer
+      direction="vertical"
+      fluid
+      h="100%"
+      justifyContent="center"
+      maxW={768}
+      p={5}
+      space={5}
+      w="100%"
+    >
       <Flex alignItems="center">
         <Icon component={LogoMarkMono} size={60} mx="auto" />
       </Flex>

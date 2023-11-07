@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
+import { GET_CALL_DETAILS } from '../../gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
+import { formatDate, formatDuration } from '../../helpers/dates/dates';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -12,15 +12,25 @@ export const CallDetailsPage = () => {
     }
   });
 
-  if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
+  if (loading)
+    return (
+      <Typography py={4} variant="displayM">
+        Loading call details...
+      </Typography>
+    );
+  if (error)
+    return (
+      <Typography py={4} variant="displayM">
+        Error
+      </Typography>
+    );
 
   const { call } = data;
 
   return (
     <>
-      <Typography variant="displayM" textAlign="center" py={3}>
-        Calls Details
+      <Typography py={4} variant="displayM">
+        Call Details
       </Typography>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
         <div>{`ID: ${call.id}`}</div>
@@ -33,7 +43,7 @@ export const CallDetailsPage = () => {
         <div>{`To: ${call.to}`}</div>
         <div>{`Via: ${call.via}`}</div>
         {call.notes?.map((note: Note, index: number) => {
-          return <div>{`Note ${index + 1}: ${note.content}`}</div>;
+          return <div key={index}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
     </>
