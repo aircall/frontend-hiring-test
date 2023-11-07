@@ -3,7 +3,6 @@ import { createGlobalStyle } from '@xstyled/styled-components';
 export const GlobalAppStyle = createGlobalStyle`
   html, body {
     height: 100%;
-    overflow: hidden;
     width: 100%;
   }
 
