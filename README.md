@@ -40,7 +40,7 @@ You won't have time to fix everything, and we don't expect you to. Also, we adju
 - **senior software engineer**
   - All of the above
   - ✅ Add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
-  - Implement the archive call feature and add real-time support. Meaning that if you open the app in 2 tabs, archive a call from the first tab, the second tab must reflect this change. Create a PR for this feature as if you were submitting it to our team, for it to be merged and released in production. As we try to work asynchonously, writing skills are important to us.
+  - ✅ Implement the archive call feature and add real-time support. Meaning that if you open the app in 2 tabs, archive a call from the first tab, the second tab must reflect this change. Create a PR for this feature as if you were submitting it to our team, for it to be merged and released in production. As we try to work asynchonously, writing skills are important to us.
 - **staff engineer and above**
   - All of the above
   - Write a plan describing what would be required for this app to be released into production, keeping the same features set, and how you would implement it. Potential topics to be addressed here are: testing, CI/CD, documentation, performances, scaling, developer experience... We don't expect you to address all of them, focus on the ones that matters the most for you.
