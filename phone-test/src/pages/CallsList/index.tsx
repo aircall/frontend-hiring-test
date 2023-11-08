@@ -1,20 +1,26 @@
-import { useQuery } from '@apollo/client';
-import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
+import styled from '@xstyled/styled-components';
 import {
   Grid,
   Icon,
   Typography,
   Spacer,
   Box,
+  Pagination,
   DiagonalDownOutlined,
-  DiagonalUpOutlined,
-  Pagination
+  DiagonalUpOutlined
 } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { formatDate, formatDuration } from '../../helpers/dates';
+import { useNavigate } from 'react-router-dom';
+import { usePaginatedCallsQuery } from './usePaginatedCallsQuery';
+import { useHandlePagination } from './useHandlePagination';
+import { PAGE_SIZE_OPTIONS } from './constants';
 
 export const PaginationWrapper = styled.div`
+  position: sticky;
+  inset-block-end: 0px;
+  padding-block-end: 16px;
+  background-color: background-01;
+
   > div {
     width: inherit;
     margin-top: 20px;
@@ -23,20 +29,12 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
-
 export const CallsListPage = () => {
-  const [search] = useSearchParams();
   const navigate = useNavigate();
-  const pageQueryParams = search.get('page');
-  const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
-    variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
-    }
-    // onCompleted: () => handleRefreshToken(),
-  });
+
+  const { activePage, pageSize, onPageSizeChange, handlePageChange } = useHandlePagination();
+
+  const { loading, error, data } = usePaginatedCallsQuery(activePage, pageSize);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
@@ -46,10 +44,6 @@ export const CallsListPage = () => {
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
-  };
-
-  const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
   };
 
   return (
@@ -114,9 +108,11 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={pageSize}
             onPageChange={handlePageChange}
+            onPageSizeChange={onPageSizeChange}
             recordsTotalCount={totalCount}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
           />
         </PaginationWrapper>
       )}

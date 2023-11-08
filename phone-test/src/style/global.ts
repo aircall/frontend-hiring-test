@@ -16,8 +16,18 @@ export const GlobalAppStyle = createGlobalStyle`
     place-items: center;
     grid-template-rows: 1fr;
     width: 100vw;
-    overflow-y: auto;
+    max-height: 100%;
+    /**
+    * We need to keep overflow-y as scroll to
+    * prevent layout shifts.
+    *
+    * In the future, when it gains better browser support
+    * we can use scrollbar-gutter: stable; for this
+    */
+    overflow-y: scroll;
+    scrollbar-color: #707479 transparent;
   }
+
 
   ::-webkit-scrollbar {
     display: none;
