@@ -3,7 +3,7 @@ import { onError } from '@apollo/client/link/error';
 import { GraphQLError } from 'graphql';
 import { addOrRemoveLocalStorageItem } from '../../helpers/localStorage';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../constants/localStorageKeys';
-import { client } from '../client';
+import { client, resetApolloClientLinksOnAuthorizationTokensChange } from '../client';
 import {
   REFRESH_TOKEN_DATA,
   REFRESH_TOKEN_V2,
@@ -28,6 +28,8 @@ export const tokenExpiredLink = onError(
               try {
                 // Attempt to fetch a new access token
                 const accessToken = await fetchAndStoreNewAccessAndRefreshTokens();
+
+                resetApolloClientLinksOnAuthorizationTokensChange();
 
                 // If fetching fails or there's no access token, throw an error
                 if (!accessToken) {

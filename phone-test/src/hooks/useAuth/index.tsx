@@ -1,17 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN, LOGIN_DATA, LOGIN_VARIABLES } from '../../gql/mutations';
-import { useApolloClient, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { addOrRemoveLocalStorageItem, getLocalStorageItem } from '../../helpers/localStorage';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../constants/localStorageKeys';
 import { PATHS } from '../../constants/paths';
 import { AuthContextValue, AuthenticationStatus } from './index.decl';
+import {
+  clearApolloClientCacheOnLogout,
+  resetApolloClientLinksOnAuthorizationTokensChange
+} from '../../ApolloClientProvider/client';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider = () => {
-  const client = useApolloClient();
-
   const [status, setStatus] = useState<AuthContextValue['status']>(
     AuthenticationStatus.INITIAL_LOADING
   );
@@ -47,12 +49,13 @@ export const AuthProvider = () => {
     addOrRemoveLocalStorageItem(ACCESS_TOKEN_KEY);
     addOrRemoveLocalStorageItem(REFRESH_TOKEN_KEY);
 
-    await client.clearStore();
+    clearApolloClientCacheOnLogout();
+    resetApolloClientLinksOnAuthorizationTokensChange();
 
     setStatus(AuthenticationStatus.NOT_LOGGED_IN);
 
     navigate(PATHS.LOGIN, { replace: true });
-  }, [navigate, client]);
+  }, [navigate]);
 
   useEffect(
     function checkAuthenticationStatusOnInit() {

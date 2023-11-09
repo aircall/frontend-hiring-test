@@ -9,9 +9,7 @@ export const authLink = setContext((operation, { headers }) => {
 
   // We need to use the refresh token for the refresh token operation
   if (operation.operationName === REFRESH_TOKEN_V2_OPERATION_NAME) {
-    console.log('???');
     authorizationToken = getLocalStorageItem(REFRESH_TOKEN_KEY);
-    console.log(authorizationToken);
   }
 
   // return the headers to the context so httpLink can read them
