@@ -20,12 +20,15 @@ import { CallItem } from './CallItem';
 import { formatDate } from '../../helpers/dates';
 import { sortCallsDescendingByCreationDate } from './sortCallsByCreationDate';
 import { PATHS } from '../../constants/paths';
+import { useHandleArchiveCallMutation } from './useHandleArchiveCallMutation';
+import { useOnUpdateCallSubscription } from './useOnUpdateCallSubscription';
 
 export const PaginationWrapper = styled.div`
   position: sticky;
   inset-block-end: 0px;
   padding-block-end: 16px;
   background-color: background-01;
+  z-index: 3;
 
   > div {
     width: inherit;
@@ -38,6 +41,8 @@ export const PaginationWrapper = styled.div`
 export const CallsListPage = () => {
   const navigate = useNavigate();
 
+  useOnUpdateCallSubscription();
+
   const { filters, setFilters, hasActiveFilters, filterCalls } = useHandleCallFilters();
 
   const { activePage, pageSize, onPageSizeChange, handlePageChange } = useHandlePagination();
@@ -46,6 +51,8 @@ export const CallsListPage = () => {
     hasActiveFilters ? FILTERS_ACTIVE_PAGE : activePage,
     hasActiveFilters ? FILTERS_PAGE_SIZE : pageSize
   );
+
+  const { archiveCallHandler } = useHandleArchiveCallMutation();
 
   if (error)
     return (
@@ -63,7 +70,7 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls = [] } = data?.paginatedCalls ?? {};
 
-  const handleCallOnClick = (callId: string) => {
+  const openCallDetailHandler = (callId: string) => {
     navigate(PATHS.CALL_DETAIL(callId));
   };
 
@@ -89,7 +96,12 @@ export const CallsListPage = () => {
             </Typography>
             <Spacer space={3} direction="vertical" fluid>
               {calls.map(call => (
-                <CallItem call={call} onClick={handleCallOnClick} />
+                <CallItem
+                  key={call.id}
+                  call={call}
+                  onOpenDetail={openCallDetailHandler}
+                  onArchive={archiveCallHandler}
+                />
               ))}
             </Spacer>
           </Box>

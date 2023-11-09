@@ -1,4 +1,5 @@
 export interface CallItemProps {
   call: Call;
-  onClick: (callId: Call['id']) => void;
+  onOpenDetail: (callId: Call['id']) => void;
+  onArchive: (callId: Call['id']) => void;
 }

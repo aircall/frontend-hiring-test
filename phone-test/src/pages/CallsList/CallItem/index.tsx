@@ -1,15 +1,20 @@
 import {
+  ArchiveOutlined,
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
+  Flex,
   Grid,
   Icon,
+  IconButton,
+  Tag,
+  Tooltip,
   Typography
 } from '@aircall/tractor';
 import { CallItemProps } from './index.decl';
 import { formatDate, formatDuration } from '../../../helpers/dates';
 
-export function CallItem({ call, onClick }: CallItemProps) {
+export function CallItem({ call, onOpenDetail, onArchive }: CallItemProps) {
   const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
 
   const title =
@@ -33,7 +38,7 @@ export function CallItem({ call, onClick }: CallItemProps) {
       bg="black-a30"
       borderRadius={16}
       cursor="pointer"
-      onClick={() => onClick(call.id)}
+      onClick={() => onOpenDetail(call.id)}
     >
       <Grid
         gridTemplateColumns="32px 1fr max-content"
@@ -58,9 +63,33 @@ export function CallItem({ call, onClick }: CallItemProps) {
           <Typography variant="caption">{date}</Typography>
         </Box>
       </Grid>
-      <Box px={4} py={2}>
+      <Flex px={4} py={2} justifyContent="space-between" alignItems="center">
         <Typography variant="caption">{notes}</Typography>
-      </Box>
+        {call.is_archived ? (
+          <Tag.Root variant="red">Archived</Tag.Root>
+        ) : (
+          <Tooltip
+            content={
+              <Typography variant="caption" textAlign="right">
+                Archive Call
+              </Typography>
+            }
+          >
+            <IconButton
+              aria-label="Archive Call"
+              size={36}
+              component={ArchiveOutlined}
+              color="red-700"
+              discColor="secondary-500"
+              onClick={event => {
+                event.stopPropagation();
+
+                onArchive(call.id);
+              }}
+            />
+          </Tooltip>
+        )}
+      </Flex>
     </Box>
   );
 }
