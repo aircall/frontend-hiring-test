@@ -1,7 +1,12 @@
 import { ApolloClient, InMemoryCache, from } from '@apollo/client';
-import { authLink, httpLink } from './links';
+import { tokenExpiredLink } from './links/tokenExpiredLink';
+import { httpLink } from './links/httpLink';
+import { authLink } from './links/authLink';
 
 export const client = new ApolloClient({
-  link: from([authLink, httpLink]),
+  /**
+   * The links are executed in order, and tokenExpiredLink must come first
+   */
+  link: from([tokenExpiredLink, authLink, httpLink]),
   cache: new InMemoryCache()
 });
