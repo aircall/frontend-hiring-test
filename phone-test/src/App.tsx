@@ -11,14 +11,15 @@ import { GlobalAppStyle } from './style/global';
 import { AuthProvider } from './hooks/useAuth';
 import { ApolloClientProvider } from './ApolloClientProvider';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
+import { PATHS } from './constants/paths';
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedRoute />}>
-        <Route path="/calls" element={<CallsListPage />} />
-        <Route path="/calls/:callId" element={<CallDetailsPage />} />
+      <Route path={PATHS.LOGIN} element={<LoginPage />} />
+      <Route path={PATHS.CALLS} element={<ProtectedRoute />}>
+        <Route path={PATHS.CALLS} element={<CallsListPage />} />
+        <Route path={`${PATHS.CALLS}/:callId`} element={<CallDetailsPage />} />
       </Route>
     </Route>
   )

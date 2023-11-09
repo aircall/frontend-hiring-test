@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PATHS } from '../../constants/paths';
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -7,7 +8,7 @@ export function useHandlePagination() {
   const navigate = useNavigate();
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    navigate(`${PATHS.CALLS}/?page=${page}`);
   };
 
   const [search] = useSearchParams();

@@ -4,6 +4,7 @@ import logo from '../../logo.png';
 import { GET_ME } from '../../gql/queries/getMe';
 import { useQuery } from '@apollo/client';
 import { useAuth } from '../../hooks/useAuth';
+import { PATHS } from '../../constants/paths';
 
 export const ProtectedLayout = () => {
   const { data } = useQuery(GET_ME);
@@ -13,7 +14,7 @@ export const ProtectedLayout = () => {
   return (
     <Box minWidth="100vh" p={4}>
       <Flex justifyContent="space-between" alignItems="center">
-        <Link to="/calls">
+        <Link to={PATHS.CALLS}>
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">

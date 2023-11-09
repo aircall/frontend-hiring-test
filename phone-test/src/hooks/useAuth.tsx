@@ -4,6 +4,7 @@ import { LOGIN, LOGIN_DATA, LOGIN_VARIABLES } from '../gql/mutations';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { addOrRemoveLocalStorageItem, getLocalStorageItem } from '../helpers/localStorage';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/localStorageKeys';
+import { PATHS } from '../constants/paths';
 
 interface AuthContextValue {
   login: ({ username, password }: LoginInput) => void;
@@ -39,7 +40,7 @@ export const AuthProvider = () => {
 
           setStatus('authenticated');
 
-          navigate('/calls');
+          navigate(PATHS.CALLS);
         }
       });
     },
@@ -55,7 +56,7 @@ export const AuthProvider = () => {
 
     setStatus('unauthenticated');
 
-    navigate('/login', { replace: true });
+    navigate(PATHS.LOGIN, { replace: true });
   }, [navigate, client]);
 
   useEffect(

@@ -19,6 +19,7 @@ import { groupCallsByCreationDate } from './groupCallsByCreationDate';
 import { CallItem } from './CallItem';
 import { formatDate } from '../../helpers/dates';
 import { sortCallsDescendingByCreationDate } from './sortCallsByCreationDate';
+import { PATHS } from '../../constants/paths';
 
 export const PaginationWrapper = styled.div`
   position: sticky;
@@ -63,7 +64,7 @@ export const CallsListPage = () => {
   const { totalCount, nodes: calls = [] } = data?.paginatedCalls ?? {};
 
   const handleCallOnClick = (callId: string) => {
-    navigate(`/calls/${callId}`);
+    navigate(PATHS.CALL_DETAIL(callId));
   };
 
   const parsedCalls = hasActiveFilters ? filterCalls(calls, filters) : calls;
