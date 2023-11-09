@@ -1,27 +1,20 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { LOGIN, LOGIN_DATA, LOGIN_VARIABLES } from '../gql/mutations';
+import { LOGIN, LOGIN_DATA, LOGIN_VARIABLES } from '../../gql/mutations';
 import { useApolloClient, useMutation } from '@apollo/client';
-import { addOrRemoveLocalStorageItem, getLocalStorageItem } from '../helpers/localStorage';
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants/localStorageKeys';
-import { PATHS } from '../constants/paths';
-
-interface AuthContextValue {
-  login: ({ username, password }: LoginInput) => void;
-  logout: () => void;
-  status: 'loading' | 'authenticated' | 'unauthenticated';
-}
+import { addOrRemoveLocalStorageItem, getLocalStorageItem } from '../../helpers/localStorage';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../constants/localStorageKeys';
+import { PATHS } from '../../constants/paths';
+import { AuthContextValue, AuthenticationStatus } from './index.decl';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
-export interface AuthPRoviderProps {
-  children: React.ReactNode;
-}
 
 export const AuthProvider = () => {
   const client = useApolloClient();
 
-  const [status, setStatus] = useState<AuthContextValue['status']>('loading');
+  const [status, setStatus] = useState<AuthContextValue['status']>(
+    AuthenticationStatus.INITIAL_LOADING
+  );
 
   const [loginMutation] = useMutation<LOGIN_DATA, LOGIN_VARIABLES>(LOGIN);
 
@@ -30,6 +23,8 @@ export const AuthProvider = () => {
   // call this function when you want to authenticate the user
   const login = useCallback(
     ({ username, password }: LoginInput) => {
+      setStatus(AuthenticationStatus.AUTHENTICATING);
+
       return loginMutation({
         variables: { input: { username, password } },
         onCompleted: ({ login }) => {
@@ -38,7 +33,7 @@ export const AuthProvider = () => {
           addOrRemoveLocalStorageItem(ACCESS_TOKEN_KEY, access_token);
           addOrRemoveLocalStorageItem(REFRESH_TOKEN_KEY, refresh_token);
 
-          setStatus('authenticated');
+          setStatus(AuthenticationStatus.LOGGED_IN);
 
           navigate(PATHS.CALLS);
         }
@@ -54,17 +49,19 @@ export const AuthProvider = () => {
 
     await client.clearStore();
 
-    setStatus('unauthenticated');
+    setStatus(AuthenticationStatus.NOT_LOGGED_IN);
 
     navigate(PATHS.LOGIN, { replace: true });
   }, [navigate, client]);
 
   useEffect(
-    function checkIfUserIsAuthenticated() {
-      if (status === 'loading') {
+    function checkAuthenticationStatusOnInit() {
+      if (status === AuthenticationStatus.INITIAL_LOADING) {
         const accessToken = getLocalStorageItem(ACCESS_TOKEN_KEY);
 
-        setStatus(accessToken ? 'authenticated' : 'unauthenticated');
+        setStatus(
+          accessToken ? AuthenticationStatus.LOGGED_IN : AuthenticationStatus.NOT_LOGGED_IN
+        );
       }
     },
     [status]
