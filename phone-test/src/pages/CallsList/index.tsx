@@ -7,13 +7,18 @@ import {
   Box,
   Pagination,
   DiagonalDownOutlined,
-  DiagonalUpOutlined
+  DiagonalUpOutlined,
+  Banner,
+  SpinnerOutlined,
+  Flex
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../../helpers/dates';
 import { useNavigate } from 'react-router-dom';
 import { usePaginatedCallsQuery } from './usePaginatedCallsQuery';
 import { useHandlePagination } from './useHandlePagination';
-import { PAGE_SIZE_OPTIONS } from './constants';
+import { FILTERS_ACTIVE_PAGE, FILTERS_PAGE_SIZE, PAGE_SIZE_OPTIONS } from './constants';
+import { CallFilters } from './CallFilters';
+import { useHandleCallFilters } from './CallFilters/useHandleCallFilters';
 
 export const PaginationWrapper = styled.div`
   position: sticky;
@@ -32,27 +37,47 @@ export const PaginationWrapper = styled.div`
 export const CallsListPage = () => {
   const navigate = useNavigate();
 
+  const { filters, setFilters, hasActiveFilters, filterCalls } = useHandleCallFilters();
+
   const { activePage, pageSize, onPageSizeChange, handlePageChange } = useHandlePagination();
 
-  const { loading, error, data } = usePaginatedCallsQuery(activePage, pageSize);
+  const { loading, error, data } = usePaginatedCallsQuery(
+    hasActiveFilters ? FILTERS_ACTIVE_PAGE : activePage,
+    hasActiveFilters ? FILTERS_PAGE_SIZE : pageSize
+  );
 
-  if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
+  if (error)
+    return (
+      <Banner.Root variant="error" mt={40}>
+        <Banner.Icon />
+        <Box>
+          <Banner.Heading mb={1}>Something went wrong</Banner.Heading>
+          <Banner.Paragraph>
+            We have been unable to fetch the calls. Please try again later, or contact our support
+            team through support.aircall.io
+          </Banner.Paragraph>
+        </Box>
+      </Banner.Root>
+    );
 
-  const { totalCount, nodes: calls } = data.paginatedCalls;
+  const { totalCount, nodes: calls = [] } = data?.paginatedCalls ?? {};
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
+
+  const parsedCalls = hasActiveFilters ? filterCalls(calls, filters) : calls;
 
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
+      <Box mb={3}>
+        <CallFilters filters={filters} onChangeFilters={setFilters} />
+      </Box>
       <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
+        {parsedCalls.map((call: Call) => {
           const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
           const title =
             call.call_type === 'missed'
@@ -104,7 +129,25 @@ export const CallsListPage = () => {
         })}
       </Spacer>
 
-      {totalCount && (
+      {!loading && calls.length === 0 && (
+        <Banner.Root variant="neutral" mt={40}>
+          <Banner.Icon />
+          <Box>
+            <Banner.Heading mb={1}>There's no calls in this page!</Banner.Heading>
+            <Banner.Paragraph>
+              If you are using pagination or filters, try resetting them.
+            </Banner.Paragraph>
+          </Box>
+        </Banner.Root>
+      )}
+
+      {loading && (
+        <Flex justifyContent="center" m={6}>
+          <Icon component={SpinnerOutlined} spin />
+        </Flex>
+      )}
+
+      {totalCount && !hasActiveFilters && (
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
