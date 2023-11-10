@@ -127,7 +127,7 @@ export const CallsListPage = () => {
       )}
 
       {totalCount && !hasActiveFilters && (
-        <PaginationWrapper>
+        <PaginationWrapper data-test="pagination">
           <Pagination
             activePage={activePage}
             pageSize={pageSize}

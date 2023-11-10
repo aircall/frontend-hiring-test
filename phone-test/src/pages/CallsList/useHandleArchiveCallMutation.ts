@@ -4,7 +4,7 @@ import {
   ARCHIVE_CALL_DATA,
   ARCHIVE_CALL_VARIABLES
 } from '../../gql/mutations/archiveCall';
-import { toasts, useToast } from '@aircall/tractor';
+import { useToast } from '@aircall/tractor';
 
 const FIVE_SECONDS_IN_MILISECONDS = 5 * 1000;
 

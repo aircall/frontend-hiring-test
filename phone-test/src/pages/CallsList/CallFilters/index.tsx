@@ -14,6 +14,7 @@ export function CallFilters({ filters, onChangeFilters }: CallFiltersProps) {
       <Grid columnGap={3} rowGap={3} gridTemplateColumns="1fr 1fr 1fr" mb={6}>
         <FormItem label="Call Type" name="filters-call-type">
           <Select
+            data-test="call-type"
             size="small"
             options={callTypeOptions}
             selectedKeys={[filters?.type ?? EMPTY_VALUE]}
@@ -22,6 +23,7 @@ export function CallFilters({ filters, onChangeFilters }: CallFiltersProps) {
         </FormItem>
         <FormItem label="Call Direction" name="filters-call-direction">
           <Select
+            data-test="call-direction"
             size="small"
             options={callDirectionOptions}
             selectedKeys={[filters?.direction ?? EMPTY_VALUE]}
@@ -30,6 +32,7 @@ export function CallFilters({ filters, onChangeFilters }: CallFiltersProps) {
         </FormItem>
         <FormItem label="Call Status" name="filters-call-status">
           <Select
+            data-test="call-status"
             size="small"
             options={callStatusOptions}
             selectedKeys={[filters?.status ?? EMPTY_VALUE]}

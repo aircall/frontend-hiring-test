@@ -39,6 +39,8 @@ export function CallItem({ call, onOpenDetail, onArchive }: CallItemProps) {
       borderRadius={16}
       cursor="pointer"
       onClick={() => onOpenDetail(call.id)}
+      data-test="call-item"
+      data-id={call.id}
     >
       <Grid
         gridTemplateColumns="32px 1fr max-content"
