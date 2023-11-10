@@ -19,6 +19,14 @@ You will also see any lint errors in the console.
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
+### `yarn e2e`
+
+Executes all e2e tests. Note: it requires `yarn start` to be running.
+
+### `yarn cypress:open`
+
+Opens Cypress's [Launchpad](https://docs.cypress.io/guides/getting-started/opening-the-app#The-Launchpad), providing an interactive environment for running and debugging end-to-end tests in real-time.
+
 ### `yarn build`
 
 Builds the app for production to the `build` folder.\

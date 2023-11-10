@@ -1,6 +1,8 @@
 import { gql } from '@apollo/client';
 import { CALL_FIELDS } from '../fragments';
 
+export const PAGINATED_CALLS_OPERATION_NAME = 'PaginatedCalls';
+
 export const PAGINATED_CALLS = gql`
   ${CALL_FIELDS}
   query PaginatedCalls($offset: Float!, $limit: Float!) {
