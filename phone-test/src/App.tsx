@@ -1,4 +1,4 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
@@ -16,6 +16,7 @@ import { PATHS } from './constants/paths';
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
+      <Route path="*" element={<Navigate to={PATHS.LOGIN} replace />} />
       <Route path={PATHS.LOGIN} element={<LoginPage />} />
       <Route path={PATHS.CALLS} element={<ProtectedRoute />}>
         <Route path={PATHS.CALLS} element={<CallsListPage />} />
