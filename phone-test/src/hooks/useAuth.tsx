@@ -5,12 +5,17 @@ import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
 const AuthContext = createContext({
-  login: ({}) => {},
+  login: (loginPayload: LoginCredentials) => {},
   logout: () => {}
 });
 
 export interface AuthPRoviderProps {
   children: React.ReactNode;
+}
+
+export interface LoginCredentials {
+  username: string;
+  password: string;
 }
 
 export const AuthProvider = () => {
@@ -22,7 +27,7 @@ export const AuthProvider = () => {
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
+  const login = ({ username, password }: LoginCredentials) => {
     return loginMutation({
       variables: { input: { username, password } },
       onCompleted: ({ login }: any) => {
