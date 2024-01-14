@@ -33,7 +33,7 @@ export const CallDetailsPage = () => {
         <div>{`To: ${call.to}`}</div>
         <div>{`Via: ${call.via}`}</div>
         {call.notes?.map((note: Note, index: number) => {
-          return <div>{`Note ${index + 1}: ${note.content}`}</div>;
+          return <div key={note.id}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
     </>
