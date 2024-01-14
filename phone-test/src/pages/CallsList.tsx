@@ -23,33 +23,64 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
-
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+  const callsPerPageQueryParams = search.get('perPage');
+  const callsPerPage = !!callsPerPageQueryParams ? parseInt(callsPerPageQueryParams) : 5;
+  const direction = search.get('direction') ?? '';
+  const types = search.get('type')?.split(',') || [];
+
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * callsPerPage,
+      limit: callsPerPage
     }
     // onCompleted: () => handleRefreshToken(),
   });
 
+  // Status check
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
   if (!data) return <p>Not found</p>;
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
+  // Constants
+  const pageSizeOptions = [
+    {
+      value: 5,
+      label: '5'
+    },
+    {
+      value: 25,
+      label: '25'
+    },
+    {
+      value: 50,
+      label: '50'
+    },
+    {
+      value: 100,
+      label: '100'
+    }
+  ];
+
+  // Handler Functions
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    navigate(`/calls/?page=${page}&perPage=${callsPerPage}`);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    const newTotalPages = Math.ceil(totalCount / newPageSize);
+    const newActivePage = newTotalPages < activePage ? Math.floor(newTotalPages) : activePage;
+    navigate(`/calls/?page=${newActivePage}&perPage=${newPageSize}`);
   };
 
   return (
@@ -114,8 +145,10 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={callsPerPage}
+            pageSizeOptions={pageSizeOptions}
             onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>
