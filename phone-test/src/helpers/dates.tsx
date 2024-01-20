@@ -10,7 +10,7 @@ export const formatDuration = (duration: number) => {
   }
 };
 
-const getValidDate = (date: Date | string) => {
+export const getValidDate = (date: Date | string) => {
   const potentialValidDate = typeof date === 'string' ? parseISO(date) : date;
 
   // Make sure that the date is a valid ISO otherwise fallback to Date API
