@@ -8,6 +8,7 @@ import {
   DiagonalDownOutlined,
   DiagonalUpOutlined
 } from '@aircall/tractor';
+import groupBy from '../../utils/group-array';
 
 interface Note {
   id: string;
@@ -32,28 +33,50 @@ export interface CallListerProps {
   onCallClick: (callId: string) => void;
 }
 export default function CallLister({ calls, onCallClick }: CallListerProps) {
+  const groupedCalls = groupBy(calls, ({ created_at }) => {
+    const callDate = new Date(created_at);
+    const callDay = callDate.getDate();
+    const callMonth = callDate.toLocaleString('default', { month: 'short' });
+    return `${callDay} ${callMonth}`;
+  });
+
+  const dividedCallsList: Array<string | Call> = [];
+  for (const key in groupedCalls) {
+    if (!dividedCallsList.includes(key)) {
+      dividedCallsList.push(key);
+    }
+
+    groupedCalls[key].forEach(call => {
+      dividedCallsList.push(call);
+    });
+  }
+
   return (
     <Spacer space={3} direction="vertical">
-      {calls.map((call: Call) => {
-        const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
+      {dividedCallsList.map((item: string | Call) => {
+        if (typeof item === 'string') {
+          return <Typography variant="displayM2">Calls on {item}</Typography>;
+        }
+
+        const icon = item.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
         const title =
-          call.call_type === 'missed'
+          item.call_type === 'missed'
             ? 'Missed call'
-            : call.call_type === 'answered'
+            : item.call_type === 'answered'
             ? 'Call answered'
             : 'Voicemail';
-        const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-        const duration = formatDuration(call.duration / 1000);
-        const date = formatDate(call.created_at);
-        const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+        const subtitle = item.direction === 'inbound' ? `from ${item.from}` : `to ${item.to}`;
+        const duration = formatDuration(item.duration / 1000);
+        const date = formatDate(item.created_at);
+        const notes = item.notes ? `Call has ${item.notes.length} notes` : <></>;
 
         return (
           <Box
-            key={call.id}
+            key={item.id}
             bg="black-a30"
             borderRadius={16}
             cursor="pointer"
-            onClick={() => onCallClick(call.id)}
+            onClick={() => onCallClick(item.id)}
           >
             <Grid
               gridTemplateColumns="32px 1fr max-content"

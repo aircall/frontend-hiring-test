@@ -24,8 +24,8 @@ export const CallsListPage = () => {
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: isListFiltered ? 0 : (activePage - 1) * callsPerPage,
-      limit: isListFiltered ? 200 : callsPerPage
+      offset: 0,
+      limit: 200
     }
     // onCompleted: () => handleRefreshToken(),
   });
@@ -44,13 +44,9 @@ export const CallsListPage = () => {
     : calls;
   const sortedAndFilteredCallsList = [...filteredCallsList].sort((a: Call, b: Call) => {
     const dateA = getValidDate(a.created_at).getTime();
-    console.log('dateA: ', dateA);
-
-    const dateB = getValidDate(b.created_at);
-    return dateA - dateB.getTime();
+    const dateB = getValidDate(b.created_at).getTime();
+    return dateB - dateA;
   });
-
-  console.log('filteredCallsList: ', filteredCallsList);
 
   // Constants
   const pageSizeOptions = [
@@ -107,14 +103,10 @@ export const CallsListPage = () => {
         Calls History
       </Typography>
       <CallLister
-        calls={
-          isListFiltered
-            ? sortedAndFilteredCallsList.slice(
-                (activePage - 1) * callsPerPage,
-                activePage * callsPerPage
-              )
-            : sortedAndFilteredCallsList
-        }
+        calls={sortedAndFilteredCallsList.slice(
+          (activePage - 1) * callsPerPage,
+          activePage * callsPerPage
+        )}
         onCallClick={handleCallOnClick}
       />
       {totalCount && (
