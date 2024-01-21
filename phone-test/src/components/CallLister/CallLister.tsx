@@ -55,7 +55,11 @@ export default function CallLister({ calls, onCallClick }: CallListerProps) {
     <Spacer space={3} direction="vertical">
       {dividedCallsList.map((item: string | Call) => {
         if (typeof item === 'string') {
-          return <Typography variant="displayM2">Calls on {item}</Typography>;
+          return (
+            <Typography key={item} variant="displayM2">
+              Calls on {item}
+            </Typography>
+          );
         }
 
         const icon = item.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;

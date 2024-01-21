@@ -5,6 +5,7 @@ import { Typography, Pagination } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import CallLister from '../components/CallLister/CallLister';
 import { getValidDate } from '../helpers/dates';
+import FilterBar from '../components/FilterBar/FilterBar';
 
 export const CallsListPage = () => {
   // Hooks
@@ -20,7 +21,7 @@ export const CallsListPage = () => {
   const typeFiltersArray = search.get('type')?.split(',') || [];
   const isListFiltered = !!directionFilter || !!typeFiltersArray.length;
 
-  console.log(typeFiltersArray);
+  console.log(isListFiltered);
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -38,8 +39,15 @@ export const CallsListPage = () => {
   const { totalCount, nodes: calls } = data.paginatedCalls;
   const filteredCallsList = isListFiltered
     ? calls.filter((call: any) => {
-        if (!!directionFilter && call.direction !== directionFilter) return false;
-        return typeFiltersArray.includes(call.call_type);
+        let doesPassDirectionFilter = true;
+        let doesPassTypeFilter = true;
+        if (!!directionFilter) {
+          doesPassDirectionFilter = call.direction === directionFilter;
+        }
+        if (!!typeFiltersArray.length) {
+          doesPassTypeFilter = typeFiltersArray.includes(call.call_type);
+        }
+        return doesPassDirectionFilter && doesPassTypeFilter;
       })
     : calls;
   const sortedAndFilteredCallsList = [...filteredCallsList].sort((a: Call, b: Call) => {
@@ -92,7 +100,11 @@ export const CallsListPage = () => {
 
   const handleFilterChange = (filterCategory: string, newFilterValue: string) => {
     setSearchParams((prev: URLSearchParams) => {
-      prev.set(filterCategory, newFilterValue);
+      if (!!newFilterValue) {
+        prev.set(filterCategory, newFilterValue);
+      } else {
+        prev.delete(filterCategory);
+      }
       return prev;
     });
   };
@@ -102,6 +114,7 @@ export const CallsListPage = () => {
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
+      <FilterBar handleFilterChange={handleFilterChange} />
       <CallLister
         calls={sortedAndFilteredCallsList.slice(
           (activePage - 1) * callsPerPage,
