@@ -1,4 +1,4 @@
-import { formatDate, formatDuration, getValidDate } from '../../helpers/dates';
+import { formatDate, formatDuration } from '../../helpers/dates';
 import {
   Grid,
   Icon,
