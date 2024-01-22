@@ -8,7 +8,13 @@ export interface FilterBarProps {
 export default function FilterBar({ handleFilterChange }: FilterBarProps) {
   return (
     <Form>
-      <Spacer space={3} direction="horizontal">
+      <Spacer
+        fluid={true}
+        space={3}
+        direction="horizontal"
+        justifyContent="stretch"
+        itemsSized="evenly-sized"
+      >
         <FormItem label="Call Type">
           <Select
             takeTriggerWidth={true}
