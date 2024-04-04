@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
@@ -23,17 +24,18 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
-
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
+
+  const [callsPerPage, setCallsPerPage] = useState<number>(5);
+
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * callsPerPage,
+      limit: callsPerPage
     }
     // onCompleted: () => handleRefreshToken(),
   });
@@ -43,6 +45,10 @@ export const CallsListPage = () => {
   if (!data) return <p>Not found</p>;
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
+
+  const handleOnPageSizeChange = (newPageSize: number): void => {
+    setCallsPerPage(newPageSize);
+  };
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -114,9 +120,10 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={callsPerPage}
             onPageChange={handlePageChange}
             recordsTotalCount={totalCount}
+            onPageSizeChange={handleOnPageSizeChange}
           />
         </PaginationWrapper>
       )}
