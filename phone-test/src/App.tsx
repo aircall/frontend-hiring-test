@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
-import { CallsListPage } from './pages/CallsList';
+import { CallsListPage } from './pages/CallsList/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
 import { Tractor } from '@aircall/tractor';
 

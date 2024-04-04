@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Grid,
   Icon,
@@ -12,8 +12,9 @@ import {
   DiagonalUpOutlined,
   Pagination
 } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import CallsListFilterForm from './components/CallsListFilterForm';
+import { PAGINATED_CALLS } from '../../gql/queries';
+import { formatDate, formatDuration } from '../../helpers/dates';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -25,10 +26,11 @@ export const PaginationWrapper = styled.div`
 `;
 
 export const CallsListPage = () => {
-  const [search] = useSearchParams();
+  const [search, setSearch] = useSearchParams();
   const navigate = useNavigate();
 
   const [callsPerPage, setCallsPerPage] = useState<number>(5);
+  const [filters, setFilters] = useState<CallListFilter | null>(null);
 
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
@@ -46,6 +48,29 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
+  const filterCalls = (callCollection: Call[]): Call[] => {
+    if (!filters) return callCollection;
+
+    const filteredCalls = calls.filter((call: Call) =>
+      filters.callTypes?.includes(call.call_type as CallType)
+    );
+
+    return filteredCalls;
+  };
+
+  const applyFilters = (filtersToApply: CallListFilter): void => {
+    setFilters(filtersToApply);
+    setSearch(prevSearch => ({ ...Object.fromEntries(prevSearch), ...filtersToApply }));
+  };
+
+  const resetFilters = (): void => {
+    setFilters(null);
+    setSearch(prevSearch => {
+      filters && Object.keys(filters).forEach(key => search.delete(key));
+      return prevSearch;
+    });
+  };
+
   const handleOnPageSizeChange = (newPageSize: number): void => {
     setCallsPerPage(newPageSize);
   };
@@ -55,7 +80,18 @@ export const CallsListPage = () => {
   };
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    let queryParams = '';
+
+    if (filters) {
+      const searchParams = Object.assign(search);
+      searchParams.delete('page');
+      queryParams = `&${searchParams.toString()}`;
+    }
+
+    navigate({
+      pathname: '/calls/',
+      search: `?page=${page}${queryParams}`
+    });
   };
 
   return (
@@ -64,7 +100,11 @@ export const CallsListPage = () => {
         Calls History
       </Typography>
       <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
+        <CallsListFilterForm onApplyFilters={applyFilters} onResetFilters={resetFilters} />
+      </Spacer>
+      <Typography variant="caption">Calls</Typography>
+      <Spacer space={3} direction="vertical">
+        {filterCalls(calls).map((call: Call) => {
           const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
           const title =
             call.call_type === 'missed'
