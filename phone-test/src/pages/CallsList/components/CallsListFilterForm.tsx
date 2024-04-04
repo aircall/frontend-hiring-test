@@ -49,12 +49,19 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
             selectionMode="multiple"
             selectedKeys={callTypesFilter}
             onSelectionChange={(value: CallType[]) => setCallTypesFilter(value)}
+            data-test="select-call-types"
           />
           <Spacer space="s">
-            <Button size="small" mode="link" onClick={handleOnApplyFilters}>
+            <Button name="btn-apply" size="small" mode="link" onClick={handleOnApplyFilters}>
               Apply
             </Button>
-            <Button size="small" mode="link" variant="destructive" onClick={handleOnClearFilters}>
+            <Button
+              name="btn-clear"
+              size="small"
+              mode="link"
+              variant="destructive"
+              onClick={handleOnClearFilters}
+            >
               Clear
             </Button>
           </Spacer>
