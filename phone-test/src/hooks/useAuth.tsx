@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
@@ -22,33 +22,37 @@ export const AuthProvider = () => {
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
-    return loginMutation({
-      variables: { input: { username, password } },
-      onCompleted: ({ login }: any) => {
-        const { access_token, refresh_token, user } = login;
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
-        setUser(user);
-        console.log('redirect to calls');
-        navigate('/calls');
-      }
-    });
-  };
+  const login = useCallback(
+    ({ username, password }: any) => {
+      return loginMutation({
+        variables: { input: { username, password } },
+        onCompleted: ({ login }: any) => {
+          const { access_token, refresh_token, user } = login;
+          setAccessToken(access_token);
+          setRefreshToken(refresh_token);
+          setUser(user);
+          console.log('redirect to calls');
+          navigate('/calls');
+        }
+      });
+    },
+    [loginMutation, navigate, setAccessToken, setRefreshToken]
+  );
 
   // call this function to sign out logged in user
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
     navigate('/login', { replace: true });
-  };
+  }, [navigate, setAccessToken, setRefreshToken]);
 
   const value = useMemo(() => {
     return {
       login,
       logout
     };
-  }, []);
+  }, [login, logout]);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />
