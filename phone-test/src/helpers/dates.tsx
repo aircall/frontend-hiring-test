@@ -1,6 +1,10 @@
 import { format, isValid, parseISO } from 'date-fns';
 
 export const formatDuration = (duration: number) => {
+  if (typeof duration !== 'number') {
+    throw RangeError('Duration argument is not a valid number to be considered');
+  }
+
   if (duration >= 3600) {
     // 600 seconds 👉️ "00:10:00" (hh:mm:ss)
     return new Date(duration * 1000).toISOString().slice(11, 19);
