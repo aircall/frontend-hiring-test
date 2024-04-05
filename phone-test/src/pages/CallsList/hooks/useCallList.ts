@@ -22,6 +22,10 @@ const useCallList = (): UseCallListInterface => {
     }
 
     const getCallsGivenFilterCriteria = (data: Call[], filters?: CallListFilter, sortDirection: SortType = 'asc'): Call[] => {
+        if(!Array.isArray(data)) {
+            throw Error('Wrong data type source provided');
+        }
+        
         const { callTypes } = filters || {};
 
         const result = data
