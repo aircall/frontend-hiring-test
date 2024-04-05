@@ -7,6 +7,11 @@ export interface CallsListFiltersProps {
   onResetFilters: () => void;
 }
 
+const dateSortOpts: { value: SortType; label: string }[] = [
+  { value: 'asc', label: 'Ascending' },
+  { value: 'desc', label: 'Descending' }
+];
+
 const callTypeOpts: { value: CallType; label: string }[] = [
   { value: 'missed', label: 'Missed call' },
   { value: 'answered', label: 'Call answered' },
@@ -19,36 +24,52 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
   const [search] = useSearchParams();
 
   const { onApplyFilters, onResetFilters } = props;
+  const [dateSortFilter, setDateSortFilter] = useState<SortType[]>([]);
   const [callTypesFilter, setCallTypesFilter] = useState<CallType[]>([]);
 
   const handleOnApplyFilters = (): void => {
+    const [dateSort] = dateSortFilter;
+
     onApplyFilters({
-      callTypes: callTypesFilter
+      callTypes: callTypesFilter,
+      dateSort: dateSort
     });
   };
 
   const handleOnClearFilters = (): void => {
     setCallTypesFilter([]);
+    setDateSortFilter(['asc']);
     onResetFilters();
   };
 
   useEffect(() => {
     setCallTypesFilter(search.getAll('callTypes') as unknown as CallType[]);
+    setDateSortFilter(search.getAll('dateSort') as unknown as SortType[]);
   }, [search]);
 
   return (
     <>
       <Typography variant="caption">Filters</Typography>
-      <Grid p={10} my={10}>
-        <Flex alignItems="center" justifyContent="space-between">
+      <Grid p={10} my={20}>
+        <Flex alignItems="center" justifyContent="space-around">
           <Select
-            options={callTypeOpts}
+            w="30%"
             size="small"
-            w="50%"
-            placeholder="Select call type"
+            selectionMode="single"
+            selectedKeys={dateSortFilter}
+            options={dateSortOpts}
+            onSelectionChange={(value: SortType[]) => setDateSortFilter(value)}
+            placeholder="Date"
+            data-test="select-date-sort"
+          />
+          <Select
+            w="40%"
+            size="small"
             selectionMode="multiple"
             selectedKeys={callTypesFilter}
+            options={callTypeOpts}
             onSelectionChange={(value: CallType[]) => setCallTypesFilter(value)}
+            placeholder="Select call type"
             data-test="select-call-types"
           />
           <Spacer space="s">
