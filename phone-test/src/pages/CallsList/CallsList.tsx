@@ -101,10 +101,10 @@ export const CallsListPage = () => {
       </Spacer>
       <Typography variant="caption">Calls</Typography>
       <Spacer space={3} direction="vertical">
-        {Object.entries(callsToBeRendered!).map(([date, callsByDate]) => {
+        {Object.entries(callsToBeRendered!).map(([date, callsByDate], index) => {
           const formattedDate = formatDate(date, 'LLL d');
           return (
-            <>
+            <Box key={`group-calls-${date}-${index}`}>
               <Typography px={4} textAlign="right" color={darkTheme.colors['primary-500']}>
                 {formattedDate}
               </Typography>
@@ -160,7 +160,7 @@ export const CallsListPage = () => {
                   </Box>
                 );
               })}
-            </>
+            </Box>
           );
         })}
       </Spacer>
