@@ -59,7 +59,7 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
             selectedKeys={dateSortFilter}
             options={dateSortOpts}
             onSelectionChange={(value: SortType[]) => setDateSortFilter(value)}
-            placeholder="Sort by date"
+            placeholder="Select sort"
             data-test="select-date-sort"
           />
           <Select
