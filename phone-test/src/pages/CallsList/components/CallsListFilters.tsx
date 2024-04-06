@@ -43,8 +43,8 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
   };
 
   useEffect(() => {
-    setCallTypesFilter(search.getAll('callTypes') as unknown as CallType[]);
-    setDateSortFilter(search.getAll('dateSort') as unknown as SortType[]);
+    setCallTypesFilter((search.getAll('callTypes') as unknown as CallType[]) || []);
+    setDateSortFilter((search.getAll('dateSort') as unknown as SortType[]) || []);
   }, [search]);
 
   return (
@@ -59,7 +59,7 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
             selectedKeys={dateSortFilter}
             options={dateSortOpts}
             onSelectionChange={(value: SortType[]) => setDateSortFilter(value)}
-            placeholder="Date"
+            placeholder="Sort by date"
             data-test="select-date-sort"
           />
           <Select

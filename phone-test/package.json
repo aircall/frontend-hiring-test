@@ -59,5 +59,10 @@
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/?!(@aircall)"
+    ]
   }
 }
