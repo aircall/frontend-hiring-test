@@ -102,7 +102,7 @@ describe('CallsListFilters component', () => {
    * 4.- Check if onApplyFilters callback function was called properly
    */
 
-  it.only('should select options, click on apply and call the applyFilters callback then', async () => {
+  it('should select options, click on apply and call the applyFilters callback then', async () => {
     const onApplyFiltersFn = jest.fn();
 
     const { container, unmount } = component(['/calls/'], {
