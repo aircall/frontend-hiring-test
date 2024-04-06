@@ -8,10 +8,11 @@ import {
   useEffect
 } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
 import { LOGIN, REFRESH_TOKEN_V2 } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import useApolloClient from './useApolloClient';
-import { useMutation } from '@apollo/client';
+import generateApolloClient from '../helpers/apolloClient';
 
 // Interval frequency in ms...
 // TODO: (Suggestion) We could move this to an environment variable...
@@ -27,7 +28,7 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
-  const { generateApolloClient } = useApolloClient();
+  const { setApolloClient } = useApolloClient();
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState();
@@ -66,10 +67,11 @@ export const AuthProvider = () => {
         const { access_token, refresh_token } = refreshTokenV2;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
+        setApolloClient(generateApolloClient('refresh_token'));
         console.log('auth token refresh');
       }
     });
-  }, [refreshAuthTokenMutation, setAccessToken, setRefreshToken]);
+  }, [refreshAuthTokenMutation, setAccessToken, setApolloClient, setRefreshToken]);
 
   // call this function to sign out logged in user
   const logout = useCallback(() => {
