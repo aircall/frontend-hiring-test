@@ -13,6 +13,8 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/styled-components": "^5.1.26",
+    "cypress": "13.6.1",
+    "cypress-wait-until": "3.0.1",
     "date-fns": "^2.29.3",
     "graphql": "^16.6.0",
     "husky": "^8.0.2",
@@ -22,15 +24,23 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
+    "start-server-and-test": "2.0.3",
     "styled-components": "^5.3.6",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
+  },
+  "config": {
+    "host": "http://localhost:3000"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --e2e",
+    "cy:test": "start-server-and-test start $npm_package_config_host cy:run",
+    "cy:e2e": "start-server-and-test start $npm_package_config_host cy:open"
   },
   "eslintConfig": {
     "extends": [
