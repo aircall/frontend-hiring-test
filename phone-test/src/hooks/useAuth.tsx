@@ -14,6 +14,7 @@ import useApolloClient from './useApolloClient';
 import { useMutation } from '@apollo/client';
 
 // Interval frequency in ms...
+// TODO: (Suggestion) We could move this to an environment variable...
 const CHECK_AUTH_TOKEN_FREQUENCY = 60000;
 
 const AuthContext = createContext({
