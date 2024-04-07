@@ -17,6 +17,7 @@
     "cypress-wait-until": "3.0.1",
     "date-fns": "^2.29.3",
     "graphql": "^16.6.0",
+    "graphql-ws": "^5.16.0",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
@@ -26,6 +27,7 @@
     "react-scripts": "5.0.1",
     "start-server-and-test": "2.0.3",
     "styled-components": "^5.3.6",
+    "subscriptions-transport-ws": "^0.11.0",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
