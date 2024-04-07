@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-  useCallback,
-  SetStateAction,
-  useEffect
-} from 'react';
+import { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { LOGIN, REFRESH_TOKEN_V2 } from '../gql/mutations';
@@ -14,13 +6,20 @@ import { useLocalStorage } from './useLocalStorage';
 import useApolloClient from './useApolloClient';
 import generateApolloClient from '../helpers/apolloClient';
 
+interface AuthContextInterface {
+  login: (credentials: { username: string; password: string }) => void;
+  logout: () => void;
+  user: UserType | undefined;
+}
+
 // Interval frequency in ms...
 // TODO: (Suggestion) We could move this to an environment variable...
 const CHECK_AUTH_TOKEN_FREQUENCY = 60000;
 
-const AuthContext = createContext({
+const AuthContext = createContext<AuthContextInterface>({
   login: (credentials: { username: string; password: string }) => {},
-  logout: () => {}
+  logout: () => {},
+  user: undefined
 });
 
 export interface AuthPRoviderProps {
@@ -31,7 +30,7 @@ export const AuthProvider = () => {
   const { setApolloClient } = useApolloClient();
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<UserType | undefined>(undefined);
   const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
@@ -50,7 +49,7 @@ export const AuthProvider = () => {
           const { access_token, refresh_token, user } = login;
           setAccessToken(access_token);
           setRefreshToken(refresh_token);
-          setUser(user as SetStateAction<undefined>);
+          setUser(user as UserType);
           setIsLoggedIn(true);
           console.log('redirect to calls');
           navigate('/calls');
@@ -110,9 +109,10 @@ export const AuthProvider = () => {
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      user
     };
-  }, [login, logout]);
+  }, [login, logout, user]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timer;

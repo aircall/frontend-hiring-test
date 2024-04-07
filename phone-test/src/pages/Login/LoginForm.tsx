@@ -36,6 +36,7 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
             value={email}
             onChange={e => setEmail(e.target.value)}
             data-cy="email"
+            required
           />
         </FormItem>
         <FormItem label="Password" name="password">
@@ -44,6 +45,7 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
             value={password}
             onChange={e => setPassword(e.target.value)}
             data-cy="password"
+            required
           />
         </FormItem>
         <FormItem>
