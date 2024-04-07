@@ -1,31 +1,62 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { useParams } from 'react-router-dom';
+import { Box, Typography, Button, Spacer } from '@aircall/tractor';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { ARCHIVE_CALL } from '../gql/mutations';
-import { Box, Typography, Button, Spacer } from '@aircall/tractor';
+import { CALLS_SUBSCRIPTION } from '../gql/subscriptions';
 import { formatDate, formatDuration } from '../helpers/dates';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
-  const { loading, error, data, refetch } = useQuery(GET_CALL_DETAILS, {
+
+  const [
+    archiveCallMutation,
+    { loading: archiveCallMutationLoading, error: archiveCallMutationError }
+  ] = useMutation(ARCHIVE_CALL, {
+    update(cache, { data }) {
+      const { archiveCall } = data;
+      cache.writeQuery({
+        query: GET_CALL_DETAILS,
+        data: {
+          call: archiveCall
+        }
+      });
+    }
+  });
+
+  const { loading, error, data, subscribeToMore } = useQuery(GET_CALL_DETAILS, {
     variables: {
       id: callId
     }
   });
 
-  const [archiveCallMutation] = useMutation(ARCHIVE_CALL);
-
   const handleOnArchiveCall = (callId: string | number): void => {
-    archiveCallMutation({
-      variables: { id: callId },
-      onCompleted: () => {
-        refetch();
-      }
-    });
+    archiveCallMutation({ variables: { id: callId } });
   };
 
-  if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: CALLS_SUBSCRIPTION,
+      updateQuery: (prevData, { subscriptionData }) => {
+        if (!subscriptionData.data) return prevData;
+        const {
+          data: { onUpdatedCall }
+        } = subscriptionData;
+
+        return {
+          call: onUpdatedCall
+        };
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [subscribeToMore]);
+
+  if (loading || archiveCallMutationLoading) return <p>Loading call details...</p>;
+  if (error || archiveCallMutationError) return <p>ERROR</p>;
 
   const { call } = data;
 
