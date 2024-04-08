@@ -3,6 +3,13 @@ import 'cypress-wait-until';
 import fixtures from '../fixtures/example.json';
 
 describe('Logout functionlaity', () => {
+    let AUTH_TOKEN_KEY: string, REFRESH_TOKEN_KEY: string;
+    
+    before(() => {
+        AUTH_TOKEN_KEY = Cypress.env('AUTH_TOKEN_KEY');
+        REFRESH_TOKEN_KEY = Cypress.env('REFRESH_TOKEN_KEY');
+    })
+
     it('should perform a success login and a correctly logout', () => {
         const { login } = fixtures;
         
@@ -13,15 +20,15 @@ describe('Logout functionlaity', () => {
         cy.get('[data-cy="btn-submit"]').click();
 
         cy.url().should('eq', `${Cypress.env('APP_BASE_URL')}/calls`).then(() => {
-            expect(localStorage.getItem('access_token')).not.to.be.null;
-            expect(localStorage.getItem('refresh_token')).not.to.be.null;
+            expect(localStorage.getItem(AUTH_TOKEN_KEY)).not.to.be.null;
+            expect(localStorage.getItem(REFRESH_TOKEN_KEY)).not.to.be.null;
         });
 
         cy.get('[data-cy="btn-logout"]').click();
         
         cy.url().should('eq', `${Cypress.env('APP_BASE_URL')}/login`).then(() => {
-            expect(localStorage.getItem('access_token')).to.be.null;
-            expect(localStorage.getItem('refresh_token')).to.be.null;
+            expect(localStorage.getItem(AUTH_TOKEN_KEY)).to.be.null;
+            expect(localStorage.getItem(REFRESH_TOKEN_KEY)).to.be.null;
         });
     });
 });
