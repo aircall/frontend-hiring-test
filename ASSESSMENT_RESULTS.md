@@ -248,4 +248,9 @@ import fixtures from '../fixtures/example.json';
 
 <a name="005"></a>
 #### Additional improvements added
-...
+- Add a Loader component.
+- Add a basic implementation to ProtectedRoute component.
+- Add a feature to navigate to the login page if user is not logged in.
+- Allow format date function (helper) supporting different format patterns.
+- Add missing types (TypeScript).
+- Add some basic styling improvements.
