@@ -222,9 +222,6 @@ We can use these files to set dummy data across our tests.
 import fixtures from '../fixtures/example.json';
 //..
 ```
-
-
-
 **4. Demo**
 
 4.1. `yarn cy:run` command output.
@@ -237,7 +234,7 @@ import fixtures from '../fixtures/example.json';
 
 ###### Archive call feature
 
-1. Add a mutation within the gql/mutations folder.
+1. Add a mutation within the **gql/mutations** folder.
 
 ```javascript
 import { gql } from '@apollo/client';
@@ -254,16 +251,15 @@ export const ARCHIVE_CALL = gql`
 `;
 ```
 
-2. UI changes, add basic button to perform the archive call mutation within the CallDeatils page.
+2. UI changes, add a basic button to perform the archive call mutation within the CallDeatils page.
 
 ![](./assets/task008.png)
 
-3. After the mutation is done, the cache for the `GET_CALL_DETAILS` query is updated, in order to improve the performance and reduce the load on the back-end services.
-
+3. After the mutation is done, the cache for the `GET_CALL_DETAILS` query is updated, to improve the performance and reduce the load on the back-end services.
 
 ###### Sync tabs after archiving a call (Real-time support)
 
-1. Firstly, add a new subscription to the gql/subscriptions folder.
+1. Firstly, add a new subscription to the **gql/subscriptions** folder.
 
 ```javascript
 import { gql } from '@apollo/client';
@@ -283,7 +279,7 @@ export const CALLS_SUBSCRIPTION = gql`
 
 - Create a `httpLink`.
 - Create a `webSocketLink`.
-- Make sure of providing the authorization header.
+- Make sure to provide the authorization header.
 
 ```javascript
 // ...
@@ -354,11 +350,11 @@ useEffect(() => {
 // ...
 ```
 
-4. Whenever a `subscribeToMore` followup method is executed, a change is detected by the `useEffect` hook, so the associated subscription will be triggered (making use of the WebSocket implementation done at the split link literal).
+4. Whenever a `subscribeToMore` follow-up method is executed, a change is detected by the `useEffect` hook, so the associated subscription will be triggered (Using the WebSocket implementation done at the split link section).
 
 ![](./assets/task008.gif)
 
-5. Afterwards, any change made at the application will be reflected accross the other browser's tabs opened at the same section.
+5. Afterwards, any change made to the application will be reflected across the other browser's tabs opened at the same section.
 
 <a name="004"></a>
 #### Staff SE contributions
@@ -368,11 +364,11 @@ useEffect(() => {
 
 <a name="005"></a>
 #### Additional improvements added
-- Add a Loader component.
-- Add a basic implementation to ProtectedRoute component.
-- Add a feature to navigate to the login page if user is not logged in.
+- Add a `Loader` component.
+- Add a basic implementation to the `ProtectedRoute` component.
+- Add a feature to navigate the `Login page` if a user is not logged in.
 - Allow format date function (helper) supporting different format patterns.
-- Add back button to CallDetails page.
-- Add username to identify the user.
+- Add a back button to the CallDetails page.
+- Add a username to identify the user.
 - Add missing types (TypeScript).
 - Add some basic styling improvements.
