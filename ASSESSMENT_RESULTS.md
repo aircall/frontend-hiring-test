@@ -147,11 +147,11 @@ These scripts were added to the project.
 
 To ease the E2E testing, we can provide the Cypress runner with some variables. We only need to **create a .env.e2e file at the project's root level**, and fill in the variables accordingly.
 
-| Env. variable      | Value                      |
-| ------------------ | -------------------------- |
+| Env. variable      | Value                                |
+| ------------------ | ------------------------------------ |
 | APP_BASE_URL       | `http://localhost:3000` or another   |
-| AUTH_TOKEN_KEY     | <YOUR_AUTH_TOKEN_KEY>      |
-| REFRESH_TOKEN_KEY  | <YOUR_REFRESH_TOKEN_KEY>   |
+| AUTH_TOKEN_KEY     | <YOUR_AUTH_TOKEN_KEY>                |
+| REFRESH_TOKEN_KEY  | <YOUR_REFRESH_TOKEN_KEY>             |
 
 Then, we need to load them all using `dotenv`, as follows:
 
@@ -188,14 +188,11 @@ Finally, we can use the variables within any spec file, as follows:
  */
 
 describe('Whatever test spec', () => {
-  * ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable (At suite level)
   it('Whatever test', () => {
+    const appBaseURL = ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable (i.e.: At test level).
     // ...
-    * ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable (At test level)
-  })
-  // ...
-})
-// ...
+  });
+});
 ```
 
 **3. Fixtures**
