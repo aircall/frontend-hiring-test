@@ -236,9 +236,129 @@ import fixtures from '../fixtures/example.json';
 ![](./assets/task007.gif)
 
 ###### Archive call feature
-...
+
+1. Add a mutation within the gql/mutations folder.
+
+```javascript
+import { gql } from '@apollo/client';
+import { CALL_FIELDS } from '../fragments/call';
+
+export const ARCHIVE_CALL = gql`
+  ${CALL_FIELDS}
+
+  mutation ArchiveCall($id: ID!) {
+    archiveCall(id: $id) {
+      ...CallFields
+    }
+  }
+`;
+```
+
+2. UI changes, add basic button to perform the archive call mutation within the CallDeatils page.
+
+![](./assets/task008.png)
+
+3. After the mutation is done, the cache for the `GET_CALL_DETAILS` query is updated, in order to improve the performance and reduce the load on the back-end services.
+
+
 ###### Sync tabs after archiving a call (Real-time support)
-...
+
+1. Firstly, add a new subscription to the gql/subscriptions folder.
+
+```javascript
+import { gql } from '@apollo/client';
+import { CALL_FIELDS } from '../fragments';
+
+export const CALLS_SUBSCRIPTION = gql`
+    ${CALL_FIELDS}
+    subscription OnUpdatedCall {
+        onUpdatedCall {
+            ...CallFields
+        }
+    }
+`;
+```
+
+2. Create an `Apollo Client` service to handle either query/mutations operations or subscriptions, using the **splitting link strategy** as follows:
+
+- Create a `httpLink`.
+- Create a `webSocketLink`.
+- Make sure of providing the authorization header.
+
+```javascript
+// ...
+headers: {
+  Authorization: `Bearer ${myToken}`
+}
+// ...
+```
+
+Some extracts of code implemented within the `Apollo Client` definition:
+
+```javascript
+/**
+ * @file
+ * <rootDir>/src/services/apollo/apolloClient.ts
+ */
+
+// ...
+const splitLink = split(
+  ({ query }) => {
+  const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
+    );
+  },
+  wsLink(tokenKey),
+  authLink.concat(httpLink),
+);
+
+const client = new ApolloClient({
+  link: splitLink,
+  cache: new InMemoryCache()
+});
+
+return client;
+// ...
+```
+
+3. Associate the subscription with the `subscribeToMore` method from the `GET_CALL_DETAILS` query (useQuery) in the CallsDetails page at the `useEffect` hook definition, as follows:
+
+```javascript
+// ...
+const { loading, error, data, subscribeToMore } = useQuery(GET_CALL_DETAILS, {
+    variables: {
+      id: callId
+    }
+  });
+// ...
+useEffect(() => {
+  const unsubscribe = subscribeToMore({
+    document: CALLS_SUBSCRIPTION,
+    updateQuery: (prevData, { subscriptionData }) => {
+      if (!subscriptionData.data) return prevData;
+      const {
+        data: { onUpdatedCall }
+      } = subscriptionData;
+
+      return {
+        call: onUpdatedCall
+      };
+    }
+  });
+
+  return () => {
+    unsubscribe();
+  };
+}, [subscribeToMore]);
+// ...
+```
+
+4. Whenever a `subscribeToMore` followup method is executed, a change is detected by the `useEffect` hook, so the associated subscription will be triggered (making use of the WebSocket implementation done at the split link literal).
+
+![](./assets/task008.gif)
+
+5. Afterwards, any change made at the application will be reflected accross the other browser's tabs opened at the same section.
 
 <a name="004"></a>
 #### Staff SE contributions
@@ -252,5 +372,7 @@ import fixtures from '../fixtures/example.json';
 - Add a basic implementation to ProtectedRoute component.
 - Add a feature to navigate to the login page if user is not logged in.
 - Allow format date function (helper) supporting different format patterns.
+- Add back button to CallDetails page.
+- Add username to identify the user.
 - Add missing types (TypeScript).
 - Add some basic styling improvements.
