@@ -127,7 +127,7 @@ The tool selected to perform E2E tests is **Cypress**.
 
 **1. Scripts:**
 
-These scripts were added to project.
+These scripts were added to the project.
 
 ```shell
 # Open Cypress config wizard, and its tool to monitor/execute/perform/etc. E2E tests
@@ -136,16 +136,16 @@ These scripts were added to project.
 # Execute only the E2E tests within the terminal window, (Make sure the project is running in parallel).
 > yarn cy:run
 
-# Starts the application and executes the E2E tests at terminal level (In-parallel)
+# Starts the application and executes the E2E tests at the terminal level (In-parallel)
 > yarn cy:test
 
-# # Starts the application and executes the Cypress tool (In-parallel)
+# Starts the application and executes the Cypress tool (In-parallel)
 > yarn cy:e2e
 ```
 
 **2. Environment variables:**
 
-To ease the E2E testing, we can provide the Cypress runner with some variables. We just need to **create a .env.e2e file at the project's root level**, and filling in the variables accordingly.
+To ease the E2E testing, we can provide the Cypress runner with some variables. We only need to **create a .env.e2e file at the project's root level**, and fill in the variables accordingly.
 
 | Env. variable      | Value                      |
 | ------------------ | -------------------------- |
@@ -171,7 +171,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       config.env = {
         ...config.env,
-        ...env_e2e, // <--- Passing environment variables to he configs here
+        ...env_e2e, // <--- Passing environment variables to the configs here
     };
 
     return config;
@@ -185,14 +185,13 @@ Finally, we can use the variables within any spec file, as follows:
 /**
  * @file
  * WhateverTest.cy.ts
- * 
- * ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable.
  */
 
 describe('Whatever test spec', () => {
-  // ...
+  * ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable (At suite level)
   it('Whatever test', () => {
-    // ...    
+    // ...
+    * ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable (At test level)
   })
   // ...
 })
@@ -201,7 +200,7 @@ describe('Whatever test spec', () => {
 
 **3. Fixtures**
 
-We can use this kind of files to set dummy data to beused accross our tests.
+We can use these files to set dummy data across our tests.
 
 ```javascript
 /**
@@ -220,7 +219,7 @@ We can use this kind of files to set dummy data to beused accross our tests.
 /**
  * @file
  * Whatever.cy.ts
- * 2. Using it in any spec test...
+ * 2. Use it in any spec test...
  */
 
 import fixtures from '../fixtures/example.json';
@@ -238,8 +237,6 @@ import fixtures from '../fixtures/example.json';
 4.2. Cypress E2E tets in action.
 
 ![](./assets/task007.gif)
-
-
 
 ###### Archive call feature
 ...
