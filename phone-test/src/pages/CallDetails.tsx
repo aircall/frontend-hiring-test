@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { Box, Typography, Button, Spacer } from '@aircall/tractor';
+import Loader from '../components/Layout/Loader';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { ARCHIVE_CALL } from '../gql/mutations';
 import { CALLS_SUBSCRIPTION } from '../gql/subscriptions';
@@ -55,7 +56,7 @@ export const CallDetailsPage = () => {
     };
   }, [subscribeToMore]);
 
-  if (loading || archiveCallMutationLoading) return <p>Loading call details...</p>;
+  if (loading || archiveCallMutationLoading) return <Loader message="Loading call details..." />;
   if (error || archiveCallMutationError) return <p>ERROR</p>;
 
   const { call } = data;

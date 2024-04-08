@@ -12,6 +12,7 @@ import {
   DiagonalUpOutlined,
   Pagination
 } from '@aircall/tractor';
+import Loader from '../../components/Layout/Loader';
 import { darkTheme } from '../../style/theme/darkTheme';
 import CallsListFilters from './components/CallsListFilters';
 import useCallList from './hooks/useCallList';
@@ -46,7 +47,7 @@ export const CallsListPage = () => {
     // onCompleted: () => handleRefreshToken(),
   });
 
-  if (loading) return <p>Loading calls...</p>;
+  if (loading) return <Loader message="Loading calls..." />;
   if (error) return <p>ERROR</p>;
   if (!data) return <p>Not found</p>;
 
