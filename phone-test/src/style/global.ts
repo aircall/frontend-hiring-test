@@ -17,6 +17,7 @@ export const GlobalAppStyle = createGlobalStyle`
     grid-template-rows: 1fr;
     width: 100vw;
     overflow-y: auto;
+    height: 100vh;
   }
 
   ::-webkit-scrollbar {
