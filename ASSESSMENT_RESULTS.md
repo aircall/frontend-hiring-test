@@ -2,6 +2,13 @@
 
 This pull request is divided into sections, following the tasks by the level of competencies suggested.
 
+1. [Jr. SE contributions](#001)
+2. [SE contributions](#002)
+3. [Sr. SE contributions](#003)
+4. [Staff SE contributions](#004)
+5. [Additional improvements added](#005)
+
+<a name="001"></a>
 #### Jr. SE contributions
 
 ##### Call list page
@@ -36,7 +43,7 @@ const handleOnPageSizeChange = (newPageSize: number): void => {
 //...
 ```
 
-5. **Demo**
+5. Demo
 
 ![](./assets/task001.gif)
 
@@ -85,16 +92,166 @@ const handleOnPageSizeChange = (newPageSize: number): void => {
 ###### Group calls
 
 1. Add a custom hook function to map and group the call entries by date.
+2. Import the custom hook function into the CallsList page and map the result set whenever a new response payload is received.
 
-> Noticed the calls are grouped by the day they occurred.
+> Noticed the calls are grouped by the day they occurred. **i.e.: Apr 4**
 
 ![](./assets/task003.png)
 
+<a name="002"></a>
 #### SE contributions
-...
 
+###### Logout feature
+###### Expiration token UX
+###### Unit tests
+
+The tool used to perform unit tests is **Jest**.
+
+Added several unit tests:
+- `dates.spec.ts` (Helper functions).
+- `useCallList.spec.ts` (Custom utils hook).
+- `CallsListFilters.spec.tsx` (Component).
+
+Output after running `yarn test`:
+
+![](./assets/task006.png)
+
+
+
+<a name="003"></a>
 #### Sr. SE contributions
+
+###### E2E test (Cypress)
+
+The tool selected to perform E2E tests is **Cypress**.
+
+**1. Scripts:**
+
+These scripts were added to project.
+
+```shell
+# Open Cypress config wizard, and its tool to monitor/execute/perform/etc. E2E tests
+> yarn cy:open
+
+# Execute only the E2E tests within the terminal window, (Make sure the project is running in parallel).
+> yarn cy:run
+
+# Starts the application and executes the E2E tests at terminal level (In-parallel)
+> yarn cy:test
+
+# # Starts the application and executes the Cypress tool (In-parallel)
+> yarn cy:e2e
+```
+
+**2. Environment variables:**
+
+To ease the E2E testing, we can provide the Cypress runner with some variables. We just need to **create a .env.e2e file at the project's root level**, and filling in the variables accordingly.
+
+| Env. variable      | Value                      |
+| ------------------ | -------------------------- |
+| APP_BASE_URL       | `http://localhost:3000` or another   |
+| AUTH_TOKEN_KEY     | <YOUR_AUTH_TOKEN_KEY>      |
+| REFRESH_TOKEN_KEY  | <YOUR_REFRESH_TOKEN_KEY>   |
+
+Then, we need to load them all using `dotenv`, as follows:
+
+```javascript
+/**
+ * @file
+ * cypress.config.ts
+ */
+
+import { defineConfig } from "cypress";
+import dotenv from 'dotenv';
+
+const env_e2e = dotenv.config({ path: '.env.e2e' }).parsed; // <--- Load environment variables here
+
+export default defineConfig({
+  e2e: {
+    setupNodeEvents(on, config) {
+      config.env = {
+        ...config.env,
+        ...env_e2e, // <--- Passing environment variables to he configs here
+    };
+
+    return config;
+    },
+  },
+});
+```
+Finally, we can use the variables within any spec file, as follows:
+
+```javascript
+/**
+ * @file
+ * WhateverTest.cy.ts
+ * 
+ * ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable.
+ */
+
+describe('Whatever test spec', () => {
+  // ...
+  it('Whatever test', () => {
+    // ...    
+  })
+  // ...
+})
+// ...
+```
+
+**3. Fixtures**
+
+We can use this kind of files to set dummy data to beused accross our tests.
+
+```javascript
+/**
+ * @file
+ * <rootDir>/cypress/fixtures/examples.json
+ * 1. Defining our dummy data...
+ */
+
+{
+  "login": {
+    "username": "hello@cypress.io",
+    "password": "12345"
+  }
+}
+
+/**
+ * @file
+ * Whatever.cy.ts
+ * 2. Using it in any spec test...
+ */
+
+import fixtures from '../fixtures/example.json';
+//..
+```
+
+
+
+**4. Demo**
+
+4.1. `yarn cy:run` command output.
+
+![](./assets/task007_cy_run.png)
+
+4.2. Cypress E2E tets in action.
+
+![](./assets/task007.gif)
+
+
+
+###### Archive call feature
+...
+###### Sync tabs after archiving a call (Real-time support)
 ...
 
+<a name="004"></a>
 #### Staff SE contributions
+
+###### Release plan
+...
+
+<a name="005"></a>
+#### Additional improvements added
 ...
