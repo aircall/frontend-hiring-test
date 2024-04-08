@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Spacer, Grid, Flex, Select, Button, Typography } from '@aircall/tractor';
 
@@ -23,9 +23,18 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
 ): React.ReactElement => {
   const [search] = useSearchParams();
 
+  const defaultFilters = {
+    dateSort: search.getAll('dateSort') || [],
+    callTypesFilter: search.getAll('callTypes') || []
+  };
+
   const { onApplyFilters, onResetFilters } = props;
-  const [dateSortFilter, setDateSortFilter] = useState<SortType[]>([]);
-  const [callTypesFilter, setCallTypesFilter] = useState<CallType[]>([]);
+  const [dateSortFilter, setDateSortFilter] = useState<SortType[]>(
+    defaultFilters.dateSort as unknown as SortType[]
+  );
+  const [callTypesFilter, setCallTypesFilter] = useState<CallType[]>(
+    defaultFilters.callTypesFilter as unknown as CallType[]
+  );
 
   const handleOnApplyFilters = (): void => {
     const [dateSort] = dateSortFilter;
@@ -38,14 +47,13 @@ const CallsListFilters: React.FC<CallsListFiltersProps> = (
 
   const handleOnClearFilters = (): void => {
     setCallTypesFilter([]);
-    setDateSortFilter(['asc']);
+    setDateSortFilter([]);
     onResetFilters();
   };
 
   useEffect(() => {
-    setCallTypesFilter((search.getAll('callTypes') as unknown as CallType[]) || []);
-    setDateSortFilter((search.getAll('dateSort') as unknown as SortType[]) || []);
-  }, [search]);
+    handleOnApplyFilters();
+  }, []);
 
   return (
     <>

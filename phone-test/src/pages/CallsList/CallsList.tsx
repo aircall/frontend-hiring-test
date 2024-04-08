@@ -57,8 +57,13 @@ export const CallsListPage = () => {
   const callsToBeRendered = mapCallDataByCreationDate(filteredCalls);
 
   const applyFilters = (filtersToApply: CallListFilter): void => {
-    setFilters(filtersToApply);
-    setSearch(prevSearch => ({ ...Object.fromEntries(prevSearch), ...filtersToApply }));
+    const sanitizedFilters = { ...filtersToApply } as Record<PropertyKey, string>;
+    Object.keys(sanitizedFilters).forEach(
+      key => sanitizedFilters[key] === undefined && delete sanitizedFilters[key]
+    );
+
+    setFilters(sanitizedFilters);
+    setSearch(prevSearch => ({ ...Object.fromEntries(prevSearch), ...sanitizedFilters }));
   };
 
   const resetFilters = (): void => {
@@ -102,6 +107,11 @@ export const CallsListPage = () => {
       </Spacer>
       <Typography variant="caption">Calls</Typography>
       <Spacer space={3} direction="vertical">
+        {Object.entries(callsToBeRendered!).length === 0 && (
+          <Typography p={20} variant="displayS" textAlign="center">
+            No calls found
+          </Typography>
+        )}
         {Object.entries(callsToBeRendered!).map(([date, callsByDate], index) => {
           const formattedDate = formatDate(date, 'LLL d');
           return (
