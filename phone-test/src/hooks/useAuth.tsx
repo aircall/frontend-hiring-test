@@ -10,12 +10,14 @@ import { AUTH_CONFIG } from '../services/auth/authConfig';
 interface AuthContextInterface {
   login: (credentials: { username: string; password: string }) => void;
   logout: () => void;
+  checkIsLoggedIn: () => boolean;
   user: UserType | undefined;
 }
 
 const AuthContext = createContext<AuthContextInterface>({
   login: (credentials: { username: string; password: string }) => {},
   logout: () => {},
+  checkIsLoggedIn: () => false,
   user: undefined
 });
 
@@ -24,18 +26,17 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
+  const navigate = useNavigate();
   const { setApolloClient } = useApolloClient();
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useLocalStorage(AUTH_CONFIG.USER, undefined);
-  const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage(AUTH_CONFIG.AUTH_TOKEN_KEY, undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage(AUTH_CONFIG.REFRESH_TOKEN_KEY, undefined);
   const [loginMutation] = useMutation(LOGIN);
   const [refreshAuthTokenMutation] = useMutation(REFRESH_TOKEN_V2, {
     client: generateApolloClient(AUTH_CONFIG.REFRESH_TOKEN_KEY)
   });
-  const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
   const login = useCallback(
@@ -74,8 +75,9 @@ export const AuthProvider = () => {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
+    setIsLoggedIn(false);
     navigate('/login', { replace: true });
-  }, [navigate, setAccessToken, setRefreshToken, setUser]);
+  }, [navigate, setAccessToken, setRefreshToken, setUser, setIsLoggedIn]);
 
   const isExpiredToken = (token: string): boolean => {
     if (typeof token !== 'string') return true;
@@ -106,16 +108,26 @@ export const AuthProvider = () => {
     }
   }, [logout, refreshAuthToken]);
 
+  const checkIsLoggedIn = useCallback((): boolean => {
+    return (
+      !!localStorage.getItem(AUTH_CONFIG.USER) &&
+      !!localStorage.getItem(AUTH_CONFIG.AUTH_TOKEN_KEY) &&
+      !!localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_KEY)
+    );
+  }, []);
+
   const value = useMemo(() => {
     return {
       login,
       logout,
+      checkIsLoggedIn,
       user
     };
-  }, [login, logout, user]);
+  }, [login, logout, user, checkIsLoggedIn]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timer;
+
     if (isLoggedIn) {
       intervalId = setInterval(checkAuthToken, AUTH_CONFIG.CHECK_AUTH_TOKEN_FREQUENCY);
     }
