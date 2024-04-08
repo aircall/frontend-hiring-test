@@ -1,4 +1,4 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
@@ -21,6 +21,7 @@ export const router = createBrowserRouter(
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
+      <Route path="/" element={<Navigate to="/login" replace />} />
     </Route>
   )
 );
