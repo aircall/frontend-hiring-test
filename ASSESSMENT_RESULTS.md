@@ -102,6 +102,26 @@ const handleOnPageSizeChange = (newPageSize: number): void => {
 #### SE contributions
 
 ###### Logout feature
+
+1. Include the `logout` function from the `useAuth` custom hook.
+2. Add a button to the `ProtectedLayout` component.
+
+```javascript
+/**
+ * @file
+ * ProtectedLayout.tsx
+ */
+// ...
+import { useAuth } from '../../hooks/useAuth';
+// ...
+const { logout } = useAuth();
+// ...
+<Button name="btn-logout" mode="link" onClick={logout}>
+  Logout
+</Button>
+// ...
+```
+
 ###### Expiration token UX
 ###### Unit tests
 
