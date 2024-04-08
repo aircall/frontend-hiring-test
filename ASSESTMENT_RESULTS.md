@@ -1,6 +1,6 @@
-# 👨‍🎨 Assestment results
+# 👨‍🎨 Assessment results
 
-This pull request is divided into several sections, following the tasks by the level of competencies suggested.
+This pull request is divided into sections, following the tasks by the level of competencies suggested.
 
 #### Jr. SE contributions
 
@@ -51,7 +51,7 @@ const handleOnPageSizeChange = (newPageSize: number): void => {
 
   ![](./assets/task002.png)
 
-3. Add ````handler functions```` to control when user applies/clears the filters, in order to emit/executes the callback operation(s) in the parent component.
+3. Add ````handler functions```` to control when the user applies/clears the filters, to emit/executes the callback operation(s) in the parent component.
 4. Develop a ````custom hook```` to extract logic from the component. (Filters and maps operations).
 4. Persist filters in the browser's address bar, so that we can paginate the list by keeping the filters, as follows:
 
@@ -59,9 +59,10 @@ const handleOnPageSizeChange = (newPageSize: number): void => {
 {__DOMAIN__}/calls/?filter=value&anotherFilter=anotherValue
 ````
 
-5. As the new component is intended to strictly work with the CallsList page, it's a good practice to follow this architectural pattern (Screamming).
+5. As the new component is intended to work with the CallsList page strictly, it's a good practice to follow this architectural pattern (Screaming).
 
-├── scr/
+```md
+├── src/
 │   ├── components/
 │   │   └── ...
 │   └── pages/
@@ -71,21 +72,19 @@ const handleOnPageSizeChange = (newPageSize: number): void => {
 │       │   ├── hooks/
 │       │   │   └── useCallLis.tsx
 │       │   └── types/
-│       │       └── CallsList.d.ts
+│       │   │   └── CallsList.d.ts
+│       │   ├── CallsList.tsx
 │       └── anotherPage/
 │           ├── ...
-│           └── ...
-
+```
 
 6. Demo
 
 ![](./assets/task002.gif)
 
-
-
 ###### Group calls
 
-1. Add custom hook function to map the calls entries and group them by date.
+1. Add a custom hook function to map and group the call entries by date.
 
 > Noticed the calls are grouped by the day they occurred.
 
