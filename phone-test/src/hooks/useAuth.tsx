@@ -4,17 +4,14 @@ import { useMutation } from '@apollo/client';
 import { LOGIN, REFRESH_TOKEN_V2 } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import useApolloClient from './useApolloClient';
-import generateApolloClient from '../helpers/apolloClient';
+import generateApolloClient from '../services/apollo/apolloClient';
+import { AUTH_CONFIG } from '../services/auth/authConfig';
 
 interface AuthContextInterface {
   login: (credentials: { username: string; password: string }) => void;
   logout: () => void;
   user: UserType | undefined;
 }
-
-// Interval frequency in ms...
-// TODO: (Suggestion) We could move this to an environment variable...
-const CHECK_AUTH_TOKEN_FREQUENCY = 60000;
 
 const AuthContext = createContext<AuthContextInterface>({
   login: (credentials: { username: string; password: string }) => {},
@@ -30,13 +27,13 @@ export const AuthProvider = () => {
   const { setApolloClient } = useApolloClient();
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [user, setUser] = useState<UserType | undefined>(undefined);
+  const [user, setUser] = useLocalStorage(AUTH_CONFIG.USER, undefined);
   const [status, setStatus] = useState('loading');
-  const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
-  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
+  const [accessToken, setAccessToken] = useLocalStorage(AUTH_CONFIG.AUTH_TOKEN_KEY, undefined);
+  const [refreshToken, setRefreshToken] = useLocalStorage(AUTH_CONFIG.REFRESH_TOKEN_KEY, undefined);
   const [loginMutation] = useMutation(LOGIN);
   const [refreshAuthTokenMutation] = useMutation(REFRESH_TOKEN_V2, {
-    client: generateApolloClient('refresh_token')
+    client: generateApolloClient(AUTH_CONFIG.REFRESH_TOKEN_KEY)
   });
   const navigate = useNavigate();
 
@@ -49,14 +46,14 @@ export const AuthProvider = () => {
           const { access_token, refresh_token, user } = login;
           setAccessToken(access_token);
           setRefreshToken(refresh_token);
-          setUser(user as UserType);
+          setUser(user);
           setIsLoggedIn(true);
           console.log('redirect to calls');
           navigate('/calls');
         }
       });
     },
-    [loginMutation, navigate, setAccessToken, setRefreshToken]
+    [loginMutation, navigate, setAccessToken, setRefreshToken, setUser]
   );
 
   // call this function to refresh the authToken
@@ -66,7 +63,7 @@ export const AuthProvider = () => {
         const { access_token, refresh_token } = refreshTokenV2;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
-        setApolloClient(generateApolloClient('refresh_token'));
+        setApolloClient(generateApolloClient(AUTH_CONFIG.REFRESH_TOKEN_KEY));
         console.log('auth token refresh');
       }
     });
@@ -76,8 +73,9 @@ export const AuthProvider = () => {
   const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
+    setUser(null);
     navigate('/login', { replace: true });
-  }, [navigate, setAccessToken, setRefreshToken]);
+  }, [navigate, setAccessToken, setRefreshToken, setUser]);
 
   const isExpiredToken = (token: string): boolean => {
     if (typeof token !== 'string') return true;
@@ -91,8 +89,10 @@ export const AuthProvider = () => {
 
   const checkAuthToken = useCallback(() => {
     console.log('checkAuthToken triggered');
-    const isAuthTokenExpired = isExpiredToken(localStorage.getItem('access_token')!);
-    const isRefreshTokenExpired = isExpiredToken(localStorage.getItem('refresh_token')!);
+    const isAuthTokenExpired = isExpiredToken(localStorage.getItem(AUTH_CONFIG.AUTH_TOKEN_KEY)!);
+    const isRefreshTokenExpired = isExpiredToken(
+      localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_KEY)!
+    );
 
     const shouldRefreshToken = isAuthTokenExpired && !isRefreshTokenExpired;
     const shouldLogout = isAuthTokenExpired && isRefreshTokenExpired;
@@ -117,7 +117,7 @@ export const AuthProvider = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timer;
     if (isLoggedIn) {
-      intervalId = setInterval(checkAuthToken, CHECK_AUTH_TOKEN_FREQUENCY);
+      intervalId = setInterval(checkAuthToken, AUTH_CONFIG.CHECK_AUTH_TOKEN_FREQUENCY);
     }
     return () => {
       clearInterval(intervalId);

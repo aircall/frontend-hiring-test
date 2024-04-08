@@ -1,7 +1,8 @@
-import { ApolloClient, InMemoryCache, createHttpLink, split } from '@apollo/client'
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, createHttpLink, split } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities';
 import { setContext } from '@apollo/client/link/context';
 import { WebSocketLink } from '@apollo/client/link/ws';
+import { APOLLO_CONFIG } from './apolloConfig'
 
 const getTokenGivenKey = (tokenKey: string): string => {
   const token = localStorage.getItem(tokenKey);
@@ -10,13 +11,13 @@ const getTokenGivenKey = (tokenKey: string): string => {
 }
 
 const httpLink = createHttpLink({
-  uri: 'https://frontend-test-api.aircall.dev/graphql'
+  uri: APOLLO_CONFIG.GQL_HTTP_URI
 });
 
 const wsLink = (tokenKey: string): WebSocketLink => {
   const token = getTokenGivenKey(tokenKey);
   return new WebSocketLink({
-    uri: 'wss://frontend-test-api.aircall.dev/websocket',
+    uri: APOLLO_CONFIG.GQL_WS_URI,
     options: {
       lazy: true,
       reconnect: true,
@@ -28,7 +29,7 @@ const wsLink = (tokenKey: string): WebSocketLink => {
   });
 };
 
-const generateApolloClient = (tokenKey: string) => {
+const generateApolloClient = (tokenKey: string): ApolloClient<NormalizedCacheObject> => {
     
   const authLink = setContext((_, { headers }) => {
     return {

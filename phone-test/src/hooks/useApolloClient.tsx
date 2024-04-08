@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { ApolloClient } from '@apollo/client';
-import generateApolloClient from '../helpers/apolloClient';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import generateApolloClient from '../services/apollo/apolloClient';
+import { AUTH_CONFIG } from '../services/auth/authConfig';
 
-const useApolloClient = () => {
-  const [apolloClient, setApolloClient] = useState<ApolloClient<any>>();
+const useApolloClient = (tokenKey?: string) => {
+  const [apolloClient, setApolloClient] = useState<ApolloClient<NormalizedCacheObject>>();
 
   useEffect(() => {
-    setApolloClient(generateApolloClient('access_token'));
-  }, []);
+    setApolloClient(generateApolloClient(tokenKey || AUTH_CONFIG.AUTH_TOKEN_KEY));
+  }, [tokenKey]);
 
   return {
     apolloClient,

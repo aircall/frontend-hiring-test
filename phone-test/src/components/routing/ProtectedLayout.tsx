@@ -1,10 +1,13 @@
 import { Outlet, Link } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid, Button } from '@aircall/tractor';
+import { AUTH_CONFIG } from '../../services/auth/authConfig';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useAuth } from '../../hooks/useAuth';
 import logo from '../../logo.png';
 
 export const ProtectedLayout = () => {
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
+  const [user] = useLocalStorage(AUTH_CONFIG.USER, undefined);
 
   return (
     <Box minWidth="100vh" p={4}>
