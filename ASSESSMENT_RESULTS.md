@@ -189,7 +189,7 @@ Finally, we can use the variables within any spec file, as follows:
 
 describe('Whatever test spec', () => {
   it('Whatever test', () => {
-    const appBaseURL = ${Cypress.env('APP_BASE_URL')} // <--- Example on how to use an environment variable (i.e.: At test level).
+    const appBaseURL = Cypress.env('APP_BASE_URL') // <--- Example on how to use an environment variable (i.e.: At test level).
     // ...
   });
 });
