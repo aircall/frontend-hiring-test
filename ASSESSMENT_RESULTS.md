@@ -458,7 +458,44 @@ useEffect(() => {
 #### Staff SE contributions
 
 ###### Release plan
-...
+
+> Noticed that depending on the CI/CD pipeline chosen, the deployment process may vary.
+
+**Contributors process (Brief considerations):**
+
+1. Set a well-documented policy to let others know how to be capable of perfoming a deployment to production.
+  **- Some considerations (Defining an ideal time-frame):**
+    - App traffic (data/resource usage).
+    - User concurrence.
+    - Peak hours of usage.
+    - Others.
+      
+2. Each developer should be able to perform a deployment to production, either on demand or by leveraging it to any automatic process already stablished.
+  **- Some considerations:**
+    - PRs should be reviewed and approved by 2~3 contributors, also by the code owners(s) (If applicable).
+    - Prior to merge to any productive branch we need to **tag the release**.
+    - Keep an **user-readable-friendly Changelog**.
+    - Others.
+3. Teams should be aware of any deploy to production (Using any communication tool.- automated messages for instance).
+
+**Deployment process (Brief considerations):**
+
+1. Each deployment should include a:
+  - Release to any test environment. (QA or similars).
+  - Release to any sandbox environment. (Production-like environment).
+  - Any other pre-production environment.
+  - Others (Test feature flags, A/B testing, etc.).
+
+2. Prior to any deployment, tests should be addressed (Coverage, Linters, Health checks, environment variables, external libraries/dependencies, others.).
+3. Automatic rollbacks should be implemented if any failure occurs.
+4. Zero-downtime deploys should be implemented.
+5. Others.
+
+
+
+
+
+
 
 <a name="005"></a>
 #### Additional improvements added
