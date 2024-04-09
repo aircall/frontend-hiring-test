@@ -19,7 +19,6 @@ This pull request is divided into sections, following the tasks by the level of 
 3. Add a handler function to control when the user changes the page size and reflect the change in the UI by setting the value ```callsPerPage``` accordingly.
 4. Provide the ```Pagination``` component with the proper props/values/handlers.
 
-
 ```javascript
 
 /**
@@ -186,7 +185,7 @@ const checkAuthToken = useCallback(() => {
 ```
 
 4. Both methods will be appended to the **useAuth.tsx** custom hook which contains the **AuthProvider** definition.
-5. Then, we initialize an **interval** who will checks for the validation of the token periodically. (Given the auth token frequency parameter).
+5. Then, we initialize an **interval** that will check for the validation of the token periodically. (Given the auth token frequency parameter).
 
 ```javascript
   useEffect(() => {
@@ -213,7 +212,6 @@ Added several unit tests:
 Output after running `yarn test`:
 
 ![](./assets/task006.png)
-
 
 
 <a name="003"></a>
@@ -452,7 +450,7 @@ useEffect(() => {
 
 ![](./assets/task008.gif)
 
-5. Afterwards, any change made to the application will be reflected across the other browser's tabs opened at the same section.
+5. Afterwards, any change made to the application will be reflected across the other browser's tabs opened in the same section.
 
 <a name="004"></a>
 #### Staff SE contributions
@@ -463,39 +461,33 @@ useEffect(() => {
 
 **Contributors process (Brief considerations):**
 
-1. Set a well-documented policy to let others know how to be capable of perfoming a deployment to production.
-  **- Some considerations (Defining an ideal time-frame):**
+1. Set a well-documented policy to let others know how to be capable of performing a deployment to production.
+  **- Some considerations (Defining an ideal time frame):**
     - App traffic (data/resource usage).
     - User concurrence.
     - Peak hours of usage.
     - Others.
       
-2. Each developer should be able to perform a deployment to production, either on demand or by leveraging it to any automatic process already stablished.
+2. Each developer should be able to perform a deployment to production, either on demand or by leveraging it to any automatic process already established.
   **- Some considerations:**
     - PRs should be reviewed and approved by 2~3 contributors, also by the code owners(s) (If applicable).
-    - Prior to merge to any productive branch we need to **tag the release**.
+    - Before merging to any productive branch we need to **tag the release**.
     - Keep an **user-readable-friendly Changelog**.
     - Others.
-3. Teams should be aware of any deploy to production (Using any communication tool.- automated messages for instance).
+3. Teams should be aware of any deployment to production (Using any communication tool.- automated messages for instance).
 
 **Deployment process (Brief considerations):**
 
 1. Each deployment should include a:
-  - Release to any test environment. (QA or similars).
+  - Release to any test environment. (QA or similar).
   - Release to any sandbox environment. (Production-like environment).
   - Any other pre-production environment.
   - Others (Test feature flags, A/B testing, etc.).
 
-2. Prior to any deployment, tests should be addressed (Coverage, Linters, Health checks, environment variables, external libraries/dependencies, others.).
+2. Before any deployment, tests should be addressed (Coverage, Linters, Health checks, environment variables, external libraries/dependencies, others.).
 3. Automatic rollbacks should be implemented if any failure occurs.
-4. Zero-downtime deploys should be implemented.
+4. Zero downtime deployments should be implemented.
 5. Others.
-
-
-
-
-
-
 
 <a name="005"></a>
 #### Additional improvements added
