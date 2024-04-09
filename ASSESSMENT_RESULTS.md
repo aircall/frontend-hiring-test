@@ -123,6 +123,84 @@ const { logout } = useAuth();
 ```
 
 ###### Expiration token UX
+
+1. Add the `refresh token mutation` to the **gql/mutations** folder.
+
+```javascript
+import { gql } from '@apollo/client';
+import { USER_FIELDS } from '../fragments/user';
+
+export const REFRESH_TOKEN_V2 = gql`
+  ${USER_FIELDS}
+
+  mutation RefreshTokenV2 {
+    refreshTokenV2 {
+      access_token
+      refresh_token
+      user {
+        ...UserFields
+      }
+    }
+  }
+`;
+```
+
+2. Add a `checkAuthToken` method to check whether the token is expired or not. On top of this implementation, we will need to add the `refreshAuthToken` method.
+
+- If **access_token** is expired but the **refresh_token** does not, the `refreshAuthToken` will be executed.
+- If both, **access_token** and **refresh_token** are expired, then execute the `logout` method. (User will be automatically redirected to the Login page).
+
+```javascript
+const checkAuthToken = useCallback(() => {
+  console.log('checkAuthToken triggered');
+  const isAuthTokenExpired = isExpiredToken(localStorage.getItem(AUTH_CONFIG.AUTH_TOKEN_KEY)!);
+  const isRefreshTokenExpired = isExpiredToken(
+    localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_KEY)!
+  );
+
+  const shouldRefreshToken = isAuthTokenExpired && !isRefreshTokenExpired;
+  const shouldLogout = isAuthTokenExpired && isRefreshTokenExpired;
+
+  if (shouldRefreshToken) {
+    refreshAuthToken();
+  } else if (shouldLogout) {
+    logout();
+  } else {
+    return;
+  }
+}, [logout, refreshAuthToken]);
+```
+
+3. Also, add the `isExpiredToken` method.
+
+```javascript
+  const isExpiredToken = (token: string): boolean => {
+    if (typeof token !== 'string') return true;
+
+    const tokenChunks = token.split('.');
+    const [, rawExpiration] = tokenChunks;
+
+    const decodedJWTToken = JSON.parse(window.atob(rawExpiration));
+    return Date.now() > decodedJWTToken.exp * 1000;
+  };
+```
+
+4. Both methods will be appended to the **useAuth.tsx** custom hook which contains the **AuthProvider** definition.
+5. Then, we initialize an **interval** who will checks for the validation of the token periodically. (Given the auth token frequency parameter).
+
+```javascript
+  useEffect(() => {
+    let intervalId: NodeJS.Timer;
+
+    if (isLoggedIn) {
+      intervalId = setInterval(checkAuthToken, AUTH_CONFIG.CHECK_AUTH_TOKEN_FREQUENCY);
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isLoggedIn, checkAuthToken]);
+```
+
 ###### Unit tests
 
 The tool used to perform unit tests is **Jest**.
