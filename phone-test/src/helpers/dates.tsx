@@ -1,6 +1,10 @@
 import { format, isValid, parseISO } from 'date-fns';
 
 export const formatDuration = (duration: number) => {
+  if (typeof duration !== 'number') {
+    throw RangeError('Duration argument is not a valid number to be considered');
+  }
+
   if (duration >= 3600) {
     // 600 seconds 👉️ "00:10:00" (hh:mm:ss)
     return new Date(duration * 1000).toISOString().slice(11, 19);
@@ -29,6 +33,6 @@ const getValidDate = (date: Date | string) => {
  * @param date ex: 2022-11-16T13:37:05.822Z
  * @returns human readable date
  */
-export const formatDate = (date: string) => {
-  return format(getValidDate(date), 'LLL d - HH:mm');
+export const formatDate = (date: string, formatPattern = 'LLL d - HH:mm') => {
+  return format(getValidDate(date), formatPattern);
 };

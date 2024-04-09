@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 
@@ -13,7 +12,6 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
-  const navigate = useNavigate();
 
   const onSubmit = async (email: string, password: string) => {
     try {
@@ -31,7 +29,16 @@ export const LoginPage = () => {
   };
 
   return (
-    <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5}>
+    <Spacer
+      p={5}
+      h="100%"
+      w="50ch"
+      maxWidth="120ch"
+      direction="vertical"
+      justifyContent="center"
+      fluid
+      space={5}
+    >
       <Flex alignItems="center">
         <Icon component={LogoMarkMono} size={60} mx="auto" />
       </Flex>

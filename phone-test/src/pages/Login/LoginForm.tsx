@@ -35,6 +35,8 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
             placeholder="job@aircall.io"
             value={email}
             onChange={e => setEmail(e.target.value)}
+            data-cy="email"
+            required
           />
         </FormItem>
         <FormItem label="Password" name="password">
@@ -42,10 +44,12 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            data-cy="password"
+            required
           />
         </FormItem>
         <FormItem>
-          <Button block type="submit">
+          <Button block type="submit" data-cy="btn-submit">
             {formState === 'Pending' ? <Icon component={SpinnerOutlined} spin /> : 'Login'}
           </Button>
         </FormItem>
