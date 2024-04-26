@@ -1,3 +1,5 @@
+import {useState} from 'react';
+
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
@@ -23,7 +25,7 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 15;
+const CALLS_PER_PAGE = 5;
 
 export const CallsListPage = () => {
   const [search] = useSearchParams();
@@ -37,6 +39,8 @@ export const CallsListPage = () => {
     }
     // onCompleted: () => handleRefreshToken(),
   });
+
+  const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
@@ -53,6 +57,8 @@ export const CallsListPage = () => {
   };
 
   // figure out how to force card width to conform to wrapper
+  // really hate the jump we get while we're loading data
+  // beware of key props
 
   return (
     <>
@@ -123,9 +129,14 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={selectedCallPerPage}
             onPageChange={handlePageChange}
             recordsTotalCount={totalCount}
+            onPageSizeChange={(callsPerPage) => {
+              console.log(`output from page size change: ${callsPerPage}`);
+              setSelectedCallPerPage(callsPerPage)
+            }
+            }
           />
         </PaginationWrapper>
       )}
