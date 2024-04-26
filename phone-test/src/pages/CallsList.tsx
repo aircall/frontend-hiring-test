@@ -23,7 +23,7 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
+const CALLS_PER_PAGE = 15;
 
 export const CallsListPage = () => {
   const [search] = useSearchParams();
@@ -52,63 +52,72 @@ export const CallsListPage = () => {
     navigate(`/calls/?page=${page}`);
   };
 
+  // figure out how to force card width to conform to wrapper
+
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
-      <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
-          const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-          const title =
-            call.call_type === 'missed'
-              ? 'Missed call'
-              : call.call_type === 'answered'
-              ? 'Call answered'
-              : 'Voicemail';
-          const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-          const duration = formatDuration(call.duration / 1000);
-          const date = formatDate(call.created_at);
-          const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+      <div style={{ 
+        // background: 'red', 
+        height: '70vh', overflow: 'auto' }}>
+        <Spacer space={3} direction="vertical">
+          {calls.map((call: Call) => {
+            const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
+            const title =
+              call.call_type === 'missed'
+                ? 'Missed call'
+                : call.call_type === 'answered'
+                ? 'Call answered'
+                : 'Voicemail';
+            const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
+            const duration = formatDuration(call.duration / 1000);
+            const date = formatDate(call.created_at);
+            const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
 
-          return (
-            <Box
-              key={call.id}
-              bg="black-a30"
-              borderRadius={16}
-              cursor="pointer"
-              onClick={() => handleCallOnClick(call.id)}
-            >
-              <Grid
-                gridTemplateColumns="32px 1fr max-content"
-                columnGap={2}
-                borderBottom="1px solid"
-                borderBottomColor="neutral-700"
-                alignItems="center"
-                px={4}
-                py={2}
+            return (
+              <Box
+                //  width="1"
+                minWidth="1"
+                key={call.id}
+                bg="black-a30"
+                borderRadius={16}
+                cursor="pointer"
+                onClick={() => handleCallOnClick(call.id)}
               >
-                <Box>
-                  <Icon component={icon} size={32} />
+                <Grid
+                  gridTemplateColumns="32px 1fr max-content"
+                  columnGap={2}
+                  borderBottom="1px solid"
+                  borderBottomColor="neutral-700"
+                  alignItems="center"
+                  px={4}
+                  py={2}
+                  // background={'blue'}
+                >
+                  <Box>
+                    <Icon component={icon} size={32} />
+                  </Box>
+                  <Box>
+                    <Typography variant="body">{title}</Typography>
+                    <Typography variant="body2">{subtitle}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" textAlign="right">
+                      {duration}
+                    </Typography>
+                    <Typography variant="caption">{date}</Typography>
+                  </Box>
+                </Grid>
+                <Box px={4} py={2}>
+                  <Typography variant="caption">{notes}</Typography>
                 </Box>
-                <Box>
-                  <Typography variant="body">{title}</Typography>
-                  <Typography variant="body2">{subtitle}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" textAlign="right">
-                    {duration}
-                  </Typography>
-                  <Typography variant="caption">{date}</Typography>
-                </Box>
-              </Grid>
-              <Box px={4} py={2}>
-                <Typography variant="caption">{notes}</Typography>
               </Box>
-            </Box>
-          );
-        })}
-      </Spacer>
+            );
+          })}
+        </Spacer>
+      </div>
 
       {totalCount && (
         <PaginationWrapper>
