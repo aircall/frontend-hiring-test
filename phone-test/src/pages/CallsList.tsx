@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {useState, useEffect} from 'react';
 
 import { useQuery } from '@apollo/client';
@@ -36,20 +37,35 @@ export const CallsListPage = () => {
   // const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
 
   const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
+  const [callTypeFilter, setCallTypeFilter] = useState('');
+  const [directionFilter, setDirectionFilter] = useState('inbound');
+
+  // need to update schema on server SIDE_OPTIONS. This not being possible need to filter the 
+  // calls locally.
 
   const { loading, error, data, refetch } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * selectedCallPerPage,
-      limit: selectedCallPerPage
+      limit: selectedCallPerPage,
+      callType: callTypeFilter,
+      direction: directionFilter
     }
   });
 
+  const [callTypes, setCallTypes] = useState([]);
+
   useEffect(() => {
-    refetch({
-      offset: (activePage - 1) * selectedCallPerPage,
-      limit: selectedCallPerPage
-    });
-  }, [activePage, selectedCallPerPage, refetch]);
+
+  },[])
+
+  // useEffect(() => {
+  //   refetch({
+  //     offset: (activePage - 1) * selectedCallPerPage,
+  //     limit: selectedCallPerPage,
+  //     callType: callTypeFilter,
+  //     direction: directionFilter
+  //   });
+  // }, [activePage, selectedCallPerPage, refetch, callTypeFilter, directionFilter]);
 
   // const { loading, error, data } = useQuery(PAGINATED_CALLS, {
   //   variables: {
@@ -59,6 +75,26 @@ export const CallsListPage = () => {
   //   // onCompleted: () => handleRefreshToken(),
   // });
 
+  
+  
+
+  const filterCallTypes = (calls: Call[]) => {
+    return calls.filter(call => {
+      // return !direction || call.direction === direction
+      return call.call_type;
+    });
+  };
+
+  const filterCalls = (calls: Call[], callType?: string, direction?: string) => {
+    if (!calls) return [];
+    debugger;
+    return calls.filter(call => {
+      // return !direction || call.direction === direction
+      return (!callType || call.call_type === callType) &&
+             (!direction || call.direction === direction);
+    });
+  };
+
 
 
   if (loading) return <p>Loading calls...</p>;
@@ -66,6 +102,14 @@ export const CallsListPage = () => {
   if (!data) return <p>Not found</p>;
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
+
+  // const uniqueCallTypes: string[] = Array.from(new Set(calls.map(call => call.call_type)));
+  
+
+  // const filteredCalls = filterCalls(data.paginatedCalls.nodes, 'voicemail',);
+  // const filteredCalls = filterCalls(data.paginatedCalls.nodes, 'voicemail', 'inbound');
+
+  // console.log({filteredCalls})
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -78,6 +122,12 @@ export const CallsListPage = () => {
   // figure out how to force card width to conform to wrapper
   // really hate the jump we get while we're loading data
   // beware of key props
+
+  // ToDo: implement filter & hide pagination display if there's no need for it
+
+  // const filteredCallTypes = filterCallTypes(data.paginatedCalls.nodes);
+
+  // console.log({uniqueCallTypes})
 
   return (
     <>
