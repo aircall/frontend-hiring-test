@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
@@ -32,15 +32,34 @@ export const CallsListPage = () => {
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
-    variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
-    }
-    // onCompleted: () => handleRefreshToken(),
-  });
+
+  // const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
 
   const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
+
+  const { loading, error, data, refetch } = useQuery(PAGINATED_CALLS, {
+    variables: {
+      offset: (activePage - 1) * selectedCallPerPage,
+      limit: selectedCallPerPage
+    }
+  });
+
+  useEffect(() => {
+    refetch({
+      offset: (activePage - 1) * selectedCallPerPage,
+      limit: selectedCallPerPage
+    });
+  }, [activePage, selectedCallPerPage, refetch]);
+
+  // const { loading, error, data } = useQuery(PAGINATED_CALLS, {
+  //   variables: {
+  //     offset: (activePage - 1) * CALLS_PER_PAGE,
+  //     limit: CALLS_PER_PAGE
+  //   }
+  //   // onCompleted: () => handleRefreshToken(),
+  // });
+
+
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
