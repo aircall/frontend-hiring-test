@@ -30,8 +30,9 @@ export const LoginPage = () => {
     }
   };
 
+  // ensure that this still works in mobile viewports
   return (
-    <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5}>
+    <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5} maxWidth={540}>
       <Flex alignItems="center">
         <Icon component={LogoMarkMono} size={60} mx="auto" />
       </Flex>
