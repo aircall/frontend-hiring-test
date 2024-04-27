@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getValidDate } from '../helpers/dates';
 
 export const typeFilterOptions = [
-  { label: 'All', value: '' },
+  // { label: 'All', value: '' },
   { label: 'Answered', value: 'answered' },
   { label: 'Missed', value: 'missed' },
   { label: 'Voicemail', value: 'voicemail' }
@@ -68,7 +68,7 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
-  console.log({calls})
+  console.log({callTypeFilter})
 
   const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
 
@@ -95,6 +95,7 @@ export const CallsListPage = () => {
   // };
 
   console.log({selectedCallPerPage, paginatedCalls, sortedAndFilteredCallsList})
+  console.log({directionFilter})
 
   return (
     <>
@@ -184,13 +185,15 @@ export const CallsListPage = () => {
 
 function filterCalls(calls: Call[], callType?: string, direction?: string): Call[] {
   if (!calls) return [];
+  // debugger;
   return calls.filter(call => (
-    (!callType || callType === '' || call.call_type === callType) &&
+    
+    (!callType || callType.length === 0 || callType.includes(call.call_type)) &&
     (!direction || direction === '' || call.direction === direction)
   ));
 }
 
 function paginate(array: any[], pageSize: number, pageNumber: number): any[] {
-  debugger;
+  // debugger;
   return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 }
