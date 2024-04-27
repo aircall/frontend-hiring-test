@@ -14,8 +14,35 @@ import {
   DiagonalUpOutlined,
   Pagination
 } from '@aircall/tractor';
+import {  Form, FormItem, Select } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
+export const typeFilterOptions = [
+  {
+    label: 'Answered',
+    value: 'answered'
+  },
+  {
+    label: 'Missed',
+    value: 'missed'
+  },
+  {
+    label: 'Voicemail',
+    value: 'voicemail'
+  }
+];
+
+export const directionFilterOptions = [
+  {
+    label: 'Inbound',
+    value: 'inbound'
+  },
+  {
+    label: 'Outbound',
+    value: 'outbound'
+  }
+];
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -134,10 +161,43 @@ export const CallsListPage = () => {
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
+      <Form>
+      <Spacer
+        fluid={true}
+        space={3}
+        direction="horizontal"
+        justifyContent="stretch"
+        itemsSized="evenly-sized"
+      >
+        <FormItem label="Call Type">
+          <Select
+            takeTriggerWidth={true}
+            placeholder="All"
+            selectionMode="multiple"
+            size="regular"
+            options={typeFilterOptions}
+            onSelectionChange={currentSelectedKeys => {
+              handleFilterChange('type', currentSelectedKeys.join(','));
+            }}
+          />
+        </FormItem>
+        <FormItem label="Call Direction">
+          <Select
+            takeTriggerWidth={true}
+            placeholder="All"
+            size="regular"
+            options={directionFilterOptions}
+            onSelectionChange={currentSelectedKeys =>
+              handleFilterChange('direction', currentSelectedKeys[0] as string)
+            }
+          />
+        </FormItem>
+      </Spacer>
+    </Form>
       <div style={{ 
         // background: 'red', 
         height: '70vh', overflow: 'auto' }}>
-        <Spacer space={3} direction="vertical">
+        <Spacer space={3} direction="vertical" fluid>
           {calls.map((call: Call) => {
             const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
             const title =
