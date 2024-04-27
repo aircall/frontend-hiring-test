@@ -17,7 +17,7 @@ export const typeFilterOptions = [
 ];
 
 export const directionFilterOptions = [
-  // { label: 'All', value: '' },
+  { label: 'All', value: '' },
   { label: 'Inbound', value: 'inbound' },
   { label: 'Outbound', value: 'outbound' }
 ];
@@ -50,6 +50,7 @@ export const CallsListPage = () => {
   const [callTypeFilter, setCallTypeFilter] = useState(['all']);
   const [directionFilter, setDirectionFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -61,6 +62,14 @@ export const CallsListPage = () => {
   useEffect(() => {
     setCurrentPage(activePage);
   }, [activePage]);
+
+  useEffect(() => {
+    if (data) {
+      const { totalCount, nodes: calls } = data.paginatedCalls;
+      const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
+      setTotalFilteredCalls(filteredCalls.length);
+    }
+  }, [data, callTypeFilter, directionFilter]);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
@@ -168,14 +177,16 @@ export const CallsListPage = () => {
           })}
         </Spacer>
       </div>
-      {totalCount && (
+      {totalFilteredCalls > 0 &&(
+      // {totalCount && (
         <PaginationWrapper>
           <Pagination
             activePage={currentPage}
             pageSize={selectedCallPerPage}
             pageSizeOptions={pageSizeOptions}
             onPageChange={handlePageChange}
-            recordsTotalCount={totalCount}
+            // recordsTotalCount={totalCount}
+            recordsTotalCount={totalFilteredCalls}
             onPageSizeChange={(callsPerPage) => setSelectedCallPerPage(callsPerPage)}
           />
         </PaginationWrapper>
