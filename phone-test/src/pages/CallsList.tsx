@@ -87,7 +87,11 @@ export const CallsListPage = () => {
     return dateB - dateA;
   });
 
+  const groupedCalls = groupCallsByDay(sortedAndFilteredCallsList);
+
   const paginatedCalls = paginate(sortedAndFilteredCallsList, selectedCallPerPage, currentPage);
+
+  console.log({groupedCalls})
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -102,9 +106,6 @@ export const CallsListPage = () => {
   //   if (type === 'type') setCallTypeFilter(value);
   //   else if (type === 'direction') setDirectionFilter(value);
   // };
-
-  console.log({selectedCallPerPage, paginatedCalls, sortedAndFilteredCallsList})
-  console.log({directionFilter})
 
   return (
     <>
@@ -208,4 +209,16 @@ function filterCalls(calls: Call[], callType?: string, direction?: string): Call
 function paginate(array: any[], pageSize: number, pageNumber: number): any[] {
   // debugger;
   return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+}
+
+function groupCallsByDay(calls: Call[]): any[] {
+  const groupedCalls = calls.reduce((acc: any, call: Call) => {
+    const date = call.created_at.split('T')[0];
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(call);
+    return acc;
+  }, {});
+  return Object.keys(groupedCalls).map((date) => ({ date, calls: groupedCalls[date] }));
 }
