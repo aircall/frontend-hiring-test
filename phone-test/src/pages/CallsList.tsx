@@ -17,7 +17,7 @@ export const typeFilterOptions = [
 ];
 
 export const directionFilterOptions = [
-  { label: 'All', value: '' },
+  // { label: 'All', value: '' },
   { label: 'Inbound', value: 'inbound' },
   { label: 'Outbound', value: 'outbound' }
 ];
@@ -47,7 +47,7 @@ export const CallsListPage = () => {
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
 
   const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
-  const [callTypeFilter, setCallTypeFilter] = useState('');
+  const [callTypeFilter, setCallTypeFilter] = useState(['all']);
   const [directionFilter, setDirectionFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -107,6 +107,7 @@ export const CallsListPage = () => {
               takeTriggerWidth={true}
               placeholder="All"
               selectionMode="multiple"
+              defaultValue={['all']}
               size="regular"
               options={typeFilterOptions}
               onSelectionChange={(currentSelectedKeys) => setCallTypeFilter(currentSelectedKeys)}
@@ -187,8 +188,8 @@ function filterCalls(calls: Call[], callType?: string, direction?: string): Call
   if (!calls) return [];
   // debugger;
   return calls.filter(call => (
-    
-    (!callType || callType.length === 0 || callType.includes(call.call_type)) &&
+    (!callType || callType.length === 0 || (callType.length === 1 && callType[0] === 'all') || callType.includes(call.call_type)) &&
+    // (!callType || callType === 0 || callType.includes(call.call_type)) &&
     (!direction || direction === '' || call.direction === direction)
   ));
 }
