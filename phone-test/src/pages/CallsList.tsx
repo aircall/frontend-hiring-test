@@ -18,25 +18,11 @@ import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getValidDate } from '../helpers/dates';
 
-export const typeFilterOptions = [
-  // { label: 'All', value: '' },
-  { label: 'Answered', value: 'answered' },
-  { label: 'Missed', value: 'missed' },
-  { label: 'Voicemail', value: 'voicemail' }
-];
+import { typeFilterOptions, directionFilterOptions, pageSizeOptions } from './options';
 
-export const directionFilterOptions = [
-  { label: 'All', value: '' },
-  { label: 'Inbound', value: 'inbound' },
-  { label: 'Outbound', value: 'outbound' }
-];
+import { groupCallsByDate } from './options';
 
-const pageSizeOptions = [
-  { value: 5, label: '5' },
-  { value: 25, label: '25' },
-  { value: 50, label: '50' },
-  { value: 100, label: '100' }
-];
+import { CALLS_PER_PAGE } from './options';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -46,8 +32,6 @@ export const PaginationWrapper = styled.div`
     justify-content: center;
   }
 `;
-
-const CALLS_PER_PAGE = 5;
 
 export const CallsListPage = () => {
   const [search] = useSearchParams();
@@ -98,19 +82,6 @@ export const CallsListPage = () => {
     return dateB - dateA;
   });
 
-  const groupedCalls = groupCallsByDay(sortedAndFilteredCallsList);
-
-  // const paginatedCalls = paginate(sortedAndFilteredCallsList, selectedCallPerPage, currentPage);
-
-  // function groupCallsIntoPages(calls, pageSize) {
-  //   const pages = [];
-  //   for (let i = 0; i < calls.length; i += pageSize) {
-  //     const page = calls.slice(i, i + pageSize);
-  //     pages.push(page);
-  //   }
-  //   return pages;
-  // }
-
   function groupCallsIntoPages(calls, pageSize) {
     const pages = [];
     for (let i = 0; i < calls.length; i += pageSize) {
@@ -121,76 +92,14 @@ export const CallsListPage = () => {
     return pages;
   }
 
-  // function groupCallsByDate(calls) {
-  //   const groupedCalls = {};
-  //   calls.forEach(call => {
-  //     const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
-  //     if (!groupedCalls[date]) {
-  //       groupedCalls[date] = [];
-  //     }
-  //     groupedCalls[date].push(call);
-  //   });
-  //   return groupedCalls;
-  // }
 
-  function groupCallsByDate(calls) {
-    const groupedCalls = {};
-    calls.forEach(call => {
-      const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
-      if (!groupedCalls[date]) {
-        groupedCalls[date] = [];
-      }
-      groupedCalls[date].push(call);
-    });
 
-    // Sort the keys (dates) in descending order
-    const sortedDates = Object.keys(groupedCalls).sort((a, b) => {
-      // debugger;
-      return new Date(b) - new Date(a);
-    });
 
-    // Create a new object with sorted keys
-    const sortedGroupedCalls = {};
-    sortedDates.forEach(date => {
-      sortedGroupedCalls[date] = groupedCalls[date];
-    });
-
-    return sortedGroupedCalls;
-  }
-
-  // function groupCallsByDate(calls) {
-  //   const groupedCalls = {};
-  //   calls.forEach(call => {
-  //     const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
-  //     if (!groupedCalls[date]) {
-  //       groupedCalls[date] = [];
-  //     }
-  //     groupedCalls[date].push(call);
-  //   });
-
-  //   // Sort the keys (dates) in ascending order
-  //   const sortedDates = Object.keys(groupedCalls).sort();
-
-  //   // Create a new object with sorted keys
-  //   const sortedGroupedCalls = {};
-  //   sortedDates.forEach(date => {
-  //     sortedGroupedCalls[date] = groupedCalls[date];
-  //   });
-
-  //   return sortedGroupedCalls;
-  // }
 
   const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, selectedCallPerPage);
 
-  // const x = paginateGroupedCallsByDay
-  // paginateGroupedCallsByDay
-  // paginateArray
-
-  // const currPage = paginateArray(paginatedCalls, selectedCallPerPage, currentPage)
-
   const currPage = paginatedCalls[currentPage];
 
-  console.log({ paginatedCalls, currPage });
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -201,10 +110,6 @@ export const CallsListPage = () => {
     navigate(`/calls/?page=${page}`);
   };
 
-  // const handleFilterChange = (type: string, value: string) => {
-  //   if (type === 'type') setCallTypeFilter(value);
-  //   else if (type === 'direction') setDirectionFilter(value);
-  // };
 
   return (
     <>
