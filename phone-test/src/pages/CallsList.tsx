@@ -86,6 +86,8 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
+  console.log({totalFilteredCalls})
+
   console.log({ callTypeFilter });
 
   const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
@@ -305,7 +307,10 @@ export const CallsListPage = () => {
             onPageChange={handlePageChange}
             // recordsTotalCount={totalCount}
             recordsTotalCount={totalFilteredCalls}
-            onPageSizeChange={callsPerPage => setSelectedCallPerPage(callsPerPage)}
+            onPageSizeChange={callsPerPage => {
+              setSelectedCallPerPage(callsPerPage)
+              setCurrentPage(1)
+            }}
           />
         </PaginationWrapper>
       )}
