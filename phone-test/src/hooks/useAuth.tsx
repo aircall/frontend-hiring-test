@@ -18,6 +18,7 @@ export const AuthProvider = () => {
   const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
+  const [loggedInUser, setLoggedInUser] = useLocalStorage('logged_in_user', undefined);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
 
@@ -29,7 +30,9 @@ export const AuthProvider = () => {
         const { access_token, refresh_token, user } = login;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
+        setLoggedInUser(user);
         setUser(user);
+        // store user in storage
         console.log('redirect to calls');
         navigate('/calls');
       }

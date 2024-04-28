@@ -89,9 +89,94 @@ export const CallsListPage = () => {
 
   const groupedCalls = groupCallsByDay(sortedAndFilteredCallsList);
 
-  const paginatedCalls = paginate(sortedAndFilteredCallsList, selectedCallPerPage, currentPage);
+  // const paginatedCalls = paginate(sortedAndFilteredCallsList, selectedCallPerPage, currentPage);
 
-  console.log({groupedCalls})
+
+  // function groupCallsIntoPages(calls, pageSize) {
+  //   const pages = [];
+  //   for (let i = 0; i < calls.length; i += pageSize) {
+  //     const page = calls.slice(i, i + pageSize);
+  //     pages.push(page);
+  //   }
+  //   return pages;
+  // }
+
+  function groupCallsIntoPages(calls, pageSize) {
+    const pages = [];
+    for (let i = 0; i < calls.length; i += pageSize) {
+      const page = calls.slice(i, i + pageSize);
+      const groupedPage = groupCallsByDate(page);
+      pages.push(groupedPage);
+    }
+    return pages;
+  }
+  
+  // function groupCallsByDate(calls) {
+  //   const groupedCalls = {};
+  //   calls.forEach(call => {
+  //     const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
+  //     if (!groupedCalls[date]) {
+  //       groupedCalls[date] = [];
+  //     }
+  //     groupedCalls[date].push(call);
+  //   });
+  //   return groupedCalls;
+  // }
+
+
+  function groupCallsByDate(calls) {
+    const groupedCalls = {};
+    calls.forEach(call => {
+      const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
+      if (!groupedCalls[date]) {
+        groupedCalls[date] = [];
+      }
+      groupedCalls[date].push(call);
+    });
+    
+    // Sort the keys (dates) in descending order
+    const sortedDates = Object.keys(groupedCalls).sort((a, b) => new Date(b) - new Date(a));
+    
+    // Create a new object with sorted keys
+    const sortedGroupedCalls = {};
+    sortedDates.forEach(date => {
+      sortedGroupedCalls[date] = groupedCalls[date];
+    });
+    
+    return sortedGroupedCalls;
+  }
+
+  // function groupCallsByDate(calls) {
+  //   const groupedCalls = {};
+  //   calls.forEach(call => {
+  //     const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
+  //     if (!groupedCalls[date]) {
+  //       groupedCalls[date] = [];
+  //     }
+  //     groupedCalls[date].push(call);
+  //   });
+    
+  //   // Sort the keys (dates) in ascending order
+  //   const sortedDates = Object.keys(groupedCalls).sort();
+    
+  //   // Create a new object with sorted keys
+  //   const sortedGroupedCalls = {};
+  //   sortedDates.forEach(date => {
+  //     sortedGroupedCalls[date] = groupedCalls[date];
+  //   });
+    
+  //   return sortedGroupedCalls;
+  // }
+
+  const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, 5);
+  
+  // const x = paginateGroupedCallsByDay
+  // paginateGroupedCallsByDay
+  // paginateArray
+
+  console.log({paginatedCalls})
+
+  
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -136,7 +221,7 @@ export const CallsListPage = () => {
       </Form>
       <div style={{ height: '65vh', overflow: 'auto' }}>
         <Spacer space={3} direction="vertical" fluid>
-          {paginatedCalls.map((call: Call) => {
+          {/* {paginatedCalls.map((call: Call) => {
             const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
             const title = call.call_type === 'missed' ? 'Missed call' : call.call_type === 'answered' ? 'Call answered' : 'Voicemail';
             const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
@@ -175,7 +260,7 @@ export const CallsListPage = () => {
                 <Box px={4} py={2}><Typography variant="caption">{notes}</Typography></Box>
               </Box>
             );
-          })}
+          })} */}
         </Spacer>
       </div>
       {totalFilteredCalls > 0 &&(
@@ -222,3 +307,54 @@ function groupCallsByDay(calls: Call[]): any[] {
   }, {});
   return Object.keys(groupedCalls).map((date) => ({ date, calls: groupedCalls[date] }));
 }
+
+// function paginate(groupedCalls: { [key: string]: Call[] }, pageSize: number, pageNumber: number): { date: string, calls: Call[] }[] {
+//   const paginatedGroupedCalls = {};
+//   Object.entries(groupedCalls).forEach(([date, calls]) => {
+//     paginatedGroupedCalls[date] = paginateArray(calls, pageSize, pageNumber);
+//   });
+//   return Object.entries(paginatedGroupedCalls).map(([date, calls]) => ({ date, calls }));
+// }
+
+function paginateArray(array: any[], pageSize: number, pageNumber: number): any[] {
+  return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+}
+
+/** */
+
+// function groupCallsByDay(calls: Call[], pageSize: number, pageNumber: number): any[] {
+//   const groupedCallsByPage: any[] = [];
+  
+//   const groupedCallsByDay = calls.reduce((acc: any, call: Call) => {
+//     const date = call.created_at.split('T')[0];
+//     if (!acc[date]) {
+//       acc[date] = [];
+//     }
+//     acc[date].push(call);
+//     return acc;
+//   }, {});
+
+//   const paginatedGroupedCallsByDay = paginateGroupedCallsByDay(groupedCallsByDay, pageSize, pageNumber);
+
+//   paginatedGroupedCallsByDay.forEach((pageGroup) => {
+//     const { date, calls } = pageGroup;
+//     const paginatedCalls = paginateArray(calls, pageSize);
+//     paginatedCalls.forEach((pageCalls) => {
+//       groupedCallsByPage.push({ date, calls: pageCalls });
+//     });
+//   });
+
+//   return groupedCallsByPage;
+// }
+
+// function paginateGroupedCallsByDay(groupedCallsByDay: any, pageSize: number, pageNumber: number): any[] {
+//   const paginatedGroupedCallsByDay = Object.entries(groupedCallsByDay).map(([date, calls]) => {
+//     const paginatedCalls = paginateArray(calls, pageSize * (pageNumber - 1), pageSize);
+//     return { date, calls: paginatedCalls };
+//   });
+//   return paginatedGroupedCallsByDay;
+// }
+
+// function paginateArray(array: any[], start: number, end?: number): any[] {
+//   return array.slice(start, end);
+// }
