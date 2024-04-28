@@ -3,7 +3,16 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import { Grid, Icon, Typography, Spacer, Box, DiagonalDownOutlined, DiagonalUpOutlined, Pagination } from '@aircall/tractor';
+import {
+  Grid,
+  Icon,
+  Typography,
+  Spacer,
+  Box,
+  DiagonalDownOutlined,
+  DiagonalUpOutlined,
+  Pagination
+} from '@aircall/tractor';
 import { Form, FormItem, Select } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -77,7 +86,7 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
-  console.log({callTypeFilter})
+  console.log({ callTypeFilter });
 
   const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
 
@@ -90,7 +99,6 @@ export const CallsListPage = () => {
   const groupedCalls = groupCallsByDay(sortedAndFilteredCallsList);
 
   // const paginatedCalls = paginate(sortedAndFilteredCallsList, selectedCallPerPage, currentPage);
-
 
   // function groupCallsIntoPages(calls, pageSize) {
   //   const pages = [];
@@ -110,7 +118,7 @@ export const CallsListPage = () => {
     }
     return pages;
   }
-  
+
   // function groupCallsByDate(calls) {
   //   const groupedCalls = {};
   //   calls.forEach(call => {
@@ -123,7 +131,6 @@ export const CallsListPage = () => {
   //   return groupedCalls;
   // }
 
-
   function groupCallsByDate(calls) {
     const groupedCalls = {};
     calls.forEach(call => {
@@ -133,16 +140,19 @@ export const CallsListPage = () => {
       }
       groupedCalls[date].push(call);
     });
-    
+
     // Sort the keys (dates) in descending order
-    const sortedDates = Object.keys(groupedCalls).sort((a, b) => new Date(b) - new Date(a));
-    
+    const sortedDates = Object.keys(groupedCalls).sort((a, b) => {
+      // debugger;
+      return new Date(b) - new Date(a);
+    });
+
     // Create a new object with sorted keys
     const sortedGroupedCalls = {};
     sortedDates.forEach(date => {
       sortedGroupedCalls[date] = groupedCalls[date];
     });
-    
+
     return sortedGroupedCalls;
   }
 
@@ -155,28 +165,30 @@ export const CallsListPage = () => {
   //     }
   //     groupedCalls[date].push(call);
   //   });
-    
+
   //   // Sort the keys (dates) in ascending order
   //   const sortedDates = Object.keys(groupedCalls).sort();
-    
+
   //   // Create a new object with sorted keys
   //   const sortedGroupedCalls = {};
   //   sortedDates.forEach(date => {
   //     sortedGroupedCalls[date] = groupedCalls[date];
   //   });
-    
+
   //   return sortedGroupedCalls;
   // }
 
-  const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, 5);
-  
+  const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, selectedCallPerPage);
+
   // const x = paginateGroupedCallsByDay
   // paginateGroupedCallsByDay
   // paginateArray
 
-  console.log({paginatedCalls})
+  // const currPage = paginateArray(paginatedCalls, selectedCallPerPage, currentPage)
 
-  
+  const currPage = paginatedCalls[currentPage];
+
+  console.log({ paginatedCalls, currPage });
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -194,9 +206,17 @@ export const CallsListPage = () => {
 
   return (
     <>
-      <Typography variant="displayM" textAlign="center" py={3}>Calls History</Typography>
+      <Typography variant="displayM" textAlign="center" py={3}>
+        Calls History
+      </Typography>
       <Form>
-        <Spacer fluid={true} space={3} direction="horizontal" justifyContent="stretch" itemsSized="evenly-sized">
+        <Spacer
+          fluid={true}
+          space={3}
+          direction="horizontal"
+          justifyContent="stretch"
+          itemsSized="evenly-sized"
+        >
           <FormItem label="Call Type">
             <Select
               takeTriggerWidth={true}
@@ -205,7 +225,7 @@ export const CallsListPage = () => {
               defaultValue={['all']}
               size="regular"
               options={typeFilterOptions}
-              onSelectionChange={(currentSelectedKeys) => setCallTypeFilter(currentSelectedKeys)}
+              onSelectionChange={currentSelectedKeys => setCallTypeFilter(currentSelectedKeys)}
             />
           </FormItem>
           <FormItem label="Call Direction">
@@ -214,57 +234,69 @@ export const CallsListPage = () => {
               placeholder="All"
               size="regular"
               options={directionFilterOptions}
-              onSelectionChange={(currentSelectedKeys) => setDirectionFilter(currentSelectedKeys[0])}
+              onSelectionChange={currentSelectedKeys => setDirectionFilter(currentSelectedKeys[0])}
             />
           </FormItem>
         </Spacer>
       </Form>
       <div style={{ height: '65vh', overflow: 'auto' }}>
         <Spacer space={3} direction="vertical" fluid>
-          {/* {paginatedCalls.map((call: Call) => {
-            const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-            const title = call.call_type === 'missed' ? 'Missed call' : call.call_type === 'answered' ? 'Call answered' : 'Voicemail';
-            const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-            const duration = formatDuration(call.duration / 1000);
-            const date = formatDate(call.created_at);
-            const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+          {
+            <div>
+              {Object.entries(currPage).map(([date, calls]) => (
+                <div key={date}>
+                  <h2>Date: {date}</h2>
+                  {
+                    calls.map(call => {
+                      const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
+                      const title = call.call_type === 'missed' ? 'Missed call' : call.call_type === 'answered' ? 'Call answered' : 'Voicemail';
+                      const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
+                      const duration = formatDuration(call.duration / 1000);
+                      const date = formatDate(call.created_at);
+                      const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+          
+                      return (
+                        <Box
+                          minWidth="1"
+                          key={call.id}
+                          bg="black-a30"
+                          borderRadius={16}
+                          cursor="pointer"
+                          onClick={() => handleCallOnClick(call.id)}
+                        >
+                          <Grid
+                            gridTemplateColumns="32px 1fr max-content"
+                            columnGap={2}
+                            borderBottom="1px solid"
+                            borderBottomColor="neutral-700"
+                            alignItems="center"
+                            px={4}
+                            py={2}
+                          >
+                            <Box><Icon component={icon} size={32} /></Box>
+                            <Box>
+                              <Typography variant="body">{title}</Typography>
+                              <Typography variant="body2">{subtitle}</Typography>
+                            </Box>
+                            <Box>
+                              <Typography variant="caption" textAlign="right">{duration}</Typography>
+                              <Typography variant="caption">{date}</Typography>
+                            </Box>
+                          </Grid>
+                          <Box px={4} py={2}><Typography variant="caption">{notes}</Typography></Box>
+                        </Box>
+                      );
+                    })
+                  }
+                </div>
+              ))}
+            </div>
 
-            return (
-              <Box
-                minWidth="1"
-                key={call.id}
-                bg="black-a30"
-                borderRadius={16}
-                cursor="pointer"
-                onClick={() => handleCallOnClick(call.id)}
-              >
-                <Grid
-                  gridTemplateColumns="32px 1fr max-content"
-                  columnGap={2}
-                  borderBottom="1px solid"
-                  borderBottomColor="neutral-700"
-                  alignItems="center"
-                  px={4}
-                  py={2}
-                >
-                  <Box><Icon component={icon} size={32} /></Box>
-                  <Box>
-                    <Typography variant="body">{title}</Typography>
-                    <Typography variant="body2">{subtitle}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" textAlign="right">{duration}</Typography>
-                    <Typography variant="caption">{date}</Typography>
-                  </Box>
-                </Grid>
-                <Box px={4} py={2}><Typography variant="caption">{notes}</Typography></Box>
-              </Box>
-            );
-          })} */}
+          }
         </Spacer>
       </div>
-      {totalFilteredCalls > 0 &&(
-      // {totalCount && (
+      {totalFilteredCalls > 0 && (
+        // {totalCount && (
         <PaginationWrapper>
           <Pagination
             activePage={currentPage}
@@ -273,7 +305,7 @@ export const CallsListPage = () => {
             onPageChange={handlePageChange}
             // recordsTotalCount={totalCount}
             recordsTotalCount={totalFilteredCalls}
-            onPageSizeChange={(callsPerPage) => setSelectedCallPerPage(callsPerPage)}
+            onPageSizeChange={callsPerPage => setSelectedCallPerPage(callsPerPage)}
           />
         </PaginationWrapper>
       )}
@@ -284,11 +316,15 @@ export const CallsListPage = () => {
 function filterCalls(calls: Call[], callType?: string, direction?: string): Call[] {
   if (!calls) return [];
   // debugger;
-  return calls.filter(call => (
-    (!callType || callType.length === 0 || (callType.length === 1 && callType[0] === 'all') || callType.includes(call.call_type)) &&
-    // (!callType || callType === 0 || callType.includes(call.call_type)) &&
-    (!direction || direction === '' || call.direction === direction)
-  ));
+  return calls.filter(
+    call =>
+      (!callType ||
+        callType.length === 0 ||
+        (callType.length === 1 && callType[0] === 'all') ||
+        callType.includes(call.call_type)) &&
+      // (!callType || callType === 0 || callType.includes(call.call_type)) &&
+      (!direction || direction === '' || call.direction === direction)
+  );
 }
 
 function paginate(array: any[], pageSize: number, pageNumber: number): any[] {
@@ -305,7 +341,7 @@ function groupCallsByDay(calls: Call[]): any[] {
     acc[date].push(call);
     return acc;
   }, {});
-  return Object.keys(groupedCalls).map((date) => ({ date, calls: groupedCalls[date] }));
+  return Object.keys(groupedCalls).map(date => ({ date, calls: groupedCalls[date] }));
 }
 
 // function paginate(groupedCalls: { [key: string]: Call[] }, pageSize: number, pageNumber: number): { date: string, calls: Call[] }[] {
@@ -324,7 +360,7 @@ function paginateArray(array: any[], pageSize: number, pageNumber: number): any[
 
 // function groupCallsByDay(calls: Call[], pageSize: number, pageNumber: number): any[] {
 //   const groupedCallsByPage: any[] = [];
-  
+
 //   const groupedCallsByDay = calls.reduce((acc: any, call: Call) => {
 //     const date = call.created_at.split('T')[0];
 //     if (!acc[date]) {
