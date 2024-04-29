@@ -28,7 +28,7 @@ export const CallDetail: React.FC<CallDetailProps> = ({ call, onClick }) => {
   const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
 
   return (
-    <Spacer space={3} direction="vertical" fluid>
+    <Spacer space={3} direction="vertical" fluid data-testid={`call-card`}>
       <Box
         minWidth="1"
         key={call.id}

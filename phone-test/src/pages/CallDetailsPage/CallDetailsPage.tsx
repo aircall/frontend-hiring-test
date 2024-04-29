@@ -19,7 +19,7 @@ export const CallDetailsPage = () => {
   const { call } = data;
 
   return (
-    <>
+    <div data-testid={`call-detail-card`}>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls Details
       </Typography>
@@ -42,6 +42,6 @@ export const CallDetailsPage = () => {
           return <div key={index}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
-    </>
+    </div>
   );
 };
