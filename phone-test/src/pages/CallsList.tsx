@@ -9,7 +9,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getValidDate } from '../helpers/dates';
 
 import { typeFilterOptions, directionFilterOptions, pageSizeOptions } from './options';
-import { CallDetail } from './CallDetail';
+import CallDetail from './CallDetail';
 import { groupCallsIntoPages } from './options';
 
 import { CALLS_PER_PAGE } from './options';

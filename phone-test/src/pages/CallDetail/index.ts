@@ -1,0 +1,1 @@
+export { CallDetail as default } from './CallDetail';

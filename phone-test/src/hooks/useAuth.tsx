@@ -18,6 +18,7 @@ export const AuthProvider = () => {
   const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
+  // using this to persist the user name for displaying in interface
   const [loggedInUser, setLoggedInUser] = useLocalStorage('logged_in_user', undefined);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
@@ -46,12 +47,8 @@ export const AuthProvider = () => {
     navigate('/login', { replace: true });
   };
 
-  const value = useMemo(() => {
-    return {
-      login,
-      logout
-    };
-  }, []);
+  const value = useMemo(() => ({ login, logout }), []);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />

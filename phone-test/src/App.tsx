@@ -9,7 +9,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
-import { CallDetailsPage } from './pages/CallDetails';
+import { CallDetailsPage } from './pages/CallInformation';
 import { ProtectedLayout } from './components/routing/ProtectedLayout';
 import { AuthProvider } from './hooks/useAuth';
 import { client } from './gql/client';
