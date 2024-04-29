@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import {
@@ -47,9 +48,32 @@ export const PaginationWrapper = styled.div`
 
 // ToDo: figure out why this bonks when filtering
 
+// const extendSession = async () => {
+//   // Check if the access token is expired or about to expire
+//   if (isTokenExpiredOrAboutToExpire(accessToken)) {
+//     try {
+//       // Use the refresh token to obtain a new access token
+//       const { data } = await refreshAccessToken(refreshToken);
+//       const { access_token, refresh_token, user } = data.refreshTokenV2;
+//       // Update the application state with the new tokens and user information
+//       setAccessToken(access_token);
+//       setRefreshToken(refresh_token);
+//       setUser(user);
+//       // Proceed with the API request or any other action
+//     } catch (error) {
+//       // If refresh token is expired or invalid, redirect to login page with information toast
+//       redirectToLoginPage();
+//       showInformationToast('Session expired. Please log in again.');
+//     }
+//   }
+// };
+
 export const CallsListPage = () => {
 
   // const [archiveCall] = useMutation(ARCHIVE_CALL);
+
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken'));
 
   const [search] = useSearchParams();
   const navigate = useNavigate();
@@ -59,8 +83,10 @@ export const CallsListPage = () => {
   const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
   const [callTypeFilter, setCallTypeFilter] = useState(['all']);
   const [directionFilter, setDirectionFilter] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
+
+  
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -68,6 +94,10 @@ export const CallsListPage = () => {
       limit: 200
     }
   });
+
+  // const [refreshTokenMutation] = useMutation(REFRESH_TOKEN_MUTATION);
+
+
 
   useEffect(() => {
     setCurrentPage(activePage);
@@ -153,6 +183,7 @@ export const CallsListPage = () => {
         <Spacer space={3} direction="vertical" fluid>
           {
             <div>
+              {/* check if there are results else render blank */}
               {Object.entries(currPage).map(([date, calls]) => (
                 <div key={date}>
                   <h2>Date: {date}</h2>
