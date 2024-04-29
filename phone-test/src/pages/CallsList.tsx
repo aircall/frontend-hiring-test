@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import { Typography, Spacer, Pagination } from '@aircall/tractor';
-import { Form, FormItem, Select } from '@aircall/tractor';
+import { Form, FormItem, Select, Button } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getValidDate } from '../helpers/dates';
 
@@ -34,6 +34,8 @@ export const CallsListPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
 
+  const [sortDirection, setSortDirection] = useState('descending');
+
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
       offset: 0,
@@ -46,12 +48,22 @@ export const CallsListPage = () => {
   }, [activePage]);
 
   useEffect(() => {
+    console.log('passes here')
     if (data) {
       const { totalCount, nodes: calls } = data.paginatedCalls;
       const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
       setTotalFilteredCalls(filteredCalls.length);
     }
   }, [data, callTypeFilter, directionFilter]);
+
+    //   useEffect(() => {
+    //   // Recalculate paginatedCalls using sortedAndFilteredCallsList and selectedCallPerPage
+    //   const newPaginatedCalls = groupCallsIntoPages(
+    //     sortedAndFilteredCallsList(filteredCalls, sortDirection),
+    //     selectedCallPerPage
+    //   );
+    //   setPaginatedCalls(newPaginatedCalls);
+    // }, [filteredCalls, selectedCallPerPage, sortDirection]);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
@@ -65,13 +77,28 @@ export const CallsListPage = () => {
 
   const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
 
-  const sortedAndFilteredCallsList = filteredCalls.sort((a: Call, b: Call) => {
-    const dateA = getValidDate(a.created_at).getTime();
-    const dateB = getValidDate(b.created_at).getTime();
-    return dateB - dateA;
-  });
+  const sortedAndFilteredCallsList = (filteredCalls: Call[], sortOrder: string) =>
+    filteredCalls.sort((a: Call, b: Call) => {
+      const dateA = getValidDate(a.created_at).getTime();
+      const dateB = getValidDate(b.created_at).getTime();
 
-  const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, selectedCallPerPage);
+      // Sort in ascending order if sortOrder is 'ascending'
+      if (sortOrder === 'ascending') {
+        return dateA - dateB;
+      }
+
+      // Default to descending order for any other value or if sortOrder is not provided
+
+      return dateB - dateA;
+    });
+
+
+
+
+  const paginatedCalls = groupCallsIntoPages(
+    sortedAndFilteredCallsList(filteredCalls, sortDirection),
+    selectedCallPerPage
+  );
 
   const currPage = paginatedCalls[currentPage];
 
@@ -118,12 +145,17 @@ export const CallsListPage = () => {
             />
           </FormItem>
         </Spacer>
+        <Button mode="link" size="small" onClick={() => setSortDirection('descending')}>
+          {`Sort Desc`}
+        </Button>
+        <Button mode="link" size="small" onClick={() => setSortDirection('ascending')}>
+          {`Sort Asc`}
+        </Button>
       </Form>
       <div style={{ height: '65vh', overflow: 'auto' }}>
         <Spacer space={3} direction="vertical" fluid>
           {
             <div>
-
               {currPage ? (
                 Object.entries(currPage).map(([date, calls]) => (
                   <div key={date}>
