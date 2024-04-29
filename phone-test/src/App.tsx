@@ -8,7 +8,7 @@ import { ApolloProvider } from '@apollo/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 
 import { LoginPage } from './pages/Login/Login';
-import { CallsListPage } from './pages/CallsList';
+import CallsListPage from './pages/CallsList';
 import CallDetailsPage from './pages/CallDetailsPage';
 import { ProtectedLayout } from './components/routing/ProtectedLayout';
 import { AuthProvider } from './hooks/useAuth';
