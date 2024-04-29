@@ -13,6 +13,7 @@ import {
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -25,18 +26,48 @@ export const PaginationWrapper = styled.div`
 
 const CALLS_PER_PAGE = 5;
 
+// pageSizeOptions?: {
+//   value: number;
+//   label: string;
+// }[];
+
+const optionPageSize = [{
+  value: 25,
+  label: '25',
+},
+{
+  value: 50,
+  label: '50',
+},
+{
+  value: 100,
+  label: '100',
+},
+{
+  value: 200,
+  label: '200',
+},
+];
+
 export const CallsListPage = () => {
+  const [resultsPerPage, setResultsPerPage] = useState(25);
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * resultsPerPage,
+      limit: resultsPerPage
     }
     // onCompleted: () => handleRefreshToken(),
   });
+
+
+  const handlePageSize = (pageSize: any) => {
+    console.log(pageSize);
+    setResultsPerPage(pageSize);
+  };
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
@@ -64,8 +95,8 @@ export const CallsListPage = () => {
             call.call_type === 'missed'
               ? 'Missed call'
               : call.call_type === 'answered'
-              ? 'Call answered'
-              : 'Voicemail';
+                ? 'Call answered'
+                : 'Voicemail';
           const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
           const duration = formatDuration(call.duration / 1000);
           const date = formatDate(call.created_at);
@@ -114,8 +145,10 @@ export const CallsListPage = () => {
         <PaginationWrapper>
           <Pagination
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={resultsPerPage}
             onPageChange={handlePageChange}
+            pageSizeOptions={optionPageSize}
+            onPageSizeChange={handlePageSize}
             recordsTotalCount={totalCount}
           />
         </PaginationWrapper>

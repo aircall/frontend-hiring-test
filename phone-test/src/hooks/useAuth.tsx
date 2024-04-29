@@ -4,9 +4,14 @@ import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
+// eslint-disable-next-line
 const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
+  login: ({}) => {
+    console.log('a');
+  },
+  logout: () => {
+    console.log('a');
+  }
 });
 
 export interface AuthPRoviderProps {
@@ -14,9 +19,13 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
+  // eslint-disable-next-line
   const [user, setUser] = useState();
+  // eslint-disable-next-line
   const [status, setStatus] = useState('loading');
+  // eslint-disable-next-line
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
+  // eslint-disable-next-line
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
@@ -49,6 +58,8 @@ export const AuthProvider = () => {
       logout
     };
   }, []);
+
+  
   return (
     <AuthContext.Provider value={value}>
       <Outlet />

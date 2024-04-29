@@ -39,6 +39,7 @@ const client = new ApolloClient({
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
+      <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/calls" element={<ProtectedLayout />}>
         <Route path="/calls" element={<CallsListPage />} />
