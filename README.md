@@ -31,7 +31,7 @@ You won't have time to fix everything, and we don't expect you to. Also, we adju
 - **junior software engineer**
   - ✅ Improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that. ✅
   - ✅ Add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
-  - Group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
+  - ✅ Group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
 - **software engineer**
   - All of the above
   - Fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
