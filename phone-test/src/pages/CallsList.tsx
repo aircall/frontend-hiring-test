@@ -43,9 +43,7 @@ const CallsListPage = () => {
   const [selectedCallPerPage, setSelectedCallPerPage] = useState(CALLS_PER_PAGE);
   const [callTypeFilter, setCallTypeFilter] = useState(['all']);
   const [directionFilter, setDirectionFilter] = useState('');
-  const [currentPage, setCurrentPage] = useState(activePage);
-  // const [callsPerPage, setCallsPerPage] = useState();
-  // const [callsPerPage, setCallsPerPage] = useState<CallGroup[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
   const [callsPerPage, setCallsPerPage] = useState<CallGroup>({});
   const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
   const [paginatedCalls, setPaginatedCalls] = useState<CallGroup[]>([]);
@@ -61,7 +59,18 @@ const CallsListPage = () => {
   useEffect(() => {
     if (data) {
       const { nodes: calls } = data.paginatedCalls;
-      const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
+
+      // console.log({data})
+
+      // // const orderedCalls = 
+
+      const orderedCalls = [...calls].sort((a: Call, b: Call) => {
+        const dateA = getValidDate(a.created_at).getTime();
+        const dateB = getValidDate(b.created_at).getTime();
+        return dateB - dateA;
+      });
+// debugger;
+      const filteredCalls = filterCalls(orderedCalls, callTypeFilter, directionFilter);
       setTotalFilteredCalls(filteredCalls.length);
       const newPaginatedCalls = groupCallsIntoPages(
         sortedAndFilteredCallsList(filteredCalls),
@@ -84,12 +93,10 @@ const CallsListPage = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page-1);
     navigate(`/calls/?page=${page}`);
   };
-console.log({
-  callsPerPage
-})
+
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
@@ -171,6 +178,10 @@ console.log({
 function filterCalls(calls: Call[], callType: string[], direction: string) {
   // function filterCalls(calls, callType, direction) {
   if (!calls) return [];
+  console.log({
+    callType,
+    direction
+  })
   return calls.filter(
     call =>
       (!callType ||
