@@ -1,11 +1,12 @@
 import { useQuery } from '@apollo/client';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
-import { Box, Typography } from '@aircall/tractor';
+import { Box, Button, Spacer, Typography } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
+  const navigate = useNavigate();
   const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
     variables: {
       id: callId
@@ -22,6 +23,11 @@ export const CallDetailsPage = () => {
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls Details
       </Typography>
+      <Spacer space="s">
+        <Button mode="link" size="small" onClick={() => navigate('/calls')}>
+          {`Return`}
+        </Button>
+      </Spacer>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
         <div>{`ID: ${call.id}`}</div>
         <div>{`Type: ${call.call_type}`}</div>

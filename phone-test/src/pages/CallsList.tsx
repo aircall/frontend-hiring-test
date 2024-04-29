@@ -131,7 +131,7 @@ export const CallsListPage = () => {
 
   const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, selectedCallPerPage);
 
-  const currPage = paginatedCalls[currentPage-1];
+  const currPage = paginatedCalls[currentPage];
 
 
   const handleCallOnClick = (callId: string) => {
