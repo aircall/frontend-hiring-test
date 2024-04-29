@@ -9,7 +9,8 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination
+  Pagination,
+  Select
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -22,6 +23,13 @@ export const PaginationWrapper = styled.div`
     display: flex;
     justify-content: center;
   }
+`;
+
+export const FilterWrapper = styled.div`
+  width: inherit;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 `;
 
 const CALLS_PER_PAGE = 5;
@@ -49,11 +57,37 @@ const optionPageSize = [{
 },
 ];
 
+const optionDirectionFilter = [{
+  value: 'outbound',
+  label: 'Outbound',
+}, {
+  value: 'inbound',
+  label: 'Inbound',
+}];
+
+const optionTypeFilter = [
+  {
+    value: 'missed',
+    label: 'Missed call',
+  }, {
+    value: 'answered',
+    label: 'Answered',
+  }, {
+    value: 'voicemail',
+    label: 'Voicemail',
+  }
+]
+
 export const CallsListPage = () => {
   const [resultsPerPage, setResultsPerPage] = useState(25);
-  const [search] = useSearchParams();
+  const [search, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
+  const directionFilter = search.get('direction');
+  const typeFilter = search.get('type');
+
+  const isListFiltered = !!directionFilter || !!typeFilter;
+
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -62,6 +96,18 @@ export const CallsListPage = () => {
     }
     // onCompleted: () => handleRefreshToken(),
   });
+
+  const handleFilterChange = (category: string, filterValue: string) => {
+      setSearchParams((prev) => {
+        if(!!filterValue){
+          prev.set(category, filterValue)
+        }else{
+          prev.delete(category)
+        }
+
+        return prev
+      })
+  };
 
 
   const handlePageSize = (pageSize: any) => {
@@ -74,6 +120,21 @@ export const CallsListPage = () => {
   if (!data) return <p>Not found</p>;
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
+
+  const filteredList = isListFiltered ? calls.filter((call: Call) => { 
+    let hasDirectionFilter = true;
+    let hasTypeFilter = true;
+
+    if(!!directionFilter) {
+      hasDirectionFilter = call.direction === directionFilter;
+    }
+    if(!!typeFilter) {
+      hasTypeFilter = call.call_type === typeFilter;
+    }
+
+    return hasDirectionFilter && hasTypeFilter;
+  
+  }) : calls;
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -88,8 +149,26 @@ export const CallsListPage = () => {
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
+      <FilterWrapper>
+        <Select
+          placeholder='Choose one option'
+          options={optionDirectionFilter}
+          onSelectionChange={(currentSelectedKeys) => {
+            // console.log(currentSelectedKeys);
+            handleFilterChange('direction', currentSelectedKeys[0] as string)
+          }}
+        />
+        <Select
+          placeholder='Choose one option'
+          options={optionTypeFilter}
+          onSelectionChange={(currentSelectedKeys) => {
+            // console.log(currentSelectedKeys);
+            handleFilterChange('type', currentSelectedKeys[0] as string)
+          }}
+        />
+      </FilterWrapper>
       <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
+        {filteredList.map((call: Call) => {
           const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
           const title =
             call.call_type === 'missed'

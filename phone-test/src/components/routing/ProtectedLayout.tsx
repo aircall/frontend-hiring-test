@@ -6,7 +6,7 @@ export const ProtectedLayout = () => {
   return (
     <Box minWidth="100vh" p={4}>
       <Flex justifyContent="space-between" alignItems="center">
-        <Link to="/calls">
+        <Link to="/login">
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
