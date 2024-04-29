@@ -39,36 +39,24 @@ const getRefreshedToken = async (): Promise<void> => {
 };
 
 const errorLink = onError(({ graphQLErrors, operation, forward }) => {
-  if (graphQLErrors) {
-    for (let err of graphQLErrors) {
-      const exception = err.extensions.exception as { status: number };
-      /**
-       * If the error is a 401, we need to refresh the token
-       * and retry the request
-       */
-      if (exception && exception.status === 401) {
-        return fromPromise(
-          getRefreshedToken().catch(() => {
-            // If we get an error while refreshing the token, log the user out
-            localStorage.clear();
-            window.location.href = '/login';
-          })
-        ).flatMap(() => {
-          return forward(operation);
-        });
-      }
-    }
+  const unauthorizedError = graphQLErrors?.some(err => (err.extensions?.exception as { status?: number })?.status === 401);
+
+  if (unauthorizedError) {
+    return fromPromise(
+      getRefreshedToken().catch(() => {
+        localStorage.clear();
+        window.location.href = '/login';
+      })
+    ).flatMap(() => forward(operation));
   }
 });
 
 const authLink = setContext((_, { headers }) => {
-  const currentAccessToken = localStorage.getItem('access_token');
-  const accessToken = currentAccessToken ? JSON.parse(currentAccessToken) : null;
-
+  const accessToken = localStorage.getItem('access_token');
   return {
     headers: {
       ...headers,
-      authorization: accessToken ? `Bearer ${accessToken}` : ''
+      authorization: accessToken ? `Bearer ${JSON.parse(accessToken)}` : ''
     }
   };
 });
