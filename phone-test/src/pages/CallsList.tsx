@@ -44,9 +44,11 @@ const CallsListPage = () => {
   const [callTypeFilter, setCallTypeFilter] = useState(['all']);
   const [directionFilter, setDirectionFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(activePage);
+  // const [callsPerPage, setCallsPerPage] = useState();
+  // const [callsPerPage, setCallsPerPage] = useState<CallGroup[]>([]);
+  const [callsPerPage, setCallsPerPage] = useState<CallGroup>({});
   const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
   const [paginatedCalls, setPaginatedCalls] = useState<CallGroup[]>([]);
-
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: { offset: 0, limit: 200 }
@@ -55,7 +57,7 @@ const CallsListPage = () => {
   useEffect(() => {
     setCurrentPage(activePage);
   }, [activePage]);
-  
+
   useEffect(() => {
     if (data) {
       const { nodes: calls } = data.paginatedCalls;
@@ -65,30 +67,29 @@ const CallsListPage = () => {
         sortedAndFilteredCallsList(filteredCalls),
         selectedCallPerPage
       ) as CallGroup[];
+
       setPaginatedCalls(newPaginatedCalls);
     }
   }, [data, callTypeFilter, directionFilter, selectedCallPerPage]);
 
+  useEffect(() => {
+    setCallsPerPage(paginatedCalls[currentPage]);
+  }, [paginatedCalls, currentPage]);
+
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
-
-  // const { nodes: calls } = data.paginatedCalls;
-
-  // const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
-
-
-
-  const currPage = paginatedCalls[currentPage];
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
 
-  const handlePageChange = (page:number) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
     navigate(`/calls/?page=${page}`);
   };
-
+console.log({
+  callsPerPage
+})
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
@@ -110,8 +111,9 @@ const CallsListPage = () => {
               defaultValue={['all']}
               size="regular"
               options={typeFilterOptions}
-              onSelectionChange={currentSelectedKeys => setCallTypeFilter(currentSelectedKeys.map(key => String(key)))}
-
+              onSelectionChange={currentSelectedKeys =>
+                setCallTypeFilter(currentSelectedKeys.map(key => String(key)))
+              }
             />
           </FormItem>
           <FormItem label="Call Direction">
@@ -120,26 +122,27 @@ const CallsListPage = () => {
               placeholder="All"
               size="regular"
               options={directionFilterOptions}
-              onSelectionChange={currentSelectedKeys => setDirectionFilter(() => currentSelectedKeys[0] as string)}
+              onSelectionChange={currentSelectedKeys =>
+                setDirectionFilter(() => currentSelectedKeys[0] as string)
+              }
             />
           </FormItem>
         </Spacer>
       </Form>
       <div style={{ height: '60vh', overflow: 'auto' }}>
         <Spacer space={3} direction="vertical" fluid>
-          {currPage ? (
+          {callsPerPage ? (
             <div>
-              {Object.entries(currPage  as Record<string, Call[]>).map(([date, calls]: [string, Call[]]) => (
-                <div key={date}>
-                  <h2>Date: {date}</h2>
-                  {calls.map((call: Call) => (
-                    <CallDetail key={call.id} 
-                    call={call as Call}
-
-                     onClick={handleCallOnClick} />
-                  ))}
-                </div>
-              ))}
+              {Object.entries(callsPerPage as Record<string, Call[]>).map(
+                ([date, calls]: [string, Call[]]) => (
+                  <div key={date}>
+                    <h2>Date: {date}</h2>
+                    {calls.map((call: Call) => (
+                      <CallDetail key={call.id} call={call as Call} onClick={handleCallOnClick} />
+                    ))}
+                  </div>
+                )
+              )}
             </div>
           ) : (
             <div>No Content</div>
