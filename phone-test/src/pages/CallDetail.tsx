@@ -7,7 +7,6 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 export const CallDetail = ({ call, onClick }) => {
@@ -32,6 +31,7 @@ export const CallDetail = ({ call, onClick }) => {
         borderRadius={16}
         cursor="pointer"
         onClick={() => onClick(call.id)}
+        margin={1}
       >
         <Grid
           gridTemplateColumns="32px 1fr max-content"

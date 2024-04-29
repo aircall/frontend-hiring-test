@@ -148,7 +148,7 @@ console.log({paginatedCalls})
           {`Sort Asc`}
         </Button>
       </Form>
-      <div style={{ height: '65vh', overflow: 'auto' }}>
+      <div style={{ height: '60vh', overflow: 'auto' }}>
         <Spacer space={3} direction="vertical" fluid>
           {
             <div>
