@@ -19,6 +19,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getValidDate } from '../helpers/dates';
 
 import { typeFilterOptions, directionFilterOptions, pageSizeOptions } from './options';
+import { CallDetail } from './CallDetail';
+
+import { groupCallsIntoPages } from './options';
 
 import { groupCallsByDate } from './options';
 
@@ -33,7 +36,21 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
+// const ARCHIVE_CALL = gql`
+//   mutation ArchiveCall($id: ID!) {
+//     archiveCall(id: $id) {
+//       id
+//       is_archived
+//     }
+//   }
+// `;
+
+// ToDo: figure out why this bonks when filtering
+
 export const CallsListPage = () => {
+
+  // const [archiveCall] = useMutation(ARCHIVE_CALL);
+
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
@@ -82,23 +99,9 @@ export const CallsListPage = () => {
     return dateB - dateA;
   });
 
-  function groupCallsIntoPages(calls, pageSize) {
-    const pages = [];
-    for (let i = 0; i < calls.length; i += pageSize) {
-      const page = calls.slice(i, i + pageSize);
-      const groupedPage = groupCallsByDate(page);
-      pages.push(groupedPage);
-    }
-    return pages;
-  }
-
-
-
-
-
   const paginatedCalls = groupCallsIntoPages(sortedAndFilteredCallsList, selectedCallPerPage);
 
-  const currPage = paginatedCalls[currentPage];
+  const currPage = paginatedCalls[currentPage-1];
 
 
   const handleCallOnClick = (callId: string) => {
@@ -154,46 +157,10 @@ export const CallsListPage = () => {
                 <div key={date}>
                   <h2>Date: {date}</h2>
                   {
-                    calls.map(call => {
-                      const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-                      const title = call.call_type === 'missed' ? 'Missed call' : call.call_type === 'answered' ? 'Call answered' : 'Voicemail';
-                      const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-                      const duration = formatDuration(call.duration / 1000);
-                      const date = formatDate(call.created_at);
-                      const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
-          
-                      return (
-                        <Box
-                          minWidth="1"
-                          key={call.id}
-                          bg="black-a30"
-                          borderRadius={16}
-                          cursor="pointer"
-                          onClick={() => handleCallOnClick(call.id)}
-                        >
-                          <Grid
-                            gridTemplateColumns="32px 1fr max-content"
-                            columnGap={2}
-                            borderBottom="1px solid"
-                            borderBottomColor="neutral-700"
-                            alignItems="center"
-                            px={4}
-                            py={2}
-                          >
-                            <Box><Icon component={icon} size={32} /></Box>
-                            <Box>
-                              <Typography variant="body">{title}</Typography>
-                              <Typography variant="body2">{subtitle}</Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant="caption" textAlign="right">{duration}</Typography>
-                              <Typography variant="caption">{date}</Typography>
-                            </Box>
-                          </Grid>
-                          <Box px={4} py={2}><Typography variant="caption">{notes}</Typography></Box>
-                        </Box>
-                      );
-                    })
+                    
+                    calls.map(call => 
+                      <CallDetail call={call} onClick={handleCallOnClick}/>
+                    )
                   }
                 </div>
               ))}
