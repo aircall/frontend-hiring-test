@@ -5,10 +5,9 @@ import logo from '../../logo.png';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 export const ProtectedLayout = () => {
-  const [loggedInUser, setLoggedInUser] = useLocalStorage('logged_in_user', undefined);
-
-  const {username} = loggedInUser;
-  console.log({loggedInUser})
+  
+  const [loggedInUser] = useLocalStorage('logged_in_user', undefined);
+  const { username } = loggedInUser || {};
 
   return (
     <Box minWidth="100vh" p={4}>
@@ -17,7 +16,7 @@ export const ProtectedLayout = () => {
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome ${username}!`}</span>
+          <span>{`Welcome ${username || 'User'}!`}</span>
           <Link to="/login">logout</Link>
         </Spacer>
       </Flex>
