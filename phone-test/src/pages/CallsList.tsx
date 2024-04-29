@@ -33,7 +33,8 @@ export const CallsListPage = () => {
   const [directionFilter, setDirectionFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
-
+  const [paginatedCalls, setPaginatedCalls] = useState([]);
+  
   const [sortDirection, setSortDirection] = useState('descending');
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
@@ -53,8 +54,15 @@ export const CallsListPage = () => {
       const { totalCount, nodes: calls } = data.paginatedCalls;
       const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
       setTotalFilteredCalls(filteredCalls.length);
+  
+      // Recalculate paginatedCalls using sortedAndFilteredCallsList and selectedCallPerPage
+      const newPaginatedCalls = groupCallsIntoPages(
+        sortedAndFilteredCallsList(filteredCalls, sortDirection),
+        selectedCallPerPage
+      );
+      setPaginatedCalls(newPaginatedCalls);
     }
-  }, [data, callTypeFilter, directionFilter]);
+  }, [data, callTypeFilter, directionFilter, selectedCallPerPage, sortDirection]);
 
     //   useEffect(() => {
     //   // Recalculate paginatedCalls using sortedAndFilteredCallsList and selectedCallPerPage
@@ -71,34 +79,22 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
-  console.log({ totalFilteredCalls });
-
-  console.log({ callTypeFilter });
-
   const filteredCalls = filterCalls(calls, callTypeFilter, directionFilter);
 
   const sortedAndFilteredCallsList = (filteredCalls: Call[], sortOrder: string) =>
     filteredCalls.sort((a: Call, b: Call) => {
       const dateA = getValidDate(a.created_at).getTime();
       const dateB = getValidDate(b.created_at).getTime();
-
       // Sort in ascending order if sortOrder is 'ascending'
       if (sortOrder === 'ascending') {
         return dateA - dateB;
       }
-
       // Default to descending order for any other value or if sortOrder is not provided
-
       return dateB - dateA;
     });
 
 
-
-
-  const paginatedCalls = groupCallsIntoPages(
-    sortedAndFilteredCallsList(filteredCalls, sortDirection),
-    selectedCallPerPage
-  );
+console.log({paginatedCalls})
 
   const currPage = paginatedCalls[currentPage];
 
@@ -160,8 +156,8 @@ export const CallsListPage = () => {
                 Object.entries(currPage).map(([date, calls]) => (
                   <div key={date}>
                     <h2>Date: {date}</h2>
-                    {calls.map(call => (
-                      <CallDetail call={call} onClick={handleCallOnClick} />
+                    {calls.map((call) => (
+                      <CallDetail key={call.id} call={call} onClick={handleCallOnClick} />
                     ))}
                   </div>
                 ))
@@ -185,7 +181,7 @@ export const CallsListPage = () => {
             recordsTotalCount={totalFilteredCalls}
             onPageSizeChange={callsPerPage => {
               setSelectedCallPerPage(callsPerPage);
-              setCurrentPage(1);
+              setCurrentPage(0);
             }}
           />
         </PaginationWrapper>
@@ -196,7 +192,6 @@ export const CallsListPage = () => {
 
 function filterCalls(calls: Call[], callType?: string, direction?: string): Call[] {
   if (!calls) return [];
-  // debugger;
   return calls.filter(
     call =>
       (!callType ||
@@ -208,70 +203,3 @@ function filterCalls(calls: Call[], callType?: string, direction?: string): Call
   );
 }
 
-function paginate(array: any[], pageSize: number, pageNumber: number): any[] {
-  // debugger;
-  return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-}
-
-function groupCallsByDay(calls: Call[]): any[] {
-  const groupedCalls = calls.reduce((acc: any, call: Call) => {
-    const date = call.created_at.split('T')[0];
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(call);
-    return acc;
-  }, {});
-  return Object.keys(groupedCalls).map(date => ({ date, calls: groupedCalls[date] }));
-}
-
-// function paginate(groupedCalls: { [key: string]: Call[] }, pageSize: number, pageNumber: number): { date: string, calls: Call[] }[] {
-//   const paginatedGroupedCalls = {};
-//   Object.entries(groupedCalls).forEach(([date, calls]) => {
-//     paginatedGroupedCalls[date] = paginateArray(calls, pageSize, pageNumber);
-//   });
-//   return Object.entries(paginatedGroupedCalls).map(([date, calls]) => ({ date, calls }));
-// }
-
-function paginateArray(array: any[], pageSize: number, pageNumber: number): any[] {
-  return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-}
-
-/** */
-
-// function groupCallsByDay(calls: Call[], pageSize: number, pageNumber: number): any[] {
-//   const groupedCallsByPage: any[] = [];
-
-//   const groupedCallsByDay = calls.reduce((acc: any, call: Call) => {
-//     const date = call.created_at.split('T')[0];
-//     if (!acc[date]) {
-//       acc[date] = [];
-//     }
-//     acc[date].push(call);
-//     return acc;
-//   }, {});
-
-//   const paginatedGroupedCallsByDay = paginateGroupedCallsByDay(groupedCallsByDay, pageSize, pageNumber);
-
-//   paginatedGroupedCallsByDay.forEach((pageGroup) => {
-//     const { date, calls } = pageGroup;
-//     const paginatedCalls = paginateArray(calls, pageSize);
-//     paginatedCalls.forEach((pageCalls) => {
-//       groupedCallsByPage.push({ date, calls: pageCalls });
-//     });
-//   });
-
-//   return groupedCallsByPage;
-// }
-
-// function paginateGroupedCallsByDay(groupedCallsByDay: any, pageSize: number, pageNumber: number): any[] {
-//   const paginatedGroupedCallsByDay = Object.entries(groupedCallsByDay).map(([date, calls]) => {
-//     const paginatedCalls = paginateArray(calls, pageSize * (pageNumber - 1), pageSize);
-//     return { date, calls: paginatedCalls };
-//   });
-//   return paginatedGroupedCallsByDay;
-// }
-
-// function paginateArray(array: any[], start: number, end?: number): any[] {
-//   return array.slice(start, end);
-// }
