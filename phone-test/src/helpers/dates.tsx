@@ -10,13 +10,19 @@ export const formatDuration = (duration: number) => {
   }
 };
 
+/**
+ * Function: getValidDate
+ * Description: Converts a Date object or string representation of a date to a valid Date object.
+ *              If the provided date is already valid, returns it; otherwise, attempts to parse
+ *              the string representation using ISO parsing. If ISO parsing fails, falls back
+ *              to the Date API.
+ * Parameters:
+ *   - date: Date | string - The date to validate or parse.
+ * Returns:
+ *   - Date - A valid Date object.
+ */
 export const getValidDate = (date: Date | string) => {
   const potentialValidDate = typeof date === 'string' ? parseISO(date) : date;
-
-  // Make sure that the date is a valid ISO otherwise fallback to Date API
-  // The following date string "Mon Mar 09 2020 13:33:55 GMT+0100 (heure normale d’Europe centrale)"
-  // is considered as invalid because it's a string reprensentation of the Date in spite of the fact that
-  // it's valid when using the Date API.
   if (isValid(potentialValidDate)) {
     return potentialValidDate;
   }
