@@ -80,7 +80,7 @@ export const CallDetail: React.FC<CallDetailProps> = ({ call, onClick }) => {
       <Box
         minWidth="1"
         key={call.id}
-        bg="black-a30"
+        bg={call.is_archived ? "#C9DFDB" : "black-a10" }
         borderRadius={16}
         cursor="pointer"
         onClick={() => onClick(call.id)}
