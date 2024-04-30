@@ -1,6 +1,5 @@
 // @ts-nocheck
 export const typeFilterOptions = [
-  // { label: 'All', value: '' },
   { label: 'Answered', value: 'answered' },
   { label: 'Missed', value: 'missed' },
   { label: 'Voicemail', value: 'voicemail' }
