@@ -12,7 +12,7 @@ import {
   directionFilterOptions,
   pageSizeOptions
 } from './options';
-import { groupCallsIntoPages } from './options';
+import { groupCallsIntoPages } from './helpers';
 
 const PaginationWrapper = styled.div`
   > div {
