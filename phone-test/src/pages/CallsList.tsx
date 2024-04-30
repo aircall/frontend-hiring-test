@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-// import { CALLS_SUBSCRIPTION } from '../gql/subscriptions';
 import { CALLS_SUBSCRIPTION } from '../gql/subscriptions/callsSubscriptions';
 import { Typography, Spacer, Pagination, FormItem, Select } from '@aircall/tractor';
 import { getValidDate } from '../helpers/dates';
