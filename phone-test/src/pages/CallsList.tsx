@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
+// import { CALLS_SUBSCRIPTION } from '../gql/subscriptions';
+import { CALLS_SUBSCRIPTION } from '../gql/subscriptions/callsSubscriptions';
 import { Typography, Spacer, Pagination, FormItem, Select } from '@aircall/tractor';
 import { getValidDate } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -92,8 +94,12 @@ const CallsListPage = () => {
   const [totalFilteredCalls, setTotalFilteredCalls] = useState(0);
   const [paginatedCalls, setPaginatedCalls] = useState<CallGroup[]>([]);
 
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
+  const { loading, error, data, subscribeToMore } = useQuery(PAGINATED_CALLS, {
     variables: { offset: 0, limit: 200 }
+  });
+
+  subscribeToMore({
+    document: CALLS_SUBSCRIPTION
   });
 
   useEffect(() => {

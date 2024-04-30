@@ -7,7 +7,9 @@ export interface CallDetailProps {
       to: string;
       duration: number;
       created_at: string;
+      is_archived: boolean;
       notes?: string[];
+      via:string;
     };
     onClick: (id: string) => void;
   }
