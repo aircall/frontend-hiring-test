@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
@@ -40,13 +40,41 @@ export const AuthProvider = () => {
   const navigate = useNavigate();
   const [getUser, { loading, error, data }] = useLazyQuery(GET_USER);
   const isAuthenticated = !!localStorage.getItem('access_token');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loggedInUser, setLoggedInUser] = useLocalStorage('logged_in_user', undefined);
+
+  const login = useCallback(
+    ({ username, password }: Credentials) => {
+      return loginMutation({
+        variables: { input: { username, password } },
+        onCompleted: ({ login }: any) => {
+          const { access_token, refresh_token, user } = login;
+          localStorage.setItem('access_token', JSON.stringify(access_token));
+          localStorage.setItem('refresh_token', JSON.stringify(refresh_token));
+
+          setLoggedInUser(user);
+          setUser(user);
+          console.log('redirect to calls');
+          navigate('/calls');
+        }
+      });
+    },
+    [loginMutation, setLoggedInUser, setUser, navigate]
+  );
+
+  const logout = useCallback(() => {
+    localStorage.setItem('access_token', '');
+    localStorage.setItem('refresh_token', '');
+    setUser(null);
+    navigate('/login');
+  }, [setUser, navigate]);
 
   // get user data at first render if user is authenticated
   useEffect(() => {
     if (isAuthenticated) {
       getUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // set user data if there is no error fetching user data
@@ -62,31 +90,7 @@ export const AuthProvider = () => {
       console.log(error);
       logout();
     }
-  }, [error]);
-
-  // call this function when you want to authenticate the user
-  const login = ({ username, password }: Credentials) => {
-    return loginMutation({
-      variables: { input: { username, password } },
-      onCompleted: ({ login }: any) => {
-        const { access_token, refresh_token, user } = login;
-        localStorage.setItem('access_token', JSON.stringify(access_token));
-        localStorage.setItem('refresh_token', JSON.stringify(refresh_token));
-
-        setLoggedInUser(user);
-        setUser(user);
-        console.log('redirect to calls');
-        navigate('/calls');
-      }
-    });
-  };
-
-  const logout = () => {
-    localStorage.setItem('access_token', '');
-    localStorage.setItem('refresh_token', '');
-    setUser(null);
-    navigate('/login');
-  };
+  }, [error, logout]);
 
   const value = useMemo(
     () => ({
@@ -96,7 +100,7 @@ export const AuthProvider = () => {
       user,
       loading
     }),
-    [user, loading, isAuthenticated]
+    [user, loading, isAuthenticated, login, logout]
   );
 
   return (

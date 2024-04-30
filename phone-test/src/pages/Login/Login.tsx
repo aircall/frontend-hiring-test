@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 
 import { FormState } from './Login.decl';
 import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+// import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
@@ -14,7 +14,7 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   
   const onSubmit = async (email: string, password: string) => {
