@@ -11,20 +11,16 @@ import {
   ArchiveFilled,
   ArchiveOutlined,
   IconButton,
-  Button,
   SpinnerOutlined,
   useToast
 } from '@aircall/tractor';
-// import { ARCHIVE_CALL } from '../gql/mutations';
-// import { ARCHIVE_CALL } from '../../gql/mutations/archiveCall';
-import { ARCHIVE_CALL } from '../../gql/mutations';
+import { useMutation } from '@apollo/client';
 
-import { useMutation, useQuery } from '@apollo/client';
+import { ARCHIVE_CALL } from '../../gql/mutations';
 
 import { formatDate, formatDuration } from '../../helpers/dates';
 
 import { CallDetailProps } from './CallDetail.decl';
-
 
 export const CallDetail: React.FC<CallDetailProps> = ({ call, onClick }) => {
   const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
@@ -74,7 +70,6 @@ export const CallDetail: React.FC<CallDetailProps> = ({ call, onClick }) => {
     });
   };
   
-
   return (
     <Spacer space={3} direction="vertical" fluid data-testid={`call-card`}>
       <Box
@@ -113,7 +108,6 @@ export const CallDetail: React.FC<CallDetailProps> = ({ call, onClick }) => {
               {archivingCallId.current === call.id ? (
                 <Icon key={call.id} component={SpinnerOutlined} spin />
               ) : (
-                // <>
                 <IconButton
                   key={call.id}
                   size={24}
@@ -122,35 +116,8 @@ export const CallDetail: React.FC<CallDetailProps> = ({ call, onClick }) => {
                   onClick={e => {
                     e.stopPropagation();
                     handleArchiveCall(call);
-                    // console.log('archiving');
                   }}
                 />
-                // Archive Call
-                // </>
-                // <Button
-                //   style={{
-                //     color: 'black'
-                //   }}
-                //   mode="link"
-                //   size="small"
-                //   onClick={e => {
-                //     e.stopPropagation();
-                //     console.log('archive and dearchive');
-                //   }}
-                // >
-                //          <IconButton
-                //   key={call.id}
-                //   size={24}
-                //   component={call.is_archived ? ArchiveFilled : ArchiveOutlined}
-                //   color="#01B288"
-                //   onClick={e => {
-                //     e.stopPropagation();
-                //     // handleArchiveCall(call);
-                //     console.log('archiving');
-                //   }}
-                // />
-                //   {call.is_archived ? 'Unarchive call' : 'Archive call'}
-                // </Button>
               )}
             </Tooltip>
           </Spacer>
