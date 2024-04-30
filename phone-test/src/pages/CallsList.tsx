@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import { Typography, Spacer, Pagination, Form, FormItem, Select } from '@aircall/tractor';
+import { Typography, Spacer, Pagination, FormItem, Select } from '@aircall/tractor';
 import { getValidDate } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import CallDetail from './CallDetail';
@@ -26,8 +26,8 @@ interface CallGroup {
   [date: string]: Call[];
 }
 
-const sortedAndFilteredCallsList = (filteredCalls: Call[]) =>
-  filteredCalls.sort((a: Call, b: Call) => {
+const sortCallsByDate = (calls: Call[]) =>
+  [...calls].sort((a: Call, b: Call) => {
     const dateA = getValidDate(a.created_at).getTime();
     const dateB = getValidDate(b.created_at).getTime();
     return dateB - dateA;
@@ -37,6 +37,7 @@ type CallFilterBarProps = {
   callTypeSelectionChange: (newSelection: string[]) => void;
   callDirectionSelectionChange: (newSelection: string) => void;
 };
+
 const CallFilterBar: React.FC<CallFilterBarProps> = ({
   callTypeSelectionChange,
   callDirectionSelectionChange
@@ -49,7 +50,6 @@ const CallFilterBar: React.FC<CallFilterBarProps> = ({
       justifyContent="stretch"
       itemsSized="evenly-sized"
     >
-
       <FormItem label="Call Type">
         <Select
           takeTriggerWidth={true}
@@ -105,7 +105,7 @@ const CallsListPage = () => {
       const { nodes: calls } = data.paginatedCalls;
 
       
-      const orderedCalls = sortedAndFilteredCallsList([...calls]);
+      const orderedCalls = sortCallsByDate(calls);
 
       const filteredCalls = filterCalls(orderedCalls, callTypeFilter, directionFilter);
       setTotalFilteredCalls(filteredCalls.length);
@@ -182,6 +182,7 @@ const CallsListPage = () => {
   );
 };
 
+// review this implementation
 function filterCalls(calls: Call[], callType: string[], direction: string) {
   if (!calls) return [];
   console.log({

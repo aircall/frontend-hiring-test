@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const typeFilterOptions = [
   { label: 'Answered', value: 'answered' },
   { label: 'Missed', value: 'missed' },
@@ -6,7 +5,6 @@ export const typeFilterOptions = [
 ];
 
 export const directionFilterOptions = [
-  { label: 'All', value: '' },
   { label: 'Inbound', value: 'inbound' },
   { label: 'Outbound', value: 'outbound' }
 ];
@@ -20,8 +18,12 @@ export const pageSizeOptions = [
 
 export const CALLS_PER_PAGE = 5;
 
-export function groupCallsByDate(calls) {
-  const groupedCalls = {};
+interface GroupedCalls {
+  [date: string]: Call[]; // Assuming Call is the type of your call objects
+}
+
+function groupCallsByDate(calls: Call[]) {
+  const groupedCalls: GroupedCalls = {};
   calls.forEach(call => {
     const date = call.created_at.split('T')[0]; // Assuming created_at is a string in ISO format
     if (!groupedCalls[date]) {
@@ -32,11 +34,14 @@ export function groupCallsByDate(calls) {
 
   // Sort the keys (dates) in descending order
   const sortedDates = Object.keys(groupedCalls).sort((a, b) => {
-    return new Date(b) - new Date(a);
+    return new Date(b).getTime() - new Date(a).getTime();
   });
 
   // Create a new object with sorted keys
-  const sortedGroupedCalls = {};
+  interface SortedGroupedCalls {
+    [date: string]: Call[]; // Assuming Call is the type of your call objects
+  }
+  const sortedGroupedCalls: SortedGroupedCalls = {};
   sortedDates.forEach(date => {
     sortedGroupedCalls[date] = groupedCalls[date];
   });
@@ -44,7 +49,7 @@ export function groupCallsByDate(calls) {
   return sortedGroupedCalls;
 }
 
-export function groupCallsIntoPages(calls, pageSize) {
+export function groupCallsIntoPages(calls: Call[], pageSize: number) {
   const pages = [];
   for (let i = 0; i < calls.length; i += pageSize) {
     const page = calls.slice(i, i + pageSize);
