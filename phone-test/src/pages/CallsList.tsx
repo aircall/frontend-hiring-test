@@ -1,17 +1,7 @@
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import {
-  Grid,
-  Icon,
-  Typography,
-  Spacer,
-  Box,
-  DiagonalDownOutlined,
-  DiagonalUpOutlined,
-  Pagination
-} from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
+import { Typography, Spacer, Pagination } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Call } from '../components/Call';
 
