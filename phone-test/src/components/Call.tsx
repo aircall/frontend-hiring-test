@@ -7,10 +7,22 @@ import {
   DiagonalUpOutlined
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
-import { CallTitle } from './CallTitle';
+
+enum CallType {
+  MISSED = 'missed',
+  ANSWERED = 'answered',
+  VOICEMAIL = 'voicemail'
+}
 
 export const Call = ({ onClick, call }: { call: Call; onClick: (id: string) => void }) => {
   const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
+  const title =
+    call.call_type === CallType.MISSED
+      ? 'Missed call'
+      : call.call_type === CallType.ANSWERED
+      ? 'Call answered'
+      : 'Voicemail';
+
   const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
   const duration = formatDuration(call.duration / 1000);
   const date = formatDate(call.created_at);
@@ -37,9 +49,7 @@ export const Call = ({ onClick, call }: { call: Call; onClick: (id: string) => v
           <Icon component={icon} size={32} />
         </Box>
         <Box>
-          <Typography variant="body">
-            <CallTitle call_type={call.call_type} />
-          </Typography>
+          <Typography variant="body">{title}</Typography>
           <Typography variant="body2">{subtitle}</Typography>
         </Box>
         <Box>
