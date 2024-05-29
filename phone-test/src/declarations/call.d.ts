@@ -1,6 +1,6 @@
 interface Call {
   id: string;
-  call_type: string;
+  call_type: CallType;
   created_at: string;
   direction: string;
   from: string;
@@ -14,4 +14,10 @@ interface Call {
 interface Note {
   id: string;
   content: string;
+}
+
+enum CallType {
+  MISSED = 'missed',
+  ANSWERED = 'answered',
+  VOICEMAIL = 'voicemail'
 }
