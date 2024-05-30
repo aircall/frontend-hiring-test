@@ -16,6 +16,7 @@ export const CallDetailsPage = () => {
   if (error) return <p>ERROR</p>;
 
   const { call } = data;
+  if (call === null) return <p>Not found</p>;
 
   return (
     <>
