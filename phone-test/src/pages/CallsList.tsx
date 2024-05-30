@@ -1,9 +1,11 @@
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import { Typography, Spacer, Pagination } from '@aircall/tractor';
+import { Typography, Spacer, Pagination, Select } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Call } from '../components/Call';
+import { useState } from 'react';
+import { Filter } from '../components/Filter';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -16,15 +18,27 @@ export const PaginationWrapper = styled.div`
 
 const CALLS_PER_PAGE = 25;
 
+const filterOptions = [
+  { label: 'All', value: '' },
+  { label: 'Inbound', value: 'inbound' },
+  { label: 'Outbound', value: 'outbound' },
+  { label: 'Missed', value: 'missed' },
+  { label: 'Answered', value: 'answered' },
+  { label: 'Voicemail', value: 'voicemail' }
+];
+
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
+  // const [filter, setFilter] = useState('');
 
   const pageQueryParams = search.get('page');
   const perPageQueryParams = search.get('perPage');
+  const filterQueryParams = search.get('filter');
 
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const perPage = !!perPageQueryParams ? parseInt(perPageQueryParams) : CALLS_PER_PAGE;
+  const filterValue = filterQueryParams || '';
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -40,6 +54,14 @@ export const CallsListPage = () => {
 
   const { totalCount, nodes: calls } = data.paginatedCalls;
 
+  const filteredCalls = calls.filter((call: Call) => {
+    if (filterValue === '') return true;
+    if (filterValue === 'inbound' || filterValue === 'outbound') {
+      return call.direction === filterValue;
+    }
+    return call.call_type === filterValue;
+  });
+
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
@@ -52,13 +74,20 @@ export const CallsListPage = () => {
     navigate(`/calls/?perPage=${newPageSize}`);
   };
 
+  const handleChangeFilter = (filterValue: string) => {
+    if (filterValue === '') return navigate(`/calls/`);
+    navigate(`/calls/?filter=${filterValue}`);
+  };
+
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
+      <Filter options={filterOptions} filter={filterValue} onChangeFilter={handleChangeFilter} />
+
       <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => (
+        {filteredCalls.map((call: Call) => (
           <Call call={call} onClick={handleCallOnClick} />
         ))}
       </Spacer>
