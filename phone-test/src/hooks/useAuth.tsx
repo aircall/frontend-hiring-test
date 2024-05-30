@@ -4,6 +4,10 @@ import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
+interface User {
+  username: string;
+}
+
 const AuthContext = createContext({
   login: ({}) => {},
   logout: () => {}
@@ -14,7 +18,7 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User | null>();
   const [status, setStatus] = useState('loading');
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
@@ -25,7 +29,15 @@ export const AuthProvider = () => {
   const login = ({ username, password }: any) => {
     return loginMutation({
       variables: { input: { username, password } },
-      onCompleted: ({ login }: any) => {
+      onCompleted: ({
+        login
+      }: {
+        login: {
+          access_token: string;
+          refresh_token: string;
+          user: User;
+        };
+      }) => {
         const { access_token, refresh_token, user } = login;
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
