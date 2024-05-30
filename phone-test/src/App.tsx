@@ -58,14 +58,13 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   if (graphQLErrors) {
     for (let err of graphQLErrors) {
       // Check if the error was an authentication error
-      debugger;
+
       if (err.extensions?.code === 'INTERNAL_SERVER_ERROR') {
         // Attempt to refresh the token
         return new Observable(observer => {
           client
             .mutate({ mutation: REFRESH_TOKEN })
             .then(({ data }) => {
-              debugger;
               // Store the new tokens
               localStorage.setItem('access_token', data.refreshTokenV2.access_token);
               localStorage.setItem('refresh_token', data.refreshTokenV2.refresh_token);
@@ -88,7 +87,6 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
               forward(operation).subscribe(subscriber);
             })
             .catch(() => {
-              debugger;
               return observer.error.bind(observer);
             });
         });
