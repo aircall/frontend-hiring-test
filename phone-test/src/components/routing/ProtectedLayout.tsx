@@ -1,8 +1,12 @@
 import { Outlet, Link } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
 import logo from '../../logo.png';
+import { useQuery } from '@apollo/client';
+import { ME } from '../../gql/queries/me';
 
 export const ProtectedLayout = () => {
+  const { loading, error, data } = useQuery(ME);
+
   return (
     <Box minWidth="100vh" p={4} maxHeight="100vh" overflow="auto">
       <Flex justifyContent="space-between" alignItems="center">
@@ -10,7 +14,7 @@ export const ProtectedLayout = () => {
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome {username}!`}</span>
+          {!loading && !error && <span>{`Welcome ${data?.me?.username || 'User'}!`}</span>}
           <Link to="/login">logout</Link>
         </Spacer>
       </Flex>

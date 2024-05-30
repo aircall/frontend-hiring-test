@@ -3,7 +3,7 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
-
+import { REFRESH_TOKEN } from '../gql/mutations';
 interface User {
   username: string;
 }
@@ -23,6 +23,7 @@ export const AuthProvider = () => {
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
+  const [refreshTokenMutation] = useMutation(REFRESH_TOKEN);
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
