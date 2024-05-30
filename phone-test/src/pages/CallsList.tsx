@@ -1,10 +1,9 @@
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import { Typography, Spacer, Pagination, Select } from '@aircall/tractor';
+import { Typography, Spacer, Pagination } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Call } from '../components/Call';
-import { useState } from 'react';
 import { Filter } from '../components/Filter';
 
 export const PaginationWrapper = styled.div`
@@ -30,7 +29,6 @@ const filterOptions = [
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
-  // const [filter, setFilter] = useState('');
 
   const pageQueryParams = search.get('page');
   const perPageQueryParams = search.get('perPage');
