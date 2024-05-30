@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import { Typography, Spacer, Pagination } from '@aircall/tractor';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Call } from '../components/Call';
 import { Filter } from '../components/Filter';
 
@@ -33,9 +33,9 @@ interface GroupedCallsProps {
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
-
-  const pageQueryParams = search.get('page');
-  const perPageQueryParams = search.get('perPage');
+  const location = useLocation();
+  const pageQueryParams = search.get('offset');
+  const perPageQueryParams = search.get('limit');
   const filterQueryParams = search.get('filter');
 
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
@@ -76,21 +76,33 @@ export const CallsListPage = () => {
     {}
   );
 
+  const mergeUrlParams = (search: string, newParams: object) => {
+    const params = new URLSearchParams(search);
+
+    for (const [key, value] of Object.entries(newParams)) {
+      params.set(key, value);
+    }
+
+    console.log('params.toString() :>> ', params.toString());
+    return params.toString();
+  };
+
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    navigate(`/calls?${mergeUrlParams(location.search, { offset: page })}`);
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
-    navigate(`/calls/?perPage=${newPageSize}`);
+    navigate(mergeUrlParams(location.search, { limit: newPageSize }));
+    navigate(`/calls?${mergeUrlParams(location.search, { limit: newPageSize })}`);
   };
 
-  const handleChangeFilter = (filterValue: string) => {
-    if (filterValue === '') return navigate(`/calls/`);
-    navigate(`/calls/?filter=${filterValue}`);
+  const handleChangeFilter = (filter: string) => {
+    if (filter === '') return navigate(`/calls/`);
+    navigate(`/calls?${mergeUrlParams(location.search, { filter })}`);
   };
 
   return (
