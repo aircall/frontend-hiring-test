@@ -26,6 +26,10 @@ const filterOptions = [
   { label: 'Voicemail', value: 'voicemail' }
 ];
 
+interface GroupedCallsProps {
+  [date: string]: Call[];
+}
+
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
@@ -60,6 +64,18 @@ export const CallsListPage = () => {
     return call.call_type === filterValue;
   });
 
+  const groupedCalls: GroupedCallsProps = filteredCalls.reduce(
+    (acc: GroupedCallsProps, call: Call) => {
+      const date = new Date(call.created_at).toDateString();
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(call);
+      return acc;
+    },
+    {}
+  );
+
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
   };
@@ -85,8 +101,13 @@ export const CallsListPage = () => {
       <Filter options={filterOptions} filter={filterValue} onChangeFilter={handleChangeFilter} />
 
       <Spacer space={3} direction="vertical">
-        {filteredCalls.map((call: Call) => (
-          <Call call={call} onClick={handleCallOnClick} />
+        {Object.entries(groupedCalls).map(([date, calls]) => (
+          <div key={date}>
+            <Typography variant="displayS">{date}</Typography>
+            {calls.map((call: Call) => (
+              <Call key={call.id} call={call} onClick={handleCallOnClick} />
+            ))}
+          </div>
         ))}
       </Spacer>
 
