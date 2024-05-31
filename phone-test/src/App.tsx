@@ -15,84 +15,95 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
-  createHttpLink
+  createHttpLink,
+  FetchResult
 } from '@apollo/client';
 import { AuthProvider } from './hooks/useAuth';
 import { onError } from '@apollo/client/link/error';
 import { REFRESH_TOKEN } from './gql/mutations/refreshToken';
+import { GraphQLError } from 'graphql';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
 });
 
-// const authLink = setContext((_, { headers }) => {
-//   // get the authentication token from local storage if it exists
-//   const accessToken = localStorage.getItem('access_token');
-//   const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
-
-//   // return the headers to the context so httpLink can read them
-//   return {
-//     headers: {
-//       ...headers,
-//       authorization: accessToken ? `Bearer ${parsedToken}` : ''
-//     }
-//   };
-// });
-
 const authLink = new ApolloLink((operation, forward) => {
-  // Use the setContext method to set the HTTP headers.
   const accessToken = localStorage.getItem('access_token');
-  const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
+  let token = accessToken || undefined;
+
+  if (operation.operationName === 'refreshTokenV2') {
+    const refreshToken = localStorage.getItem('refresh_token');
+    token = refreshToken || undefined;
+  }
 
   operation.setContext({
     headers: {
-      authorization: `Bearer ${parsedToken} || ''}`
+      authorization: token ? `Bearer ${JSON.parse(token)}` : ''
     }
   });
 
-  // Call the next link in the middleware chain.
   return forward(operation);
 });
 
-const errorLink = onError(({ graphQLErrors, operation, forward }) => {
+const refreshToken = async () => {
+  try {
+    const { data } = await client.mutate({
+      mutation: REFRESH_TOKEN
+    });
+    const accessToken = data?.refreshTokenV2.access_token;
+    if (!accessToken) {
+      throw new GraphQLError('Empty AccessToken');
+    }
+
+    localStorage.setItem('access_token', JSON.stringify(accessToken));
+    return accessToken;
+  } catch (err) {
+    localStorage.clear();
+    throw err;
+  }
+};
+
+const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
   if (graphQLErrors) {
     for (let err of graphQLErrors) {
-      // Check if the error was an authentication error
+      switch (err.message) {
+        case 'Unauthorized':
+          // ignore 401 error for a refresh request
+          if (operation.operationName === 'refreshTokenV2') return;
 
-      if (err.extensions?.code === 'INTERNAL_SERVER_ERROR') {
-        // Attempt to refresh the token
-        return new Observable(observer => {
-          client
-            .mutate({ mutation: REFRESH_TOKEN })
-            .then(({ data }) => {
-              // Store the new tokens
-              localStorage.setItem('access_token', data.refreshTokenV2.access_token);
-              localStorage.setItem('refresh_token', data.refreshTokenV2.refresh_token);
+          const observable = new Observable<FetchResult<Record<string, any>>>(observer => {
+            // used an annonymous function for using an async function
+            (async () => {
+              try {
+                const accessToken = await refreshToken();
 
-              // Retry the request
-              operation.setContext({
-                headers: {
-                  authorization: `Bearer ${data.refreshTokenV2.access_token}`
-                }
-              });
-            })
-            .then(() => {
-              const subscriber = {
-                next: observer.next.bind(observer),
-                error: observer.error.bind(observer),
-                complete: observer.complete.bind(observer)
-              };
+                operation.setContext({
+                  headers: {
+                    ...operation.getContext().headers,
+                    authorization: `Bearer ${accessToken}`
+                  }
+                });
 
-              // Retry the request
-              forward(operation).subscribe(subscriber);
-            })
-            .catch(() => {
-              return observer.error.bind(observer);
-            });
-        });
+                // Retry the failed request
+                const subscriber = {
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
+                  complete: observer.complete.bind(observer)
+                };
+
+                forward(operation).subscribe(subscriber);
+              } catch (err) {
+                observer.error(err);
+              }
+            })();
+          });
+
+          return observable;
       }
     }
   }
+
+  if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
 const client = new ApolloClient({

@@ -23,7 +23,6 @@ export const AuthProvider = () => {
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
-  const [refreshTokenMutation] = useMutation(REFRESH_TOKEN);
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
