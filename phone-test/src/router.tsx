@@ -3,7 +3,7 @@ import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
 
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider } from './context/AuthContext';
 import { AppRedirect } from './AppRedirect';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { NotFoundPage } from './pages/NotFoundPage';

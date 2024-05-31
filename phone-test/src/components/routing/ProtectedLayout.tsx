@@ -3,11 +3,8 @@ import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
 import logo from '../../logo.png';
 import { useQuery } from '@apollo/client';
 import { ME } from '../../gql/queries/me';
-interface ProtectedLayoutProps {
-  children: React.ReactNode;
-}
 
-export const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
+export const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const { loading, error, data } = useQuery(ME);
 
   return (
