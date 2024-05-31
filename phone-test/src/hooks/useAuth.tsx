@@ -1,8 +1,8 @@
-import { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { LOGIN } from '../gql/mutations';
-import { useLocalStorage } from './useLocalStorage';
 import { FetchResult, useMutation } from '@apollo/client';
+import { useLocalStorage } from './useLocalStorage';
+import { LOGIN } from '../gql/mutations';
 
 interface User {
   username: string;
@@ -37,10 +37,6 @@ const AuthContext = createContext<AuthContextProps>({
     Promise.resolve({} as FetchResult<any>),
   logout: () => {}
 });
-
-export interface AuthPRoviderProps {
-  children: React.ReactNode;
-}
 
 export const AuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -91,6 +87,7 @@ export const AuthProvider = () => {
       refreshToken
     };
   }, []);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />
