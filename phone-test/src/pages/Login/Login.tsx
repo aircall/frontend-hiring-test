@@ -13,7 +13,6 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
-  const navigate = useNavigate();
 
   const onSubmit = async (email: string, password: string) => {
     try {
