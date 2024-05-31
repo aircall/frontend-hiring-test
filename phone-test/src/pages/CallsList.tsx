@@ -85,10 +85,6 @@ export const CallsListPage = () => {
     return params.toString();
   };
 
-  const handleCallOnClick = (callId: string) => {
-    navigate(`/calls/${callId}`);
-  };
-
   const handlePageChange = (page: number) => {
     navigate(`/calls?${mergeUrlParams(location.search, { offset: page })}`);
   };
@@ -114,7 +110,7 @@ export const CallsListPage = () => {
           <div key={date}>
             <Typography variant="displayS">{date}</Typography>
             {calls.map((call: Call) => (
-              <Call key={call.id} call={call} onClick={handleCallOnClick} />
+              <Call key={call.id} call={call} />
             ))}
           </div>
         ))}

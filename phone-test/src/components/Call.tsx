@@ -7,26 +7,27 @@ import {
   DiagonalUpOutlined
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
+import { useNavigate } from 'react-router-dom';
 
-enum CallType {
-  MISSED = 'missed',
-  ANSWERED = 'answered',
-  VOICEMAIL = 'voicemail'
-}
+export const Call = ({ call }: { call: Call }) => {
+  const navigate = useNavigate();
 
-export const Call = ({ onClick, call }: { call: Call; onClick: (id: string) => void }) => {
   const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-  const title =
-    call.call_type === CallType.MISSED
-      ? 'Missed call'
-      : call.call_type === CallType.ANSWERED
-      ? 'Call answered'
-      : 'Voicemail';
+  const callTypeTitles: Record<string, string> = {
+    missed: 'missed',
+    answered: 'answered',
+    voicemail: 'voicemail'
+  };
 
+  const title = callTypeTitles[call.call_type] || 'Unknown call type';
   const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
   const duration = formatDuration(call.duration / 1000);
   const date = formatDate(call.created_at);
   const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+
+  const handleCallOnClick = (callId: string) => {
+    navigate(`/calls/${callId}`);
+  };
 
   return (
     <Box
@@ -34,7 +35,7 @@ export const Call = ({ onClick, call }: { call: Call; onClick: (id: string) => v
       bg="black-a30"
       borderRadius={16}
       cursor="pointer"
-      onClick={() => onClick(call.id)}
+      onClick={() => handleCallOnClick(call.id)}
     >
       <Grid
         gridTemplateColumns="32px 1fr max-content"
