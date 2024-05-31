@@ -31,7 +31,7 @@ export const AuthProvider = () => {
     } else {
       navigate('/login');
     }
-  }, [accessToken, navigate]);
+  }, []);
 
   // call this function when you want to authenticate the user
   const login = ({ username, password }: any) => {
