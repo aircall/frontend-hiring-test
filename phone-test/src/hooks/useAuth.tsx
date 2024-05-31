@@ -25,14 +25,6 @@ export const AuthProvider = () => {
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (localStorage.getItem('access_token')) {
-      navigate('/calls');
-    } else {
-      navigate('/login');
-    }
-  }, []);
-
   // call this function when you want to authenticate the user
   const login = ({ username, password }: any) => {
     return loginMutation({
