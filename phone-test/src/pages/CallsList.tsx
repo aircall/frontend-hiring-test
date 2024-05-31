@@ -82,8 +82,6 @@ export const CallsListPage = () => {
     for (const [key, value] of Object.entries(newParams)) {
       params.set(key, value);
     }
-
-    console.log('params.toString() :>> ', params.toString());
     return params.toString();
   };
 
@@ -96,7 +94,6 @@ export const CallsListPage = () => {
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
-    navigate(mergeUrlParams(location.search, { limit: newPageSize }));
     navigate(`/calls?${mergeUrlParams(location.search, { limit: newPageSize })}`);
   };
 
