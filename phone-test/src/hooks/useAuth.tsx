@@ -2,14 +2,39 @@ import { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
-import { useMutation } from '@apollo/client';
+import { FetchResult, useMutation } from '@apollo/client';
 
 interface User {
   username: string;
 }
+enum Status {
+  loading = 'loading',
+  authenticated = 'authenticated',
+  unauthenticated = 'unauthenticated'
+}
 
-const AuthContext = createContext({
-  login: ({}) => {},
+interface AuthContextProps {
+  user: User | null;
+  status: Status;
+  accessToken: string | null;
+  refreshToken: string | null;
+  login: ({
+    username,
+    password
+  }: {
+    username: string;
+    password: string;
+  }) => Promise<FetchResult<any>>;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextProps>({
+  user: null,
+  status: Status.loading,
+  accessToken: null,
+  refreshToken: null,
+  login: ({ username, password }: { username: string; password: string }) =>
+    Promise.resolve({} as FetchResult<any>),
   logout: () => {}
 });
 
@@ -18,15 +43,15 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState<User | null>();
-  const [status, setStatus] = useState('loading');
+  const [user, setUser] = useState<User | null>(null);
+  const [status, setStatus] = useState<Status>(Status.loading);
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
+  const login = ({ username, password }: { username: string; password: string }) => {
     return loginMutation({
       variables: { input: { username, password } },
       onCompleted: ({
@@ -42,7 +67,7 @@ export const AuthProvider = () => {
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
         setUser(user);
-        console.log('redirect to calls');
+        setStatus(Status.authenticated);
         navigate('/calls');
       }
     });
@@ -52,13 +77,18 @@ export const AuthProvider = () => {
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
+    setStatus(Status.unauthenticated);
     navigate('/login', { replace: true });
   };
 
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      status,
+      user,
+      accessToken,
+      refreshToken
     };
   }, []);
   return (
