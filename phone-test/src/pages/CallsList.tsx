@@ -122,6 +122,7 @@ export const CallsListPage = () => {
             activePage={activePage}
             pageSize={perPage}
             onPageChange={handlePageChange}
+            defaultPageSize={CALLS_PER_PAGE}
             recordsTotalCount={totalCount}
             onPageSizeChange={handlePageSizeChange}
           />
