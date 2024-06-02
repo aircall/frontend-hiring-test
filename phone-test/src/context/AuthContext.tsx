@@ -1,9 +1,10 @@
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { FetchResult, useMutation } from '@apollo/client';
+import { FetchResult, useMutation, useQuery } from '@apollo/client';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { LOGIN } from '../gql/mutations';
 import { AuthContextProps } from '../declarations/auth';
+import { ME } from '../gql/queries/me';
 
 enum Status {
   loading = 'loading',
@@ -22,12 +23,20 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<UserType | null>(null);
   const [status, setStatus] = useState<Status>(Status.loading);
   const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
   const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
-  const navigate = useNavigate();
+  const { loading, error, data } = useQuery(ME);
+  const { me } = data || {};
+
+  useEffect(() => {
+    if (!loading && !error && me?.username) {
+      setUser(me);
+    }
+  }, [me, loading, error]);
 
   // call this function when you want to authenticate the user
   const login = ({ username, password }: { username: string; password: string }) => {
