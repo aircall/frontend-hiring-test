@@ -20,7 +20,7 @@ export const CallDetailsPage = () => {
 
   return (
     <>
-      <Typography variant="displayM" textAlign="center" py={3}>
+      <Typography variant="displayM" textAlign="center" py={3} data-cy="call-details-title">
         Calls Details
       </Typography>
       <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>

@@ -31,6 +31,7 @@ export const Call = ({ call }: { call: Call }) => {
 
   return (
     <Box
+      data-cy="call-detail"
       key={call.id}
       bg="black-a30"
       borderRadius={16}
