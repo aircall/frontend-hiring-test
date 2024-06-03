@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { FetchResult, useMutation, useQuery } from '@apollo/client';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -38,36 +38,37 @@ export const AuthProvider = () => {
     }
   }, [me, loading, error]);
 
-  // call this function when you want to authenticate the user
-  const login = ({ username, password }: { username: string; password: string }) => {
-    return loginMutation({
-      variables: { input: { username, password } },
-      onCompleted: ({
-        login
-      }: {
-        login: {
-          access_token: string;
-          refresh_token: string;
-          user: UserType;
-        };
-      }) => {
-        const { access_token, refresh_token, user } = login;
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
-        setUser(user);
-        setStatus(Status.authenticated);
-        navigate('/calls');
-      }
-    });
-  };
+  const login = useCallback(
+    ({ username, password }: { username: string; password: string }) => {
+      return loginMutation({
+        variables: { input: { username, password } },
+        onCompleted: ({
+          login
+        }: {
+          login: {
+            access_token: string;
+            refresh_token: string;
+            user: UserType;
+          };
+        }) => {
+          const { access_token, refresh_token, user } = login;
+          setAccessToken(access_token);
+          setRefreshToken(refresh_token);
+          setUser(user);
+          setStatus(Status.authenticated);
+          navigate('/calls');
+        }
+      });
+    },
+    [setAccessToken, setRefreshToken, loginMutation, setUser, navigate]
+  );
 
-  // call this function to sign out logged in user
-  const logout = () => {
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
     setStatus(Status.unauthenticated);
     navigate('/login', { replace: true });
-  };
+  }, [navigate, setAccessToken, setRefreshToken]);
 
   const value = useMemo(() => {
     return {
@@ -78,7 +79,7 @@ export const AuthProvider = () => {
       accessToken,
       refreshToken
     };
-  }, []);
+  }, [user, status, accessToken, refreshToken, login, logout]);
 
   return (
     <AuthContext.Provider value={value}>

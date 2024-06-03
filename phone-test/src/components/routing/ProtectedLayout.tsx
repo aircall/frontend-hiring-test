@@ -13,7 +13,7 @@ export const ProtectedLayout = ({ children }: { children: React.ReactNode }) => 
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          {<span>{`Welcome ${user?.username || 'User'}!`}</span>}
+          {<span>{`Welcome ${user?.username || ''}`}</span>}
           <Link to="/login" onClick={logout}>
             logout
           </Link>
