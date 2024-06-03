@@ -1,14 +1,12 @@
-import { createBrowserRouter, createRoutesFromElements, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AppRedirect } from './AppRedirect';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ErrorPage } from './pages/ErrorPage';
-import { lazy } from 'react';
-
-const LoginPage = lazy(() => import('./pages/Login'));
-const CallsListPage = lazy(() => import('./pages/CallsListPage'));
-const CallDetailsPage = lazy(() => import('./pages/CallDetailsPage'));
+import LoginPage from './pages/Login';
+import CallsListPage from './pages/CallsListPage';
+import CallDetailsPage from './pages/CallDetailsPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
