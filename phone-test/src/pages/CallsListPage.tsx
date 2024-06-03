@@ -1,12 +1,14 @@
+import { useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
-import { Typography, Spacer, Pagination } from '@aircall/tractor';
+import { Typography, Spacer, Pagination, Select } from '@aircall/tractor';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Call } from '../components/Call';
-import { Filter } from '../components/Filter';
+import { CALLS_PER_PAGE, filterOptions } from '../utils/constants';
+import { useFilterGroupByDateCalls } from '../hooks/useFilterGroupByDateCalls';
 
-export const PaginationWrapper = styled.div`
+const PaginationWrapper = styled.div`
   > div {
     width: inherit;
     margin-top: 20px;
@@ -15,25 +17,11 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 25;
-
-const filterOptions = [
-  { label: 'All', value: '' },
-  { label: 'Inbound', value: 'inbound' },
-  { label: 'Outbound', value: 'outbound' },
-  { label: 'Missed', value: 'missed' },
-  { label: 'Answered', value: 'answered' },
-  { label: 'Voicemail', value: 'voicemail' }
-];
-
-interface GroupedCallsProps {
-  [date: string]: Call[];
-}
-
-export const CallsListPage = () => {
+const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+
   const pageQueryParams = search.get('offset');
   const perPageQueryParams = search.get('limit');
   const filterQueryParams = search.get('filter');
@@ -47,34 +35,10 @@ export const CallsListPage = () => {
       offset: (activePage - 1) * perPage,
       limit: perPage
     }
-    // onCompleted: () => handleRefreshToken(),
   });
 
-  if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
-
-  const { totalCount, nodes: calls } = data.paginatedCalls;
-
-  const filteredCalls = calls.filter((call: Call) => {
-    if (filterValue === '') return true;
-    if (filterValue === 'inbound' || filterValue === 'outbound') {
-      return call.direction === filterValue;
-    }
-    return call.call_type === filterValue;
-  });
-
-  const groupedCalls: GroupedCallsProps = filteredCalls.reduce(
-    (acc: GroupedCallsProps, call: Call) => {
-      const date = new Date(call.created_at).toDateString();
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(call);
-      return acc;
-    },
-    {}
-  );
+  const { totalCount, nodes: calls } = data?.paginatedCalls || {};
+  const groupedCallsByDate = useFilterGroupByDateCalls(filterValue, calls);
 
   const mergeUrlParams = (search: string, newParams: object) => {
     const params = new URLSearchParams(search);
@@ -93,20 +57,37 @@ export const CallsListPage = () => {
     navigate(`/calls?${mergeUrlParams(location.search, { limit: newPageSize })}`);
   };
 
-  const handleChangeFilter = (filter: string) => {
-    if (filter === '') return navigate(`/calls/`);
-    navigate(`/calls?${mergeUrlParams(location.search, { filter })}`);
-  };
+  const handleChangeFilter = useCallback(
+    (filter: string) => {
+      if (filter === '') return navigate(`/calls/`);
+      navigate(`/calls?${mergeUrlParams(location.search, { filter })}`);
+    },
+    [navigate, location.search]
+  );
+
+  if (loading) return <p>Loading calls...</p>;
+  if (error) return <p>ERROR</p>;
+  if (!data) return <p>Not found</p>;
 
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
-      <Filter options={filterOptions} filter={filterValue} onChangeFilter={handleChangeFilter} />
+
+      <Select
+        selectionMode="single"
+        size="small"
+        selectedKeys={[filterValue]}
+        options={filterOptions}
+        onSelectionChange={selectedKeys => {
+          if (selectedKeys.length === 0) return;
+          handleChangeFilter(selectedKeys[0]);
+        }}
+      />
 
       <Spacer space={3} direction="vertical">
-        {Object.entries(groupedCalls).map(([date, calls]) => (
+        {Object.entries(groupedCallsByDate).map(([date, calls]) => (
           <div key={date}>
             <Typography variant="displayS">{date}</Typography>
             {calls.map((call: Call) => (
@@ -131,3 +112,5 @@ export const CallsListPage = () => {
     </>
   );
 };
+
+export default CallsListPage;

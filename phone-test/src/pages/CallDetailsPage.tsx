@@ -4,7 +4,7 @@ import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 
-export const CallDetailsPage = () => {
+const CallDetailsPage = () => {
   const { callId } = useParams();
   const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
     variables: {
@@ -40,3 +40,4 @@ export const CallDetailsPage = () => {
     </>
   );
 };
+export default CallDetailsPage;

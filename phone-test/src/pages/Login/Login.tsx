@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 
 import { FormState } from './Login.decl';
@@ -9,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const { login } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
@@ -46,3 +44,5 @@ export const LoginPage = () => {
     </Spacer>
   );
 };
+
+export default LoginPage;

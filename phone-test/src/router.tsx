@@ -1,25 +1,28 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
-import { LoginPage } from './pages/Login/Login';
-import { CallsListPage } from './pages/CallsList';
-import { CallDetailsPage } from './pages/CallDetails';
-
 import { AuthProvider } from './context/AuthContext';
 import { AppRedirect } from './AppRedirect';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ErrorPage } from './pages/ErrorPage';
+import { Suspense, lazy } from 'react';
+
+const LoginPage = lazy(() => import('./pages/Login/Login'));
+const CallsListPage = lazy(() => import('./pages/CallsListPage'));
+const CallDetailsPage = lazy(() => import('./pages/CallDetailsPage'));
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<AuthProvider />} errorElement={<ErrorPage />}>
-      <Route path="*" element={<NotFoundPage />} />
-      <Route path="/" element={<AppRedirect />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedRoute />}>
-        <Route path="/calls" element={<CallsListPage />} />
-        <Route path="/calls/:callId" element={<CallDetailsPage />} />
+    <Suspense fallback={<div>Loading...</div>}>
+      <Route element={<AuthProvider />} errorElement={<ErrorPage />}>
+        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/" element={<AppRedirect />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/calls" element={<ProtectedRoute />}>
+          <Route path="/calls" element={<CallsListPage />} />
+          <Route path="/calls/:callId" element={<CallDetailsPage />} />
+        </Route>
       </Route>
-    </Route>
+    </Suspense>
   )
 );
 
