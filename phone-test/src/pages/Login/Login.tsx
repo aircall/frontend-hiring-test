@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const { login } = useAuth();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
@@ -44,5 +44,3 @@ const LoginPage = () => {
     </Spacer>
   );
 };
-
-export default LoginPage;

@@ -3,10 +3,11 @@ import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import { Typography, Spacer, Pagination, Select } from '@aircall/tractor';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Call } from '../components/Call';
 import { CALLS_PER_PAGE, filterOptions } from '../utils/constants';
 import { useFilterGroupByDateCalls } from '../hooks/useFilterGroupByDateCalls';
+import { useSearch } from '../hooks/useSearch';
+import { useNavigateWithParams } from '../hooks/useNavigateWithParams';
 
 const PaginationWrapper = styled.div`
   > div {
@@ -18,17 +19,8 @@ const PaginationWrapper = styled.div`
 `;
 
 const CallsListPage = () => {
-  const [search] = useSearchParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const pageQueryParams = search.get('offset');
-  const perPageQueryParams = search.get('limit');
-  const filterQueryParams = search.get('filter');
-
-  const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
-  const perPage = !!perPageQueryParams ? parseInt(perPageQueryParams) : CALLS_PER_PAGE;
-  const filterValue = filterQueryParams || '';
+  const navigateWithParams = useNavigateWithParams();
+  const { activePage, perPage, filterValue } = useSearch();
 
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
@@ -40,29 +32,20 @@ const CallsListPage = () => {
   const { totalCount, nodes: calls } = data?.paginatedCalls || {};
   const groupedCallsByDate = useFilterGroupByDateCalls(filterValue, calls);
 
-  const mergeUrlParams = (search: string, newParams: object) => {
-    const params = new URLSearchParams(search);
-
-    for (const [key, value] of Object.entries(newParams)) {
-      params.set(key, value);
-    }
-    return params.toString();
-  };
-
   const handlePageChange = (page: number) => {
-    navigate(`/calls?${mergeUrlParams(location.search, { offset: page })}`);
+    navigateWithParams('/calls', { offset: page });
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
-    navigate(`/calls?${mergeUrlParams(location.search, { limit: newPageSize })}`);
+    navigateWithParams('/calls', { limit: newPageSize });
   };
 
   const handleChangeFilter = useCallback(
     (filter: string) => {
-      if (filter === '') return navigate(`/calls/`);
-      navigate(`/calls?${mergeUrlParams(location.search, { filter })}`);
+      if (filter === '') return navigateWithParams('/calls', {});
+      navigateWithParams('/calls', { filter });
     },
-    [navigate, location.search]
+    [navigateWithParams]
   );
 
   if (loading) return <p>Loading calls...</p>;

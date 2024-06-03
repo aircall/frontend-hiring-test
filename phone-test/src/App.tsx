@@ -6,13 +6,16 @@ import { darkTheme } from './style/theme/darkTheme';
 import { GlobalAppStyle } from './style/global';
 import client from './client';
 import router from './router';
+import { Suspense } from 'react';
 
 function App() {
   return (
     <Tractor injectStyle theme={darkTheme}>
       <ApolloProvider client={client}>
-        <RouterProvider router={router} />
-        <GlobalAppStyle />
+        <Suspense fallback={null}>
+          <RouterProvider router={router} />
+          <GlobalAppStyle />
+        </Suspense>
       </ApolloProvider>
     </Tractor>
   );
