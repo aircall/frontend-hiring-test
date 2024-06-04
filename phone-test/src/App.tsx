@@ -3,13 +3,13 @@ import { CallsListPage, CallDetailsPage, LoginPage } from './pages';
 import { Tractor } from '@aircall/tractor';
 
 import './App.css';
-import { ProtectedLayout } from './components/routing/ProtectedLayout';
+import { ProtectedLayout } from './components';
 import { darkTheme } from './style/theme/darkTheme';
 import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider } from './hooks';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'

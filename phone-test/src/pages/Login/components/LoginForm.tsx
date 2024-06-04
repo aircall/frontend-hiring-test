@@ -10,7 +10,7 @@ import {
   TextFieldInput
 } from '@aircall/tractor';
 
-import { FormState } from './Login.decl';
+import { FormState } from '../Login.decl';
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => void;

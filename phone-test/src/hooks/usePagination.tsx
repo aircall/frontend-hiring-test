@@ -1,20 +1,16 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
 interface UsePaginationProps {
   defaultItemsCount: number;
 }
-
-interface UsePaginationReturn {
+interface UsePaginationResult {
   handlePageChange: (page: number) => void;
   handlePageSizeChange: (pageSize: number) => void;
   activePage: number;
-  activeLimit: number;
   callsPerPage: number;
 }
 
-
-export const usePagination = ({ defaultItemsCount }: UsePaginationProps): UsePaginationReturn => {
+export const usePagination = ({ defaultItemsCount }: UsePaginationProps): UsePaginationResult => {
   const [search, setSearch] = useSearchParams();
 
   const activePage = useMemo(() => {
@@ -39,7 +35,6 @@ export const usePagination = ({ defaultItemsCount }: UsePaginationProps): UsePag
     handlePageChange,
     handlePageSizeChange,
     activePage,
-    activeLimit,
     callsPerPage: activeLimit
   };
 };

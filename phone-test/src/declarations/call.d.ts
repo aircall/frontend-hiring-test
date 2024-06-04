@@ -1,8 +1,8 @@
 interface Call {
   id: string;
-  call_type: string;
+  call_type: CallType;
   created_at: string;
-  direction: string;
+  direction: Direction;
   from: string;
   duration: number;
   is_archived: boolean;
