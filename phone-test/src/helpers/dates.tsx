@@ -1,16 +1,15 @@
 import { format, isValid, parseISO } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 export const formatDuration = (duration: number) => {
   if (duration >= 3600) {
-    // 600 seconds 👉️ "00:10:00" (hh:mm:ss)
     return new Date(duration * 1000).toISOString().slice(11, 19);
   } else {
-    // 600 seconds 👉️ "10:00" (mm:ss)
     return new Date(duration * 1000).toISOString().slice(14, 19);
   }
 };
 
-const getValidDate = (date: Date | string) => {
+export const getValidDate = (date: Date | string) => {
   const potentialValidDate = typeof date === 'string' ? parseISO(date) : date;
 
   // Make sure that the date is a valid ISO otherwise fallback to Date API
@@ -29,6 +28,12 @@ const getValidDate = (date: Date | string) => {
  * @param date ex: 2022-11-16T13:37:05.822Z
  * @returns human readable date
  */
-export const formatDate = (date: string, variant: string = 'LLL d - HH:mm') => {
-  return format(getValidDate(date), variant);
+export const formatDate = (
+  date: string,
+  variant: string = 'LLL d - HH:mm',
+  timeZone: string = 'UTC'
+) => {
+  const validDate = getValidDate(date);
+  const zonedDate = toZonedTime(validDate, timeZone);
+  return format(zonedDate, variant);
 };
