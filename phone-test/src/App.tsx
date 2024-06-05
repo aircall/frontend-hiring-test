@@ -1,9 +1,8 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { CallsListPage, CallDetailsPage, LoginPage } from './pages';
 import { Tractor } from '@aircall/tractor';
-
 import './App.css';
-import { ProtectedLayout } from './components';
+import { ProtectedLayout, ProtectedRoute } from './components'; // Ensure ProtectedRoute is imported
 import { darkTheme } from './style/theme/darkTheme';
 import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
@@ -18,9 +17,8 @@ const httpLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const accessToken = localStorage.getItem('access_token');
-  const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
-
-  // return the headers to the context so httpLink can read them
+  const parsedToken = accessToken ? JSON.parse(accessToken) : undefined; 
+     // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
@@ -38,7 +36,13 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/calls" element={<ProtectedLayout />}>
+      <Route
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
