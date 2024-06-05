@@ -1,11 +1,24 @@
+import { useMemo } from 'react';
 import * as S from '../../styles';
+import { groupCallsByDate } from '../../utils';
 import { ListItem } from '../ListItem';
 import { ListProps } from './types';
+import { DateSection } from '../DateSection';
 
-export const List = ({ calls, onCLick }: ListProps) => (
-  <S.CallsList space={3} direction="vertical">
-    {calls.map((call: Call) => (
-      <ListItem key={call.id} call={call} onClick={onCLick} />
-    ))}
-  </S.CallsList>
-);
+export const List = ({ calls, onClick }: ListProps) => {
+  // TODO: We can add sorting for list items also , but it will work only per page.
+  // So it would be better to have that functionality covered on BE side
+  const groupedCalls = useMemo(() => groupCallsByDate(calls), [calls]);
+
+  return (
+    <S.CallsList space={3} direction="vertical">
+      {Object.keys(groupedCalls).map(date => (
+        <DateSection key={date} date={date}>
+          {groupedCalls[date].map((call: Call) => (
+            <ListItem key={call.id} call={call} onClick={onClick} />
+          ))}
+        </DateSection>
+      ))}
+    </S.CallsList>
+  );
+};

@@ -13,7 +13,14 @@ export const ListItem = ({ call, onClick }: ListItemProps) => {
   const handleClick = () => onClick(call.id);
 
   return (
-    <Box key={call.id} bg="black-a30" borderRadius={16} cursor="pointer" onClick={handleClick}>
+    <Box
+      key={call.id}
+      mb={2}
+      bg="black-a30"
+      borderRadius={16}
+      cursor="pointer"
+      onClick={handleClick}
+    >
       <Grid
         gridTemplateColumns="32px 1fr max-content"
         columnGap={2}

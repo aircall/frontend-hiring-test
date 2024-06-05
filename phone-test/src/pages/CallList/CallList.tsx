@@ -30,7 +30,7 @@ export const CallsListPage = () => {
   return (
     <PageWrapper isLoading={loading} error={error} data={data}>
       <Header title="Calls History" />
-      <List calls={calls} onCLick={handleCallOnClick} />
+      <List calls={calls} onClick={handleCallOnClick} />
       {totalCount && (
         <S.PaginationWrapper>
           <Pagination
