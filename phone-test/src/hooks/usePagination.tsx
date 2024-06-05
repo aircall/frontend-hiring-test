@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useQueryParams } from './useQueryParams';
+
 interface UsePaginationProps {
   defaultItemsCount: number;
 }
@@ -11,30 +12,29 @@ interface UsePaginationResult {
 }
 
 export const usePagination = ({ defaultItemsCount }: UsePaginationProps): UsePaginationResult => {
-  const [search, setSearch] = useSearchParams();
+  const { getQueryParam, setQueryParam, setQueryParams } = useQueryParams();
 
   const activePage = useMemo(() => {
-    const pageQueryParam = search.get('page');
+    const pageQueryParam = getQueryParam('page');
     return pageQueryParam ? parseInt(pageQueryParam) : 1;
-  }, [search]);
+  }, [getQueryParam]);
 
-  const activeLimit = useMemo(() => {
-    const limitQueryParam = search.get('limit');
+  const callsPerPage = useMemo(() => {
+    const limitQueryParam = getQueryParam('limit');
     return limitQueryParam ? parseInt(limitQueryParam) : defaultItemsCount;
-  }, [search, defaultItemsCount]);
-
+  }, [getQueryParam, defaultItemsCount]);
   const handlePageChange = (page: number) => {
-    setSearch({ page: page.toString(), limit: activeLimit.toString() });
+    setQueryParam('page', page.toString());
   };
 
   const handlePageSizeChange = (pageSize: number) => {
-    setSearch({ page: '1', limit: pageSize.toString() });
+    setQueryParams({ page: '1', limit: pageSize.toString() });
   };
 
   return {
     handlePageChange,
     handlePageSizeChange,
     activePage,
-    callsPerPage: activeLimit
+    callsPerPage
   };
 };

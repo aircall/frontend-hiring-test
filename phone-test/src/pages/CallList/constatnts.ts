@@ -22,3 +22,8 @@ export const pageSizeOptions = [
     value: 200
   }
 ];
+
+export const CALLS_FILTERS = {
+  call_type: '',
+  direction: ''
+};
