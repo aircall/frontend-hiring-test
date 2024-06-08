@@ -30,15 +30,17 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
       width="100%"
     >
       <Grid columnGap={4} rowGap={5} gridTemplateColumns="1fr">
-        <FormItem label="Email" name="email">
+        <FormItem label="Email">
           <TextFieldInput
+            name="email"
             placeholder="job@aircall.io"
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
         </FormItem>
-        <FormItem label="Password" name="password">
+        <FormItem label="Password">
           <TextFieldInput
+            name="password"
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}

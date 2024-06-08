@@ -20,6 +20,7 @@ export const ListItem = ({ call, onClick }: ListItemProps) => {
       borderRadius={16}
       cursor="pointer"
       onClick={handleClick}
+      data-test-id="call-item"
     >
       <Grid
         gridTemplateColumns="32px 1fr max-content"

@@ -1,5 +1,5 @@
-import { format, isValid, parseISO } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { isValid, parseISO } from 'date-fns';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 export const formatDuration = (duration: number) => {
   if (duration >= 3600) {
@@ -34,6 +34,6 @@ export const formatDate = (
   timeZone: string = 'UTC'
 ) => {
   const validDate = getValidDate(date);
-  const zonedDate = toZonedTime(validDate, timeZone);
-  return format(zonedDate, variant);
+  const zonedDate = utcToZonedTime(validDate, timeZone);
+  return format(zonedDate, variant, { timeZone });
 };
