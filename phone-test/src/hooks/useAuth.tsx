@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
@@ -14,20 +14,29 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export interface AuthPRoviderProps {
+export interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 export const AuthProvider = () => {
   const [user, setUser] = useState(null);
   const [status, setStatus] = useState<AuthenticationStatus>(AuthenticationStatus.Loading);
-  const [, setAccessToken] = useLocalStorage('access_token', null);
+  const [accessToken, setAccessToken] = useLocalStorage('access_token', null);
   const [, setRefreshToken] = useLocalStorage('refresh_token', null);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (accessToken) {
+      setStatus(AuthenticationStatus.Authenticated);
+    } else {
+      setStatus(AuthenticationStatus.Unauthenticated);
+    }
+  }, [accessToken]);
+
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
+  const login = ({ username, password }: { username: string; password: string }) => {
+    setStatus(AuthenticationStatus.Loading);
     return loginMutation({
       variables: { input: { username, password } },
       onCompleted: ({ login }: any) => {
@@ -40,6 +49,7 @@ export const AuthProvider = () => {
       }
     });
   };
+
   // call this function to sign out logged in user
   const logout = () => {
     setAccessToken(null);
