@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../../gql/queries/getCallDetails';
 import { Box, Typography } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../../helpers/dates';
+import { PageWrapper } from '../../components';
+import { DetailItem } from './components/DetailItem';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -12,30 +14,27 @@ export const CallDetailsPage = () => {
     }
   });
 
-  if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
-
-  const { call } = data;
-
   return (
-    <>
+    <PageWrapper isLoading={loading} error={error} data={data}>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls Details
       </Typography>
-      <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
-        <div>{`ID: ${call.id}`}</div>
-        <div>{`Type: ${call.call_type}`}</div>
-        <div>{`Created at: ${formatDate(call.created_at)}`}</div>
-        <div>{`Direction: ${call.direction}`}</div>
-        <div>{`From: ${call.from}`}</div>
-        <div>{`Duration: ${formatDuration(call.duration / 1000)}`}</div>
-        <div>{`Is archived: ${call.is_archived}`}</div>
-        <div>{`To: ${call.to}`}</div>
-        <div>{`Via: ${call.via}`}</div>
-        {call.notes?.map((note: Note, index: number) => {
-          return <div>{`Note ${index + 1}: ${note.content}`}</div>;
-        })}
-      </Box>
-    </>
+      {data && (
+        <Box overflowY="auto" bg="black-a30" p={4} borderRadius={16}>
+          <DetailItem label="ID" value={data.call.id} />
+          <DetailItem label="Type" value={data.call.call_type} />
+          <DetailItem label="Created at" value={formatDate(data.call.created_at)} />
+          <DetailItem label="Direction" value={data.call.direction} />
+          <DetailItem label="From" value={data.call.from} />
+          <DetailItem label="Duration" value={formatDuration(data.call.duration / 1000)} />
+          <DetailItem label="Is archived" value={data.call.is_archived.toString()} />
+          <DetailItem label="To" value={data.call.to} />
+          <DetailItem label="Via" value={data.call.via} />
+          {data.call.notes?.map((note: Note, index: number) => (
+            <DetailItem key={index} label={`Note ${index + 1}`} value={note.content} />
+          ))}
+        </Box>
+      )}
+    </PageWrapper>
   );
 };
