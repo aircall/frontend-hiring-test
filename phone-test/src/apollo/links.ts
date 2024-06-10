@@ -44,6 +44,7 @@ export const errorLink = onError(({ graphQLErrors, operation, forward }) => {
               }
 
               const { access_token, refresh_token } = tokenData;
+              forceReconnectWS();
               saveTokens(access_token, refresh_token);
 
               const headers = operation.getContext().headers ?? {};
@@ -64,20 +65,29 @@ export const errorLink = onError(({ graphQLErrors, operation, forward }) => {
 // Note: In the docummentation https://www.npmjs.com/package/subscriptions-transport-ws, subscriptions-transport-ws is marked depricated
 // They recommend to use  `graphql-ws` instead
 
+let wsClient: SubscriptionClient | undefined;
+
 export function createWSLink() {
-  const client = new SubscriptionClient(WS_LINK, {
+  wsClient = new SubscriptionClient(WS_LINK, {
     connectionParams: async () => {
       const accessToken = JSON.parse(localStorage.getItem('access_token') || '');
 
       return {
         authorization: accessToken ? `Bearer ${accessToken}` : ''
       };
-    }
+    },
+    reconnect: true
   });
-  client.onConnected(() => console.log('WebSocket connected'));
-  client.onConnecting(() => console.log('WebSocket connecting...'));
-  client.onDisconnected(() => console.log('WebSocket disconnected'));
-  client.onError(error => console.error('WebSocket error', error));
+  wsClient.onConnected(() => console.log('WebSocket connected'));
+  wsClient.onConnecting(() => console.log('WebSocket connecting...'));
+  wsClient.onDisconnected(() => console.log('WebSocket disconnected'));
+  wsClient.onError(error => console.error('WebSocket error', error));
 
-  return new WebSocketLink(client);
+  return new WebSocketLink(wsClient);
 }
+
+const forceReconnectWS = () => {
+  if (wsClient) {
+    wsClient.close(false, true);
+  }
+};
