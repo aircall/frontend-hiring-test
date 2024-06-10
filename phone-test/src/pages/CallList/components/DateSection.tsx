@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@aircall/tractor';
-import { formatDate } from '../../../../helpers/dates';
+import { formatDate } from '../../../helpers/dates';
 
 interface DateSectionProps {
   date: string;

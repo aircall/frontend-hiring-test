@@ -1,0 +1,1 @@
+export { useGetUser } from './useGetUser';
