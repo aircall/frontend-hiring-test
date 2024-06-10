@@ -1,4 +1,5 @@
 export interface ListProps {
   calls: Call[];
-  onClick: (id: string) => void;
+  onItemClick: (id: string) => void;
+  onArchive: (id: string) => void;
 }

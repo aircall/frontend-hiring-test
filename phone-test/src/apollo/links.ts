@@ -5,7 +5,9 @@ import { REFRESH_TOKEN } from '../gql/mutations';
 import { GraphQLError } from 'graphql';
 import client from './apolloClient';
 import { addAuthHeader, clearTokens, isTokenRefreshing, saveTokens } from './utils';
-import { HTTP_LINK, UNAUTHORIZED_MESSAGE } from './constants';
+import { HTTP_LINK, UNAUTHORIZED_MESSAGE, WS_LINK } from './constants';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { WebSocketLink } from '@apollo/client/link/ws';
 
 export const requestNewTokens = async () => {
   const { data } = await client.mutate({
@@ -58,3 +60,24 @@ export const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     }
   }
 });
+
+// Note: In the docummentation https://www.npmjs.com/package/subscriptions-transport-ws, subscriptions-transport-ws is marked depricated
+// They recommend to use  `graphql-ws` instead
+
+export function createWSLink() {
+  const client = new SubscriptionClient(WS_LINK, {
+    connectionParams: async () => {
+      const accessToken = JSON.parse(localStorage.getItem('access_token') || '');
+
+      return {
+        authorization: accessToken ? `Bearer ${accessToken}` : ''
+      };
+    }
+  });
+  client.onConnected(() => console.log('WebSocket connected'));
+  client.onConnecting(() => console.log('WebSocket connecting...'));
+  client.onDisconnected(() => console.log('WebSocket disconnected'));
+  client.onError(error => console.error('WebSocket error', error));
+
+  return new WebSocketLink(client);
+}

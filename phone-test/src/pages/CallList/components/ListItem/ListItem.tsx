@@ -1,16 +1,21 @@
 import { useMemo } from 'react';
-import { Box, Grid, Icon, Typography } from '@aircall/tractor';
+import { ArchiveOutlined, Box, Button, Grid, Icon, Typography } from '@aircall/tractor';
 
 import { ListItemProps } from './types';
 import { transformData } from './utils';
 
-export const ListItem = ({ call, onClick }: ListItemProps) => {
-  const { icon, title, subtitle, duration, date, notes } = useMemo(
+export const ListItem = ({ call, onItemClick, onArchive }: ListItemProps) => {
+  const { icon, title, subtitle, duration, date, notes, isArchived } = useMemo(
     () => transformData(call),
     [call]
   );
 
-  const handleClick = () => onClick(call.id);
+  const handleClick = () => onItemClick(call.id);
+
+  const handleArchive = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    onArchive(call.id);
+  };
 
   return (
     <Box
@@ -45,9 +50,30 @@ export const ListItem = ({ call, onClick }: ListItemProps) => {
           <Typography variant="caption">{date}</Typography>
         </Box>
       </Grid>
-      <Box px={4} py={2}>
-        <Typography variant="caption">{notes}</Typography>
-      </Box>
+      <Grid
+        gridTemplateColumns="1fr 1fr"
+        columnGap={2}
+        alignItems="center"
+        justifyContent="space-between"
+        px={4}
+        py={2}
+      >
+        <Box>
+          <Typography variant="caption">{notes}</Typography>
+        </Box>
+        <Box justifySelf="flex-end">
+          {isArchived ? (
+            <Button size="xSmall" mode="outline" onClick={handleArchive}>
+              Restore
+            </Button>
+          ) : (
+            <Button size="xSmall" variant="destructive" mode="outline" onClick={handleArchive}>
+              <ArchiveOutlined />
+              Archive
+            </Button>
+          )}
+        </Box>
+      </Grid>
     </Box>
   );
 };

@@ -26,12 +26,14 @@ export const transformData = ({
   to,
   duration,
   created_at,
-  notes
+  notes,
+  is_archived
 }: Call) => ({
   icon: callIcons[direction as Direction],
   title: callTitles[call_type as CallType],
   subtitle: getCallSubtitle(direction, from, to),
   duration: formatDuration(duration / 1000),
   date: formatDate(created_at),
-  notes: getCallNotes(notes)
+  notes: getCallNotes(notes),
+  isArchived: is_archived
 });

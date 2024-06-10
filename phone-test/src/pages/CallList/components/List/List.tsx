@@ -5,7 +5,7 @@ import { ListItem } from '../ListItem';
 import { ListProps } from './types';
 import { DateSection } from '../DateSection';
 
-export const List = ({ calls, onClick }: ListProps) => {
+export const List = ({ calls, onItemClick, onArchive }: ListProps) => {
   // TODO: We can add sorting for list items also , but it will work only per page.
   // So it would be better to have that functionality covered on BE side
   const groupedCalls = useMemo(() => groupCallsByDate(calls), [calls]);
@@ -15,7 +15,7 @@ export const List = ({ calls, onClick }: ListProps) => {
       {Object.keys(groupedCalls).map(date => (
         <DateSection key={date} date={date}>
           {groupedCalls[date].map((call: Call) => (
-            <ListItem key={call.id} call={call} onClick={onClick} />
+            <ListItem key={call.id} call={call} onItemClick={onItemClick} onArchive={onArchive} />
           ))}
         </DateSection>
       ))}
