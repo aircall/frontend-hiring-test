@@ -23,6 +23,7 @@ export const usePagination = ({ defaultItemsCount }: UsePaginationProps): UsePag
     const limitQueryParam = getQueryParam('limit');
     return limitQueryParam ? parseInt(limitQueryParam) : defaultItemsCount;
   }, [getQueryParam, defaultItemsCount]);
+  
   const handlePageChange = (page: number) => {
     setQueryParam('page', page.toString());
   };

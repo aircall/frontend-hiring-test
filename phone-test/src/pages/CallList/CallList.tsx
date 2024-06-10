@@ -16,7 +16,7 @@ export const CallsListPage = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const { filters, onFilterChange, filter } = useFilters({
+  const { filters, onFilterChange, filter, resetFilters } = useFilters({
     defaultValues: CALLS_FILTERS
   });
   const { activePage, callsPerPage, handlePageChange, handlePageSizeChange } = usePagination({
@@ -46,7 +46,7 @@ export const CallsListPage = () => {
   return (
     <PageWrapper isLoading={loading} error={error} data={data}>
       <Header title="Calls History" />
-      <Filters filters={filters} onFilterChange={onFilterChange} />
+      <Filters filters={filters} onFilterChange={onFilterChange} onReset={resetFilters} />
       <List calls={filteredCalls} onItemClick={handleItemClick} onArchive={handleArchiveItem} />
       {totalCount && (
         <S.PaginationWrapper>
