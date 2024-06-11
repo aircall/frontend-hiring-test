@@ -7,8 +7,6 @@ import { DateSection } from '../DateSection';
 import { Box, Typography } from '@aircall/tractor';
 
 export const List = ({ calls, onItemClick, onArchive }: ListProps) => {
-  // TODO: We can add sorting for list items also , but it will work only per page.
-  // So it would be better to have that functionality covered on BE side
   const groupedCalls = useMemo(() => groupCallsByDate(calls), [calls]);
   const groups = Object.keys(groupedCalls);
   return (
