@@ -45,6 +45,12 @@ const client = new ApolloClient({
 function RequireAuth({ children }: { children: JSX.Element }) {
   let auth = useAuth();
   let location = useLocation();
+  console.log({ auth });
+  // wait for user to be loaded
+
+  // if (auth.status === 'loading') {
+  //   return <div>Loading...</div>;
+  // }
   // if (!auth.user) {
   //   // Redirect them to the /login page, but save the current location they were
   //   // trying to go to when they were redirected. This allows us to send them

@@ -21,6 +21,12 @@ export const ProtectedLayout = () => {
   //   return <Navigate to="/login" state={{ from: location }} replace />;
   // }
 
+  console.log(55, status, user);
+
+  // if (status !== 'completed') {
+  //   return <div>Loading...</div>;
+  // }
+
   return (
     <Box minWidth="100vh" p={4}>
       <Flex justifyContent="space-between" alignItems="center">
@@ -28,7 +34,7 @@ export const ProtectedLayout = () => {
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome {username}!`}</span>
+          <span>{`Welcome ${user?.username}!`}</span>
           <button onClick={() => logout()}>logout</button>
         </Spacer>
       </Flex>

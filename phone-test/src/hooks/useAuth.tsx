@@ -4,8 +4,20 @@ import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
-const AuthContext = createContext({
-  login: ({}) => {},
+// Define the context value type
+interface AuthContextType {
+  login: ({ username, password }: any) => void;
+  logout: () => void;
+  user: UserType | null;
+  status: string;
+  accessToken: string | null;
+  refreshToken: string | null;
+  mounted: boolean;
+}
+
+// Create the AuthContext with the correct initial value
+const AuthContext = createContext<AuthContextType>({
+  login: async () => {},
   logout: () => {},
   user: null,
   status: 'idle',
@@ -15,16 +27,16 @@ const AuthContext = createContext({
 });
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useLocalStorage<UserType | null>('user', null);
   const [status, setStatus] = useState('idle');
-  const [accessToken, setAccessToken] = useLocalStorage('access_token', null);
-  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', null);
+  const [accessToken, setAccessToken] = useLocalStorage<string | null>('access_token', null);
+  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>('refresh_token', null);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
 
   const [mounted, setMounted] = useState(false);
 
-  console.log(111, accessToken);
+  console.log(111, accessToken, user);
 
   // call this function when you want to authenticate the user
   const login = useCallback(
@@ -36,10 +48,13 @@ export const AuthProvider = () => {
           const { access_token, refresh_token, user } = login;
           setAccessToken(access_token);
           setRefreshToken(refresh_token);
+          console.log(44, user);
           setUser(user);
-          console.log('redirect to calls');
-          setStatus('completed');
-          navigate('/calls');
+          if (user) {
+            console.log('redirect to calls');
+            setStatus('completed');
+            navigate('/calls');
+          }
         }
       });
     },
