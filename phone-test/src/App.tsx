@@ -1,4 +1,4 @@
-import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
@@ -39,6 +39,7 @@ const client = new ApolloClient({
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
+      <Route path="/" element={<Navigate to="/calls" />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/calls" element={<ProtectedLayout />}>
         <Route path="/calls" element={<CallsListPage />} />
