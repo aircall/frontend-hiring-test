@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
@@ -7,19 +7,24 @@ import { useMutation } from '@apollo/client';
 const AuthContext = createContext({
   login: ({}) => {},
   logout: () => {},
-  user: undefined,
-  status: 'loading',
-  accessToken: undefined,
-  refreshToken: undefined
+  user: null,
+  status: 'idle',
+  accessToken: null,
+  refreshToken: null,
+  mounted: false
 });
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
-  const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
-  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
+  const [user, setUser] = useState(null);
+  const [status, setStatus] = useState('idle');
+  const [accessToken, setAccessToken] = useLocalStorage('access_token', null);
+  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', null);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
+
+  const [mounted, setMounted] = useState(false);
+
+  console.log(111, accessToken);
 
   // call this function when you want to authenticate the user
   const login = useCallback(
@@ -33,20 +38,21 @@ export const AuthProvider = () => {
           setRefreshToken(refresh_token);
           setUser(user);
           console.log('redirect to calls');
-          navigate('/calls');
           setStatus('completed');
+          navigate('/calls');
         }
       });
     },
-    [loginMutation, navigate, setAccessToken, setRefreshToken]
+    [loginMutation, navigate, setAccessToken, setRefreshToken, setUser]
   );
 
-  // call this function to sign out logged in user
+  // call this function to sign out logged-in user
   const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
+    setUser(null);
     navigate('/login', { replace: true });
-  }, [navigate, setAccessToken, setRefreshToken]);
+  }, [navigate, setAccessToken, setRefreshToken, setUser]);
 
   const value = useMemo(() => {
     return {
@@ -55,9 +61,15 @@ export const AuthProvider = () => {
       user,
       status,
       accessToken,
-      refreshToken
+      refreshToken,
+      mounted
     };
-  }, [login, logout, user, status, accessToken, refreshToken]);
+  }, [login, logout, user, status, accessToken, refreshToken, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />
@@ -65,6 +77,4 @@ export const AuthProvider = () => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

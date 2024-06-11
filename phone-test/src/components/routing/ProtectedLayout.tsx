@@ -1,8 +1,26 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
 import logo from '../../logo.png';
+import { useAuth } from '../../hooks/useAuth';
+import { useEffect } from 'react';
 
 export const ProtectedLayout = () => {
+  const { user, accessToken, logout, status, mounted } = useAuth();
+  let location = useLocation();
+  console.log(222, mounted, user);
+
+  // useEffect(() => {
+  //   console.log(1, { user, status, accessToken });
+  //
+  //   if (status === 'completed' && !user) {
+  //     console.log('redirect');
+  //   }
+  // }, [accessToken, status, user]);
+
+  // if (!accessToken) {
+  //   return <Navigate to="/login" state={{ from: location }} replace />;
+  // }
+
   return (
     <Box minWidth="100vh" p={4}>
       <Flex justifyContent="space-between" alignItems="center">
@@ -11,7 +29,7 @@ export const ProtectedLayout = () => {
         </Link>
         <Spacer space="m" alignItems="center">
           <span>{`Welcome {username}!`}</span>
-          <Link to="/login">logout</Link>
+          <button onClick={() => logout()}>logout</button>
         </Spacer>
       </Flex>
       <Grid w="500px" mx="auto" rowGap={2}>
