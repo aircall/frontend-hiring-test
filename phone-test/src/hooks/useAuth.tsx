@@ -14,11 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = () => {
   const [user, setUser] = useState(null);
   const [status, setStatus] = useState<AuthenticationStatus>(AuthenticationStatus.Loading);
   const [accessToken, setAccessToken] = useLocalStorage('access_token', null);
