@@ -13,7 +13,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/styled-components": "^5.1.26",
-    "date-fns": "^2.29.3",
+    "date-fns": "^3.6.0",
     "graphql": "^16.6.0",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
