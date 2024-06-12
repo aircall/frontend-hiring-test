@@ -9,12 +9,15 @@ import { ProtectedLayout } from './components/routing/ProtectedLayout';
 import { darkTheme } from './style/theme/darkTheme';
 import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, split } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
 import { onError } from '@apollo/client/link/error';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
 });
 
@@ -38,6 +41,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     graphQLErrors.forEach(({ message, locations, path }) =>
       console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
     );
+    // Check if the user is not authorized and redirect to login page
     graphQLErrors.some(({ message }) => {
       if (message === 'Unauthorized') {
         window.location.href = '/login?sessionExpired=true';
@@ -52,9 +56,40 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const client = new ApolloClient({
-  link: from([errorLink, authLink.concat(httpLink)]),
+// WebSocket link for subscriptions using graphql-ws
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: 'wss://frontend-test-api.aircall.dev/websocket',
+    connectionParams: () => {
+      const accessToken = localStorage.getItem('access_token');
+      const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
+      return {
+        authToken: parsedToken ? `Bearer ${parsedToken}` : ''
+      };
+    },
+    on: {
+      closed: (event: any) => {
+        console.error(`WebSocket closed: ${event.code} ${event.reason}`);
+      },
+      error: (error: any) => {
+        console.error(`WebSocket error: ${error.message}`);
+      }
+    }
+  })
+);
 
+// Split link to send data to each link depending on the operation type
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
+
+const client = new ApolloClient({
+  link: from([errorLink, splitLink]),
   cache: new InMemoryCache()
 });
 

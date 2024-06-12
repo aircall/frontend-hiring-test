@@ -14,17 +14,3 @@ export const LOGIN = gql`
     }
   }
 `;
-
-export const RE_LOGIN = gql`
-  ${USER_FIELDS}
-
-  mutation Login($input: LoginInput!) {
-    refreshTokenV2 {
-      access_token
-      refresh_token
-      user {
-        ...UserFields
-      }
-    }
-  }
-`;

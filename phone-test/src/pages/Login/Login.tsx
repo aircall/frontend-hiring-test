@@ -24,7 +24,7 @@ export const LoginPage = () => {
         id: SESSION_EXPIRED,
         message: 'Your session has expired, please login again',
         variant: 'warning',
-        dismissIn: 3000
+        dismissIn: 5000
       });
       setSearchParams({});
     }

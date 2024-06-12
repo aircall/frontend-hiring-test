@@ -1,6 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { LOGIN, RE_LOGIN } from '../gql/mutations';
+import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
 
@@ -20,7 +20,6 @@ export const AuthProvider = () => {
   const [, setAccessToken] = useLocalStorage('access_token', undefined);
   const [, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
-  const [reLoginMutation] = useMutation(RE_LOGIN);
   const navigate = useNavigate();
 
   // call this function when you want to authenticate the user
@@ -38,17 +37,6 @@ export const AuthProvider = () => {
     },
     [loginMutation, navigate, setAccessToken, setRefreshToken]
   );
-
-  const reLogin = useCallback(() => {
-    return reLoginMutation({
-      onCompleted: ({ login }: any) => {
-        const { access_token, refresh_token } = login;
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
-        navigate('/calls');
-      }
-    });
-  }, [navigate, reLoginMutation, setAccessToken, setRefreshToken]);
 
   // call this function to sign out logged-in user
   const logout = useCallback(() => {

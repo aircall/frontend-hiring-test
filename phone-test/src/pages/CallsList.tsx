@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import styled from 'styled-components';
 import { PAGINATED_CALLS } from '../gql/queries';
 import {
@@ -13,10 +13,11 @@ import {
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import groupBy from 'lodash/groupBy';
 import orderBy from 'lodash/orderBy';
 import { format } from 'date-fns';
+import { ON_UPDATED_CALL } from '../gql/subscriptions';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -26,8 +27,6 @@ export const PaginationWrapper = styled.div`
     justify-content: center;
   }
 `;
-
-type Filter = { call_type: string; direction: string };
 
 type Results = { paginatedCalls: { nodes: Call[]; totalCount: number; hasNextPage: boolean } };
 
@@ -40,7 +39,7 @@ export const CallsListPage = () => {
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const [pageSize, setPageSize] = useState(CALLS_PER_PAGE);
 
-  const { loading, error, data } = useQuery<Results>(PAGINATED_CALLS, {
+  const { loading, error, data, refetch } = useQuery<Results>(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * pageSize,
       limit: pageSize,
@@ -49,7 +48,14 @@ export const CallsListPage = () => {
     // onCompleted: () => handleRefreshToken(),
   });
 
-  // const [callsFiltered, setCallsFiltered] = useState(calls);
+  const { data: subscriptionData } = useSubscription(ON_UPDATED_CALL);
+
+  useEffect(() => {
+    if (subscriptionData) {
+      refetch();
+    }
+  }, [subscriptionData, refetch]);
+
   const [filter, setFilter] = useState({ call_type: '', direction: '' });
 
   const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -59,8 +65,9 @@ export const CallsListPage = () => {
 
   const filteredCalls = useMemo(
     () =>
-      data?.paginatedCalls.nodes.filter((call: Filter) => {
+      data?.paginatedCalls.nodes.filter(call => {
         return (
+          call.is_archived &&
           (filter.call_type === '' || call.call_type === filter.call_type) &&
           (filter.direction === '' || call.direction === filter.direction)
         );

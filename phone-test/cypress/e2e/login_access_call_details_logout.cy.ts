@@ -1,4 +1,4 @@
-describe('template spec', () => {
+describe('login/details/logout spec', () => {
   it('should allow a user to log in, access call details, and log out', () => {
     // Visit the login page
     cy.visit('/login');
