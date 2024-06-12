@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
@@ -8,82 +8,49 @@ import { useMutation } from '@apollo/client';
 interface AuthContextType {
   login: ({ username, password }: any) => void;
   logout: () => void;
-  user: UserType | null;
-  status: string;
-  accessToken: string | null;
-  refreshToken: string | null;
-  mounted: boolean;
 }
 
 // Create the AuthContext with the correct initial value
 const AuthContext = createContext<AuthContextType>({
   login: async () => {},
-  logout: () => {},
-  user: null,
-  status: 'idle',
-  accessToken: null,
-  refreshToken: null,
-  mounted: false
+  logout: () => {}
 });
 
 export const AuthProvider = () => {
-  const [user, setUser] = useLocalStorage<UserType | null>('user', null);
-  const [status, setStatus] = useState('idle');
-  const [accessToken, setAccessToken] = useLocalStorage<string | null>('access_token', null);
-  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>('refresh_token', null);
+  const [, setAccessToken] = useLocalStorage('access_token', undefined);
+  const [, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
-
-  const [mounted, setMounted] = useState(false);
-
-  console.log(111, accessToken, user);
 
   // call this function when you want to authenticate the user
   const login = useCallback(
     ({ username, password }: any) => {
-      setStatus('loading');
       return loginMutation({
         variables: { input: { username, password } },
         onCompleted: ({ login }: any) => {
-          const { access_token, refresh_token, user } = login;
+          const { access_token, refresh_token } = login;
           setAccessToken(access_token);
           setRefreshToken(refresh_token);
-          console.log(44, user);
-          setUser(user);
-          if (user) {
-            console.log('redirect to calls');
-            setStatus('completed');
-            navigate('/calls');
-          }
+          navigate('/calls');
         }
       });
     },
-    [loginMutation, navigate, setAccessToken, setRefreshToken, setUser]
+    [loginMutation, navigate, setAccessToken, setRefreshToken]
   );
 
   // call this function to sign out logged-in user
   const logout = useCallback(() => {
-    setAccessToken(null);
-    setRefreshToken(null);
-    setUser(null);
+    setAccessToken(undefined);
+    setRefreshToken(undefined);
     navigate('/login', { replace: true });
-  }, [navigate, setAccessToken, setRefreshToken, setUser]);
+  }, [navigate, setAccessToken, setRefreshToken]);
 
   const value = useMemo(() => {
     return {
       login,
-      logout,
-      user,
-      status,
-      accessToken,
-      refreshToken,
-      mounted
+      logout
     };
-  }, [login, logout, user, status, accessToken, refreshToken, mounted]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  }, [login, logout]);
 
   return (
     <AuthContext.Provider value={value}>

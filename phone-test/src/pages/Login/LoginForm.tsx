@@ -27,7 +27,6 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
         e.preventDefault();
         onSubmit(email, password);
       }}
-      width="100%"
     >
       <Grid columnGap={4} rowGap={5} gridTemplateColumns="1fr">
         <FormItem label="Email" name="email">

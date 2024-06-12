@@ -1,10 +1,4 @@
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Navigate,
-  Route,
-  useLocation
-} from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { LoginPage } from './pages/Login/Login';
 import { CallsListPage } from './pages/CallsList';
 import { CallDetailsPage } from './pages/CallDetails';
@@ -17,7 +11,7 @@ import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { AuthProvider, useAuth } from './hooks/useAuth';
+import { AuthProvider } from './hooks/useAuth';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -42,39 +36,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-function RequireAuth({ children }: { children: JSX.Element }) {
-  let auth = useAuth();
-  let location = useLocation();
-  console.log({ auth });
-  // wait for user to be loaded
-
-  // if (auth.status === 'loading') {
-  //   return <div>Loading...</div>;
-  // }
-  // if (!auth.user) {
-  //   // Redirect them to the /login page, but save the current location they were
-  //   // trying to go to when they were redirected. This allows us to send them
-  //   // along to that page after they login, which is a nicer user experience
-  //   // than dropping them off on the home page.
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
-
-  return children;
-}
-
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
       <Route path="/" element={<Navigate to="/calls" />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/calls"
-        element={
-          <RequireAuth>
-            <ProtectedLayout />
-          </RequireAuth>
-        }
-      >
+      <Route path="/calls" element={<ProtectedLayout />}>
         <Route path="/calls" element={<CallsListPage />} />
         <Route path="/calls/:callId" element={<CallDetailsPage />} />
       </Route>
