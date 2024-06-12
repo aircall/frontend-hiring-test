@@ -9,17 +9,14 @@ export const ProtectedLayout = () => {
   const { logout } = useAuth();
   let location = useLocation();
 
-  const { loading, data } = useQuery(GET_USER);
+  const { loading, error, data } = useQuery(GET_USER);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!data?.me) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they login, which is a nicer user experience
-    // than dropping them off on the home page.
+  if (!data?.me || error) {
+    // Redirect to login page if user is not logged in or access key is expired
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

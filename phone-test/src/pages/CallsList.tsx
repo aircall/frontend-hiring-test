@@ -16,6 +16,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChangeEvent, useMemo, useState } from 'react';
 import groupBy from 'lodash/groupBy';
 import orderBy from 'lodash/orderBy';
+import { format } from 'date-fns';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -71,7 +72,7 @@ export const CallsListPage = () => {
     () =>
       groupBy(
         orderBy(filteredCalls, call => call.created_at, 'desc'),
-        call => new Date(call.created_at).toDateString()
+        call => format(new Date(call.created_at), 'MMM dd, yyyy')
       ),
     [filteredCalls]
   );
