@@ -14,7 +14,8 @@ import {
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChangeEvent, useMemo, useState } from 'react';
-import groupBy from 'lodash.groupby';
+import groupBy from 'lodash/groupBy';
+import orderBy from 'lodash/orderBy';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -27,6 +28,8 @@ export const PaginationWrapper = styled.div`
 
 type Filter = { call_type: string; direction: string };
 
+type Results = { paginatedCalls: { nodes: Call[]; totalCount: number; hasNextPage: boolean } };
+
 const CALLS_PER_PAGE = 25;
 
 export const CallsListPage = () => {
@@ -36,7 +39,7 @@ export const CallsListPage = () => {
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const [pageSize, setPageSize] = useState(CALLS_PER_PAGE);
 
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
+  const { loading, error, data } = useQuery<Results>(PAGINATED_CALLS, {
     variables: {
       offset: (activePage - 1) * pageSize,
       limit: pageSize,
@@ -64,13 +67,22 @@ export const CallsListPage = () => {
     [data, filter]
   );
 
-  console.log(filteredCalls);
+  const groupedCalls = useMemo(
+    () =>
+      groupBy(
+        orderBy(filteredCalls, call => call.created_at, 'desc'),
+        call => new Date(call.created_at).toDateString()
+      ),
+    [filteredCalls]
+  );
+
+  console.log(groupedCalls);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
   if (!data) return <p>Not found</p>;
 
-  const { totalCount, nodes: calls } = data.paginatedCalls;
+  const { totalCount } = data.paginatedCalls;
 
   const handleCallOnClick = (callId: string) => {
     navigate(`/calls/${callId}`);
@@ -90,7 +102,12 @@ export const CallsListPage = () => {
         Calls History
       </Typography>
       <div>
-        <select name="call_type" value={filter.call_type} onChange={handleFilterChange}>
+        <select
+          name="call_type"
+          value={filter.call_type}
+          onChange={handleFilterChange}
+          style={{ padding: '0.5rem' }}
+        >
           <option value="">All Types</option>
           <option value="missed">Missed</option>
           <option value="voicemail">Voicemail</option>
@@ -100,7 +117,7 @@ export const CallsListPage = () => {
           name="direction"
           value={filter.direction}
           onChange={handleFilterChange}
-          style={{ marginLeft: 10 }}
+          style={{ marginLeft: '1rem', padding: '0.5rem' }}
         >
           <option value="">All Directions</option>
           <option value="inbound">Incoming</option>
@@ -108,54 +125,74 @@ export const CallsListPage = () => {
         </select>
       </div>
       <Spacer space={3} direction="vertical">
-        {filteredCalls.map((call: Call) => {
-          const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-          const title =
-            call.call_type === 'missed'
-              ? 'Missed call'
-              : call.call_type === 'answered'
-              ? 'Call answered'
-              : 'Voicemail';
-          const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-          const duration = formatDuration(call.duration / 1000);
-          const date = formatDate(call.created_at);
-          const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
-
+        {Object.entries(groupedCalls).map(([date, calls]) => {
           return (
-            <Box
-              key={call.id}
-              bg="black-a30"
-              borderRadius={16}
-              cursor="pointer"
-              onClick={() => handleCallOnClick(call.id)}
+            <Grid
+              key={date}
+              marginTop={10}
+              gap={2}
+              paddingBottom={20}
+              // marginBottom={20}
+              borderBottom="1px solid"
             >
-              <Grid
-                gridTemplateColumns="32px 1fr max-content"
-                columnGap={2}
-                borderBottom="1px solid"
-                borderBottomColor="neutral-700"
-                alignItems="center"
-                px={4}
-                py={2}
-              >
-                <Box>
-                  <Icon component={icon} size={32} />
-                </Box>
-                <Box>
-                  <Typography variant="body">{title}</Typography>
-                  <Typography variant="body2">{subtitle}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" textAlign="right">
-                    {duration}
-                  </Typography>
-                  <Typography variant="caption">{date}</Typography>
-                </Box>
+              <Typography variant="displayS" textAlign="center" py={3}>
+                {date}
+              </Typography>
+              <Grid>
+                {calls.map((call: Call) => {
+                  const icon =
+                    call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
+                  const title =
+                    call.call_type === 'missed'
+                      ? 'Missed call'
+                      : call.call_type === 'answered'
+                      ? 'Call answered'
+                      : 'Voicemail';
+                  const subtitle =
+                    call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
+                  const duration = formatDuration(call.duration / 1000);
+                  const date = formatDate(call.created_at);
+                  const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
+
+                  return (
+                    <Box
+                      key={call.id}
+                      bg="black-a30"
+                      borderRadius={16}
+                      cursor="pointer"
+                      onClick={() => handleCallOnClick(call.id)}
+                    >
+                      <Grid
+                        gridTemplateColumns="32px 1fr max-content"
+                        columnGap={2}
+                        borderBottom="1px solid"
+                        borderBottomColor="neutral-700"
+                        alignItems="center"
+                        px={4}
+                        py={2}
+                      >
+                        <Box>
+                          <Icon component={icon} size={32} />
+                        </Box>
+                        <Box>
+                          <Typography variant="body">{title}</Typography>
+                          <Typography variant="body2">{subtitle}</Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" textAlign="right">
+                            {duration}
+                          </Typography>
+                          <Typography variant="caption">{date}</Typography>
+                        </Box>
+                      </Grid>
+                      <Box px={4} py={2}>
+                        <Typography variant="caption">{notes}</Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
               </Grid>
-              <Box px={4} py={2}>
-                <Typography variant="caption">{notes}</Typography>
-              </Box>
-            </Box>
+            </Grid>
           );
         })}
       </Spacer>
