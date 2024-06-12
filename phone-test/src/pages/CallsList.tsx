@@ -13,6 +13,8 @@ import {
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ChangeEvent, useMemo, useState } from 'react';
+import groupBy from 'lodash.groupby';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -23,20 +25,46 @@ export const PaginationWrapper = styled.div`
   }
 `;
 
-const CALLS_PER_PAGE = 5;
+type Filter = { call_type: string; direction: string };
+
+const CALLS_PER_PAGE = 25;
 
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
+  const [pageSize, setPageSize] = useState(CALLS_PER_PAGE);
+
   const { loading, error, data } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
+      offset: (activePage - 1) * pageSize,
+      limit: pageSize,
+      direction: 'inbound'
     }
     // onCompleted: () => handleRefreshToken(),
   });
+
+  // const [callsFiltered, setCallsFiltered] = useState(calls);
+  const [filter, setFilter] = useState({ call_type: '', direction: '' });
+
+  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilter({ ...filter, [name]: value });
+  };
+
+  const filteredCalls = useMemo(
+    () =>
+      data?.paginatedCalls.nodes.filter((call: Filter) => {
+        return (
+          (filter.call_type === '' || call.call_type === filter.call_type) &&
+          (filter.direction === '' || call.direction === filter.direction)
+        );
+      }),
+    [data, filter]
+  );
+
+  console.log(filteredCalls);
 
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
@@ -52,13 +80,35 @@ export const CallsListPage = () => {
     navigate(`/calls/?page=${page}`);
   };
 
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+  };
+
   return (
     <>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
+      <div>
+        <select name="call_type" value={filter.call_type} onChange={handleFilterChange}>
+          <option value="">All Types</option>
+          <option value="missed">Missed</option>
+          <option value="voicemail">Voicemail</option>
+          <option value="answered">Answered</option>
+        </select>
+        <select
+          name="direction"
+          value={filter.direction}
+          onChange={handleFilterChange}
+          style={{ marginLeft: 10 }}
+        >
+          <option value="">All Directions</option>
+          <option value="inbound">Incoming</option>
+          <option value="outbound">Outgoing</option>
+        </select>
+      </div>
       <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
+        {filteredCalls.map((call: Call) => {
           const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
           const title =
             call.call_type === 'missed'
@@ -113,8 +163,9 @@ export const CallsListPage = () => {
       {totalCount && (
         <PaginationWrapper>
           <Pagination
+            onPageSizeChange={handlePageSizeChange}
             activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
+            pageSize={pageSize}
             onPageChange={handlePageChange}
             recordsTotalCount={totalCount}
           />

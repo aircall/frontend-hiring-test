@@ -2,7 +2,6 @@ import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
 import logo from '../../logo.png';
 import { useAuth } from '../../hooks/useAuth';
-import { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_USER } from '../../gql/queries/getUser';
 
@@ -25,7 +24,7 @@ export const ProtectedLayout = () => {
   }
 
   return (
-    <Box minWidth="100vh" p={4}>
+    <Box minWidth="100vw" p={4}>
       <Flex justifyContent="space-between" alignItems="center">
         <Link to="/calls">
           <img src={logo} alt="Aircall" width="32px" height="32px" />

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
 
 import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 

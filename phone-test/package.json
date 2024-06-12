@@ -17,6 +17,7 @@
     "graphql": "^16.6.0",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
+    "lodash": "^4.17.21",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
