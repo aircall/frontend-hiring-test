@@ -41,7 +41,12 @@ describe('dates helpers', () => {
   describe('formatDate', () => {
     test('formats date string into a human readable format', () => {
       const dateString = '2024-06-12T12:53:56.542Z';
-      expect(formatDate(dateString)).toBe('Jun 12 - 15:53');
+
+      // Get the local time equivalent of the date string
+      const localDate = new Date(dateString);
+      const expectedFormattedDate = format(localDate, 'LLL d - HH:mm');
+
+      expect(formatDate(dateString)).toBe(expectedFormattedDate);
     });
 
     test('formats invalid date string into a human readable format using Date API', () => {
