@@ -76,8 +76,6 @@ export const CallsListPage = () => {
     [filteredCalls]
   );
 
-  console.log(groupedCalls);
-
   if (loading) return <p>Loading calls...</p>;
   if (error) return <p>ERROR</p>;
   if (!data) return <p>Not found</p>;
@@ -127,14 +125,7 @@ export const CallsListPage = () => {
       <Spacer space={3} direction="vertical">
         {Object.entries(groupedCalls).map(([date, calls]) => {
           return (
-            <Grid
-              key={date}
-              marginTop={10}
-              gap={2}
-              paddingBottom={20}
-              // marginBottom={20}
-              borderBottom="1px solid"
-            >
+            <Grid key={date} marginTop={10} gap={2} paddingBottom={20} borderBottom="1px solid">
               <Typography variant="displayS" textAlign="center" py={3}>
                 {date}
               </Typography>
