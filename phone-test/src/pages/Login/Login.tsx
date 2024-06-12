@@ -5,13 +5,30 @@ import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 import { FormState } from './Login.decl';
 import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
+import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
+const SESSION_EXPIRED = 'SESSION_EXPIRED';
 
 export const LoginPage = () => {
   const { login } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
+
+  useEffect(() => {
+    if (searchParams.get('sessionExpired')) {
+      removeToast(LOGIN_REJECTED);
+      showToast({
+        id: SESSION_EXPIRED,
+        message: 'Your session has expired, please login again',
+        variant: 'warning',
+        dismissIn: 3000
+      });
+      setSearchParams({});
+    }
+  }, [removeToast, searchParams, setSearchParams, showToast]);
 
   const onSubmit = async (email: string, password: string) => {
     try {

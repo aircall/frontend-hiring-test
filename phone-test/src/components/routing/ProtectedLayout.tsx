@@ -1,4 +1,4 @@
-import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
 import logo from '../../logo.png';
 import { useAuth } from '../../hooks/useAuth';
@@ -7,7 +7,6 @@ import { GET_USER } from '../../gql/queries/getUser';
 
 export const ProtectedLayout = () => {
   const { logout } = useAuth();
-  const location = useLocation();
 
   const { loading, error, data } = useQuery(GET_USER);
 
@@ -15,9 +14,8 @@ export const ProtectedLayout = () => {
     return <div>Loading...</div>;
   }
 
-  if (!data?.me || error) {
-    // Redirect to login page if user is not logged in or access key is expired
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (error) {
+    return <div>Error</div>;
   }
 
   return (

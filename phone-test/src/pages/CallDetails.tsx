@@ -1,12 +1,12 @@
 import { useQuery } from '@apollo/client';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
-import { Box, Typography } from '@aircall/tractor';
+import { Box, Typography, useToast } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
+import { useEffect } from 'react';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
-  const location = useLocation();
 
   const { loading, error, data } = useQuery(GET_CALL_DETAILS, {
     variables: {
@@ -15,7 +15,7 @@ export const CallDetailsPage = () => {
   });
 
   if (loading) return <p>Loading call details...</p>;
-  if (error) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (error) return <p>ERROR</p>;
 
   const { call } = data;
 

@@ -9,9 +9,10 @@ import { ProtectedLayout } from './components/routing/ProtectedLayout';
 import { darkTheme } from './style/theme/darkTheme';
 import { RouterProvider } from 'react-router-dom';
 import { GlobalAppStyle } from './style/global';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
+import { onError } from '@apollo/client/link/error';
 
 const httpLink = createHttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -31,8 +32,29 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+// Detect if the user is not authorized and redirect to login page for every request
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+    );
+    graphQLErrors.some(({ message }) => {
+      if (message === 'Unauthorized') {
+        window.location.href = '/login?sessionExpired=true';
+        return true;
+      }
+      return false;
+    });
+  }
+
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+  }
+});
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([errorLink, authLink.concat(httpLink)]),
+
   cache: new InMemoryCache()
 });
 
