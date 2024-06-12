@@ -12,7 +12,7 @@ import {
   Pagination
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChangeEvent, useMemo, useState } from 'react';
 import groupBy from 'lodash/groupBy';
 import orderBy from 'lodash/orderBy';
@@ -39,6 +39,7 @@ export const CallsListPage = () => {
   const pageQueryParams = search.get('page');
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const [pageSize, setPageSize] = useState(CALLS_PER_PAGE);
+  const location = useLocation();
 
   const { loading, error, data } = useQuery<Results>(PAGINATED_CALLS, {
     variables: {
@@ -78,7 +79,8 @@ export const CallsListPage = () => {
   );
 
   if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
+  if (error) return <Navigate to="/login" state={{ from: location }} replace />;
+
   if (!data) return <p>Not found</p>;
 
   const { totalCount } = data.paginatedCalls;
@@ -131,7 +133,7 @@ export const CallsListPage = () => {
                 {date}
               </Typography>
               <Grid>
-                {calls.map((call: Call) => {
+                {calls.map((call: Call, i) => {
                   const icon =
                     call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
                   const title =
@@ -153,6 +155,7 @@ export const CallsListPage = () => {
                       borderRadius={16}
                       cursor="pointer"
                       onClick={() => handleCallOnClick(call.id)}
+                      id={`call-${i}`}
                     >
                       <Grid
                         gridTemplateColumns="32px 1fr max-content"

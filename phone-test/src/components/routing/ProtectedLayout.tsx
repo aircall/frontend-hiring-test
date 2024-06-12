@@ -7,7 +7,7 @@ import { GET_USER } from '../../gql/queries/getUser';
 
 export const ProtectedLayout = () => {
   const { logout } = useAuth();
-  let location = useLocation();
+  const location = useLocation();
 
   const { loading, error, data } = useQuery(GET_USER);
 
