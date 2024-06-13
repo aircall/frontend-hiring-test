@@ -14,8 +14,6 @@ import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './hooks/useAuth';
 import { onError } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
-import { createClient } from 'graphql-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { WebSocketLink } from '@apollo/client/link/ws';
 
@@ -58,29 +56,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// WebSocket link for subscriptions using graphql-ws
-const wsLink = new GraphQLWsLink(
-  createClient({
-    url: 'wss://frontend-test-api.aircall.dev/websocket',
-    connectionParams: () => {
-      const accessToken = localStorage.getItem('access_token');
-      const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
-      return {
-        authToken: parsedToken ? `Bearer ${parsedToken}` : ''
-      };
-    },
-    on: {
-      closed: (event: any) => {
-        console.error(`WebSocket closed: ${event.code} ${event.reason}`);
-      },
-      error: (error: any) => {
-        console.error(`WebSocket error: ${error.message}`);
-      }
-    }
-  })
-);
-
-const wsLink2 = new WebSocketLink(
+const wsLink = new WebSocketLink(
   new SubscriptionClient('wss://frontend-test-api.aircall.dev/websocket', {
     connectionParams: () => {
       const accessToken = localStorage.getItem('access_token');
@@ -98,7 +74,7 @@ const splitLink = split(
     const definition = getMainDefinition(query);
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
-  wsLink2,
+  wsLink,
   authLink.concat(httpLink)
 );
 

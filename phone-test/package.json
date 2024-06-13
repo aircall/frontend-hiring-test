@@ -15,7 +15,6 @@
     "@types/styled-components": "^5.1.26",
     "date-fns": "^3.6.0",
     "graphql": "^16.8.2",
-    "graphql-ws": "^5.16.0",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
     "lodash": "^4.17.21",
