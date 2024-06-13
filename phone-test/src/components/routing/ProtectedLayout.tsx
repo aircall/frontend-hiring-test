@@ -1,22 +1,36 @@
-import { Outlet, Link } from 'react-router-dom';
-import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Box, Flex, Spacer, Grid, useToast } from '@aircall/tractor';
 import logo from '../../logo.png';
 import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@apollo/client';
 import { GET_USER } from '../../gql/queries/getUser';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export const ProtectedLayout = () => {
   const { logout } = useAuth();
 
-  const { loading, error, data } = useQuery(GET_USER);
+  const { loading, data } = useQuery(GET_USER);
   const handleLogOut = useCallback(logout, [logout]);
+  const { showToast } = useToast();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !data?.me) {
+      showToast({
+        message: 'Your session has expired, please login again',
+        variant: 'warning',
+        dismissIn: 5000
+      });
+      navigate('/login', { replace: true });
+    }
+  }, [data?.me, loading, navigate, showToast]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
+  if (!data?.me) {
     return <div>You aren't authorized to view this page</div>;
   }
 
@@ -27,7 +41,7 @@ export const ProtectedLayout = () => {
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome ${data?.me.username}!`}</span>
+          <span>{`Welcome ${data.me.username}!`}</span>
           <button onClick={handleLogOut}>logout</button>
         </Spacer>
       </Flex>

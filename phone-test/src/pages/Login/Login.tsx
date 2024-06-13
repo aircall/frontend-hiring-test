@@ -5,30 +5,23 @@ import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 import { FormState } from './Login.decl';
 import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_USER } from '../../gql/queries/getUser';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
-const SESSION_EXPIRED = 'SESSION_EXPIRED';
 
 export const LoginPage = () => {
   const { login } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
 
-  useEffect(() => {
-    if (searchParams.get('sessionExpired')) {
-      removeToast(LOGIN_REJECTED);
-      showToast({
-        id: SESSION_EXPIRED,
-        message: 'Your session has expired, please login again',
-        variant: 'warning',
-        dismissIn: 5000
-      });
-      setSearchParams({});
-    }
-  }, [removeToast, searchParams, setSearchParams, showToast]);
+  const navigate = useNavigate();
+
+  const { loading, data } = useQuery(GET_USER, {
+    fetchPolicy: 'network-only'
+  });
 
   const onSubmit = async (email: string, password: string) => {
     try {
@@ -44,6 +37,16 @@ export const LoginPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (!loading && data?.me) {
+      navigate('/calls');
+    }
+  }, [data?.me, loading, navigate]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5}>
