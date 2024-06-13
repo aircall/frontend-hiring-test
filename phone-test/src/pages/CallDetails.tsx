@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { Box, Button, Typography, useToast } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
@@ -39,6 +39,9 @@ export const CallDetailsPage = () => {
 
   return (
     <>
+      <Link to="/calls">
+        <Typography py={3}>← Back to calls</Typography>
+      </Link>
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls Details
       </Typography>
