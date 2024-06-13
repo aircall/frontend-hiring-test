@@ -43,7 +43,7 @@ export const AuthProvider = () => {
     setAccessToken(undefined);
     setRefreshToken(undefined);
     navigate('/login', { replace: true });
-  }, [navigate, setAccessToken, setRefreshToken]);
+  }, [setAccessToken, setRefreshToken, navigate]);
 
   const value = useMemo(() => {
     return {

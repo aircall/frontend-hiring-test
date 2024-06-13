@@ -19,7 +19,7 @@ export const LoginPage = () => {
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
 
-  const { loading, error, data } = useQuery(GET_USER);
+  const { loading, data } = useQuery(GET_USER);
 
   useEffect(() => {
     if (searchParams.get('sessionExpired')) {
@@ -51,10 +51,6 @@ export const LoginPage = () => {
 
   if (loading) {
     return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>There was an error.</div>;
   }
 
   if (data) {
