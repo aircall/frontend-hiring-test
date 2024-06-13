@@ -3,6 +3,7 @@ import { ApolloError } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@aircall/tractor";
 
+// Redirect to login page if the error is "Unauthorized"
 const useRedirectToLogin = (error: ApolloError | undefined) => {
   const navigate = useNavigate();
   const { showToast } = useToast();

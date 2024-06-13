@@ -1,10 +1,10 @@
-import { useMutation, useQuery } from '@apollo/client';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
-import { Box, Button, Typography, useToast } from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
-import { ARCHIVE_CALL } from '../gql/mutations/calls';
-import useRedirectToLogin from '../hooks/useRedirectToLogin';
+import { useMutation, useQuery } from "@apollo/client";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { GET_CALL_DETAILS } from "../gql/queries/getCallDetails";
+import { Box, Button, Typography, useToast } from "@aircall/tractor";
+import { formatDate, formatDuration } from "../helpers/dates";
+import { ARCHIVE_CALL } from "../gql/mutations/calls";
+import useRedirectToLogin from "../hooks/useRedirectToLogin";
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -26,17 +26,19 @@ export const CallDetailsPage = () => {
 
   const { call } = data;
 
+  console.log({ data });
+
   const handleArchive = async () => {
     try {
       await archiveCall({ variables: { id: call.id } });
       showToast({
-        message: 'Call archived successfully!',
-        variant: 'success',
+        message: "Call archived successfully!",
+        variant: "success",
         dismissIn: 3000
       });
-      navigate('/calls');
+      navigate("/calls");
     } catch (error) {
-      console.error('Error archiving call:', error);
+      console.error("Error archiving call:", error);
     }
   };
 
