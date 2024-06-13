@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
-          path: phone-test
+          cache-dependency-path: phone-test/yarn.lock
 
       - run: yarn install --frozen-lockfile
 
