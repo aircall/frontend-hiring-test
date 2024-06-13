@@ -3,6 +3,9 @@ name: CI
 on:
   push:
 
+permissions:
+  contents: write
+
 defaults:
   run:
     working-directory: "phone-test"
@@ -29,8 +32,8 @@ jobs:
       - name: Build project
         run: yarn build
 
-      - name: Deploy to GitHub Pages
-        run: yarn deploy
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
