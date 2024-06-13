@@ -5,7 +5,7 @@ on:
 
 defaults:
   run:
-    working-directory: phone-test
+    working-directory: ./phone-test
 
 jobs:
   build:
