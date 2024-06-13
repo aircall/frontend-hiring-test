@@ -35,7 +35,8 @@
     "serve": "serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -69,6 +70,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/lodash": "^4.17.5",
     "cypress": "^13.11.0",
+    "gh-pages": "^6.1.1",
     "serve": "^14.2.3"
   }
 }

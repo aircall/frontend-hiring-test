@@ -4,6 +4,7 @@ import { GET_CALL_DETAILS } from '../gql/queries/getCallDetails';
 import { Box, Button, Typography, useToast } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { ARCHIVE_CALL } from '../gql/mutations/calls';
+import useRedirectToLogin from '../hooks/useRedirectToLogin';
 
 export const CallDetailsPage = () => {
   const { callId } = useParams();
@@ -17,6 +18,8 @@ export const CallDetailsPage = () => {
   const { showToast } = useToast();
 
   const [archiveCall] = useMutation(ARCHIVE_CALL);
+
+  useRedirectToLogin(error);
 
   if (loading) return <p>Loading call details...</p>;
   if (error) return <p>You aren't authorized to view this page</p>;

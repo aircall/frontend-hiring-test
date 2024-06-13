@@ -9,7 +9,8 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination
+  Pagination,
+  useToast
 } from '@aircall/tractor';
 import { formatDate, formatDuration } from '../helpers/dates';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -18,6 +19,7 @@ import groupBy from 'lodash/groupBy';
 import orderBy from 'lodash/orderBy';
 import { format } from 'date-fns';
 import { ON_UPDATED_CALL } from '../gql/subscriptions';
+import useRedirectToLogin from '../hooks/useRedirectToLogin';
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -55,6 +57,8 @@ export const CallsListPage = () => {
       refetch();
     }
   }, [subscriptionData, refetch]);
+
+  useRedirectToLogin(error);
 
   const [filter, setFilter] = useState({ call_type: '', direction: '' });
 
