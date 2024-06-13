@@ -26,8 +26,6 @@ export const CallDetailsPage = () => {
 
   const { call } = data;
 
-  console.log({ data });
-
   const handleArchive = async () => {
     try {
       await archiveCall({ variables: { id: call.id } });

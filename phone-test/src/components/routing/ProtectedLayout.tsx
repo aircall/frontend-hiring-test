@@ -1,11 +1,11 @@
-import { Outlet, Link } from 'react-router-dom';
-import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
-import logo from '../../logo.png';
-import { useAuth } from '../../hooks/useAuth';
-import { useQuery } from '@apollo/client';
-import { GET_USER } from '../../gql/queries/getUser';
-import { useCallback } from 'react';
-import useRedirectToLogin from '../../hooks/useRedirectToLogin';
+import { Outlet, Link } from "react-router-dom";
+import { Box, Flex, Spacer, Grid } from "@aircall/tractor";
+import logo from "../../logo.png";
+import { useAuth } from "../../hooks/useAuth";
+import { useQuery } from "@apollo/client";
+import { GET_USER } from "../../gql/queries/getUser";
+import { useCallback } from "react";
+import useRedirectToLogin from "../../hooks/useRedirectToLogin";
 
 export const ProtectedLayout = () => {
   const { logout } = useAuth();
@@ -22,8 +22,6 @@ export const ProtectedLayout = () => {
   if (!data?.me) {
     return <div>You aren't authorized to view this page</div>;
   }
-
-  console.log({ data, loading });
 
   return (
     <Box minWidth="100vw" p={4}>

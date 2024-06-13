@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
-        working-directory: ./phone-test
+        working-directory: "phone-test"
 
     steps:
       - name: Checkout repository

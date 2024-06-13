@@ -9,7 +9,6 @@ const useRedirectToLogin = (error: ApolloError | undefined) => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    console.log({ error });
     if (error?.message === "Unauthorized") {
       showToast({
         message: "Your session has expired, please login again",
