@@ -16,6 +16,8 @@ import { onError } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { WebSocketLink } from '@apollo/client/link/ws';
 
 const httpLink = new HttpLink({
   uri: 'https://frontend-test-api.aircall.dev/graphql'
@@ -78,13 +80,25 @@ const wsLink = new GraphQLWsLink(
   })
 );
 
+const wsLink2 = new WebSocketLink(
+  new SubscriptionClient('wss://frontend-test-api.aircall.dev/websocket', {
+    connectionParams: () => {
+      const accessToken = localStorage.getItem('access_token');
+      const parsedToken = accessToken ? JSON.parse(accessToken) : undefined;
+      return {
+        authorization: accessToken ? `Bearer ${parsedToken}` : ''
+      };
+    }
+  })
+);
+
 // Split link to send data to each link depending on the operation type
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
-  wsLink,
+  wsLink2,
   authLink.concat(httpLink)
 );
 
