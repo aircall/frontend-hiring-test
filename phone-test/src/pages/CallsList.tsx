@@ -85,7 +85,7 @@ export const CallsListPage = () => {
   );
 
   if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
+  if (error) return <p>You aren't authorized to view this page</p>;
   if (!data) return <p>Not found</p>;
 
   const { totalCount } = data.paginatedCalls;

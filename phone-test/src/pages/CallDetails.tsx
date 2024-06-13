@@ -19,7 +19,7 @@ export const CallDetailsPage = () => {
   const [archiveCall] = useMutation(ARCHIVE_CALL);
 
   if (loading) return <p>Loading call details...</p>;
-  if (error) return <p>ERROR</p>;
+  if (error) return <p>You aren't authorized to view this page</p>;
 
   const { call } = data;
 

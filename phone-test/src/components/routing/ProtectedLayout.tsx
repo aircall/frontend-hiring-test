@@ -15,7 +15,7 @@ export const ProtectedLayout = () => {
   }
 
   if (error) {
-    return <div>Error</div>;
+    return <div>You aren't authorized to view this page</div>;
   }
 
   return (

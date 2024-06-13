@@ -10,9 +10,10 @@ describe('login/details/logout spec', () => {
     // Submit the login form
     cy.get('button[type="submit"]').click();
 
-    // Verify that we are logged in by checking the URL or presence of a logout button
+    // Verify we are logged in by checking the URL or presence of the user's email
     cy.url().should('include', '/calls');
 
+    // Verify we are logged in by checking the URL or presence of the user's email
     cy.contains('Welcome test@test.com!').should('be.visible');
 
     // Navigate to the call details page
@@ -21,11 +22,13 @@ describe('login/details/logout spec', () => {
     //should have a text "Calls Details"
     cy.contains('Calls Details').should('be.visible');
 
-    // // Log out
+    // Log out
     cy.get('button').contains('logout').click();
 
-    // // Verify we are logged out by checking the URL or presence of the login button
+    // Verify the user is redirected to the login page
     cy.url().should('include', '/login');
+
+    // Verify we are logged out by checking the URL or presence of the login button
     cy.get('button[type="submit"]').should('be.visible');
   });
 });

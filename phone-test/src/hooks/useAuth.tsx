@@ -6,7 +6,7 @@ import { useMutation } from '@apollo/client';
 
 // Define the context value type
 interface AuthContextType {
-  login: ({ username, password }: any) => void;
+  login: ({ username, password }: any) => Promise<any>;
   logout: () => void;
 }
 
