@@ -32,6 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "serve": "serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "cy:open": "cypress open"
@@ -65,7 +66,9 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/lodash": "^4.17.5",
-    "cypress": "^13.11.0"
+    "cypress": "^13.11.0",
+    "serve": "^14.2.3"
   }
 }
