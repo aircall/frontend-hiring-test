@@ -5,10 +5,8 @@ import { Flex, Icon, LogoMarkMono, Spacer, useToast } from '@aircall/tractor';
 import { FormState } from './Login.decl';
 import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_USER } from '../../gql/queries/getUser';
 
 const LOGIN_REJECTED = 'LOGIN_REJECTED';
 const SESSION_EXPIRED = 'SESSION_EXPIRED';
@@ -18,8 +16,6 @@ export const LoginPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [formState, setFormState] = React.useState<FormState>('Idle');
   const { showToast, removeToast } = useToast();
-
-  const { loading, data } = useQuery(GET_USER);
 
   useEffect(() => {
     if (searchParams.get('sessionExpired')) {
@@ -48,14 +44,6 @@ export const LoginPage = () => {
       });
     }
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (data) {
-    return <Navigate to="/calls" replace />;
-  }
 
   return (
     <Spacer p={5} h="100%" direction="vertical" justifyContent="center" fluid space={5}>
