@@ -27,7 +27,6 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
         e.preventDefault();
         onSubmit(email, password);
       }}
-      action="submit"
     >
       <Grid columnGap={4} rowGap={5} gridTemplateColumns="1fr" maxW="30rem" margin="auto">
         <FormItem label="Email" name="email">
@@ -37,6 +36,7 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
             onChange={e => setEmail(e.target.value)}
             type="email"
             required
+            autoComplete="email"
           />
         </FormItem>
         <FormItem label="Password" name="password">
@@ -46,6 +46,7 @@ export const LoginForm = ({ onSubmit, formState }: LoginFormProps) => {
             onChange={e => setPassword(e.target.value)}
             minLength={6}
             required
+            autoComplete="current-password"
           />
         </FormItem>
         <FormItem>

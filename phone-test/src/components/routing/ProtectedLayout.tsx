@@ -4,11 +4,13 @@ import logo from '../../logo.png';
 import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@apollo/client';
 import { GET_USER } from '../../gql/queries/getUser';
+import { useCallback } from 'react';
 
 export const ProtectedLayout = () => {
   const { logout } = useAuth();
 
   const { loading, error, data } = useQuery(GET_USER);
+  const handleLogOut = useCallback(logout, [logout]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -26,7 +28,7 @@ export const ProtectedLayout = () => {
         </Link>
         <Spacer space="m" alignItems="center">
           <span>{`Welcome ${data?.me.username}!`}</span>
-          <button onClick={() => logout()}>logout</button>
+          <button onClick={handleLogOut}>logout</button>
         </Spacer>
       </Flex>
       <Grid w="500px" mx="auto" rowGap={2}>
