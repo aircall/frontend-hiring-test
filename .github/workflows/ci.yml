@@ -31,3 +31,6 @@ jobs:
 
       - name: Deploy to GitHub Pages
         run: yarn deploy
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6

@@ -1,6 +1,6 @@
-import { useQuery, useSubscription } from '@apollo/client';
-import styled from 'styled-components';
-import { PAGINATED_CALLS } from '../gql/queries';
+import { useQuery, useSubscription } from "@apollo/client";
+import styled from "styled-components";
+import { PAGINATED_CALLS } from "../gql/queries";
 import {
   Grid,
   Icon,
@@ -9,17 +9,16 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination,
-  useToast
-} from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import groupBy from 'lodash/groupBy';
-import orderBy from 'lodash/orderBy';
-import { format } from 'date-fns';
-import { ON_UPDATED_CALL } from '../gql/subscriptions';
-import useRedirectToLogin from '../hooks/useRedirectToLogin';
+  Pagination
+} from "@aircall/tractor";
+import { formatDate, formatDuration } from "../helpers/dates";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import groupBy from "lodash/groupBy";
+import orderBy from "lodash/orderBy";
+import { format } from "date-fns";
+import { ON_UPDATED_CALL } from "../gql/subscriptions";
+import useRedirectToLogin from "../hooks/useRedirectToLogin";
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -37,7 +36,7 @@ const CALLS_PER_PAGE = 25;
 export const CallsListPage = () => {
   const [search] = useSearchParams();
   const navigate = useNavigate();
-  const pageQueryParams = search.get('page');
+  const pageQueryParams = search.get("page");
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
   const [pageSize, setPageSize] = useState(CALLS_PER_PAGE);
 
@@ -45,7 +44,7 @@ export const CallsListPage = () => {
     variables: {
       offset: (activePage - 1) * pageSize,
       limit: pageSize,
-      direction: 'inbound'
+      direction: "inbound"
     }
     // onCompleted: () => handleRefreshToken(),
   });
@@ -60,7 +59,7 @@ export const CallsListPage = () => {
 
   useRedirectToLogin(error);
 
-  const [filter, setFilter] = useState({ call_type: '', direction: '' });
+  const [filter, setFilter] = useState({ call_type: "", direction: "" });
 
   const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -72,8 +71,8 @@ export const CallsListPage = () => {
       data?.paginatedCalls.nodes.filter(call => {
         return (
           call.is_archived &&
-          (filter.call_type === '' || call.call_type === filter.call_type) &&
-          (filter.direction === '' || call.direction === filter.direction)
+          (filter.call_type === "" || call.call_type === filter.call_type) &&
+          (filter.direction === "" || call.direction === filter.direction)
         );
       }),
     [data, filter]
@@ -82,8 +81,8 @@ export const CallsListPage = () => {
   const groupedCalls = useMemo(
     () =>
       groupBy(
-        orderBy(filteredCalls, call => call.created_at, 'desc'),
-        call => format(new Date(call.created_at), 'MMM dd, yyyy')
+        orderBy(filteredCalls, call => call.created_at, "desc"),
+        call => format(new Date(call.created_at), "MMM dd, yyyy")
       ),
     [filteredCalls]
   );
@@ -116,7 +115,7 @@ export const CallsListPage = () => {
           name="call_type"
           value={filter.call_type}
           onChange={handleFilterChange}
-          style={{ padding: '0.5rem' }}
+          style={{ padding: "0.5rem" }}
         >
           <option value="">All Types</option>
           <option value="missed">Missed</option>
@@ -127,7 +126,7 @@ export const CallsListPage = () => {
           name="direction"
           value={filter.direction}
           onChange={handleFilterChange}
-          style={{ marginLeft: '1rem', padding: '0.5rem' }}
+          style={{ marginLeft: "1rem", padding: "0.5rem" }}
         >
           <option value="">All Directions</option>
           <option value="inbound">Incoming</option>
@@ -144,15 +143,15 @@ export const CallsListPage = () => {
               <Grid>
                 {calls.map((call: Call, i) => {
                   const icon =
-                    call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
+                    call.direction === "inbound" ? DiagonalDownOutlined : DiagonalUpOutlined;
                   const title =
-                    call.call_type === 'missed'
-                      ? 'Missed call'
-                      : call.call_type === 'answered'
-                      ? 'Call answered'
-                      : 'Voicemail';
+                    call.call_type === "missed"
+                      ? "Missed call"
+                      : call.call_type === "answered"
+                      ? "Call answered"
+                      : "Voicemail";
                   const subtitle =
-                    call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
+                    call.direction === "inbound" ? `from ${call.from}` : `to ${call.to}`;
                   const duration = formatDuration(call.duration / 1000);
                   const date = formatDate(call.created_at);
                   const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
