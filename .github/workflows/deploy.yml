@@ -35,6 +35,7 @@ jobs:
           # Records to Cypress Cloud
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
           record: true
+          working-directory: ./phone-test
 
         env:
           # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
