@@ -9,12 +9,11 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination,
-  Select
+  Pagination
 } from "@aircall/tractor";
 import { formatDate, formatDuration } from "../../helpers/dates";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import groupBy from "lodash/groupBy";
 import orderBy from "lodash/orderBy";
 import { format } from "date-fns";
@@ -62,11 +61,6 @@ export const CallsListPage = () => {
   useRedirectToLogin(error);
 
   const [filter, setFilter] = useState({ call_type: "", direction: "" });
-
-  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFilter({ ...filter, [name]: value });
-  };
 
   const filteredCalls = useMemo(
     () =>

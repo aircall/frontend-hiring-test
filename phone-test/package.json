@@ -37,6 +37,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "predeploy": "yarn build",
     "deploy": "gh-pages -d build"
   },
