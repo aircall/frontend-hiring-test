@@ -1,8 +1,8 @@
 interface Call {
   id: string;
-  call_type: string;
+  call_type: 'missed' | 'answered' | 'voicemail';
   created_at: string;
-  direction: string;
+  direction: 'inbound' | 'outbound';
   from: string;
   duration: number;
   is_archived: boolean;

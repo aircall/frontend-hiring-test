@@ -10,7 +10,7 @@ export const formatDuration = (duration: number) => {
   }
 };
 
-const getValidDate = (date: Date | string) => {
+export const getValidDate = (date: Date | string) => {
   const potentialValidDate = typeof date === 'string' ? parseISO(date) : date;
 
   // Make sure that the date is a valid ISO otherwise fallback to Date API
@@ -29,6 +29,7 @@ const getValidDate = (date: Date | string) => {
  * @param date ex: 2022-11-16T13:37:05.822Z
  * @returns human readable date
  */
+
 export const formatDate = (date: string) => {
   return format(getValidDate(date), 'LLL d - HH:mm');
 };
