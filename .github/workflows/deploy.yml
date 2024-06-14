@@ -2,8 +2,6 @@ name: Deploy to Vercel
 
 on:
   push:
-    branches:
-      - goksel # Change this to master later
 
 defaults:
     run:
