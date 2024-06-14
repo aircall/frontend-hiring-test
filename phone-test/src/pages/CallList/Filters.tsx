@@ -1,5 +1,5 @@
 import { Button, Grid, Select } from "@aircall/tractor";
-import { callDirectionOptions, callTypeOptions } from "./constats";
+import { callDirectionOptions, callTypeOptions } from "./constants";
 import { useCallback } from "react";
 
 export default function Filters({
