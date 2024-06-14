@@ -19,7 +19,7 @@ export const CallDetailsPage = () => {
 
   const [archiveCall, { error: archiveCallError }] = useMutation(ARCHIVE_CALL);
 
-  // Redirect to login if user is not authenticated
+  // Redirect to log in if user is not authenticated
   useRedirectToLogin(error || archiveCallError);
 
   if (loading) return <p>Loading call details...</p>;
