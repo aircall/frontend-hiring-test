@@ -1,4 +1,6 @@
 import { Button, Grid, Select } from "@aircall/tractor";
+import { callDirectionOptions, callTypeOptions } from "./constats";
+import { useCallback } from "react";
 
 export default function Filters({
   filter,
@@ -7,36 +9,35 @@ export default function Filters({
   filter: { call_type: string; direction: string };
   setFilter: (filter: { call_type: string; direction: string }) => void;
 }) {
+  const handleSelectionChange = useCallback(
+    (key: keyof typeof filter, value: string) => {
+      setFilter({ ...filter, [key]: value });
+    },
+    [filter, setFilter]
+  );
+
+  const handleReset = useCallback(() => {
+    setFilter({ call_type: "", direction: "" });
+  }, [setFilter]);
   return (
-    <Grid columnGap={3} rowGap={3} gridTemplateColumns="1fr 1fr 1fr" mb={6}>
+    <Grid columnGap={4} gridTemplateColumns="auto auto 1fr">
       <Select
-        options={[
-          { label: "All Types", value: "" },
-          { label: "Missed", value: "missed" },
-          { label: "Voicemail", value: "voicemail" },
-          { label: "Answered", value: "answered" }
-        ]}
+        size="small"
+        options={callTypeOptions}
         selectedKeys={[filter.call_type]}
-        onSelectionChange={([val]) => setFilter({ ...filter, call_type: val })}
-        style={{ padding: "0.5rem" }}
+        onSelectionChange={([val]) => handleSelectionChange("call_type", val)}
       />
       <Select
-        options={[
-          { label: "All Directions", value: "" },
-          { label: "Incoming", value: "inbound" },
-          { label: "Outgoing", value: "outbound" }
-        ]}
+        size="small"
+        options={callDirectionOptions}
         selectedKeys={[filter.direction]}
-        onSelectionChange={([val]) => setFilter({ ...filter, direction: val })}
-        style={{ padding: "0.5rem" }}
+        onSelectionChange={([val]) => handleSelectionChange("direction", val)}
       />
-      <Button
-        mode="link"
-        variant="destructive"
-        onClick={() => setFilter({ call_type: "", direction: "" })}
-      >
-        Reset Filters
-      </Button>
+      <div>
+        <Button mode="link" variant="destructive" size="small" onClick={handleReset}>
+          Reset Filters
+        </Button>
+      </div>
     </Grid>
   );
 }
