@@ -23,16 +23,18 @@ jobs:
       - name: Run tests
         run: yarn test -- --watchAll=false
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          build: yarn build
-          start: yarn start
+
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          start: yarn start
+
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
 
