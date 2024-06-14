@@ -1,6 +1,6 @@
 import { useQuery, useSubscription } from "@apollo/client";
 import styled from "styled-components";
-import { PAGINATED_CALLS } from "../gql/queries";
+import { PAGINATED_CALLS } from "../../gql/queries";
 import {
   Grid,
   Icon,
@@ -9,16 +9,18 @@ import {
   Box,
   DiagonalDownOutlined,
   DiagonalUpOutlined,
-  Pagination
+  Pagination,
+  Select
 } from "@aircall/tractor";
-import { formatDate, formatDuration } from "../helpers/dates";
+import { formatDate, formatDuration } from "../../helpers/dates";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import groupBy from "lodash/groupBy";
 import orderBy from "lodash/orderBy";
 import { format } from "date-fns";
-import { ON_UPDATED_CALL } from "../gql/subscriptions";
-import useRedirectToLogin from "../hooks/useRedirectToLogin";
+import { ON_UPDATED_CALL } from "../../gql/subscriptions";
+import useRedirectToLogin from "../../hooks/useRedirectToLogin";
+import Filters from "./Filters";
 
 export const PaginationWrapper = styled.div`
   > div {
@@ -110,29 +112,7 @@ export const CallsListPage = () => {
       <Typography variant="displayM" textAlign="center" py={3}>
         Calls History
       </Typography>
-      <div>
-        <select
-          name="call_type"
-          value={filter.call_type}
-          onChange={handleFilterChange}
-          style={{ padding: "0.5rem" }}
-        >
-          <option value="">All Types</option>
-          <option value="missed">Missed</option>
-          <option value="voicemail">Voicemail</option>
-          <option value="answered">Answered</option>
-        </select>
-        <select
-          name="direction"
-          value={filter.direction}
-          onChange={handleFilterChange}
-          style={{ marginLeft: "1rem", padding: "0.5rem" }}
-        >
-          <option value="">All Directions</option>
-          <option value="inbound">Incoming</option>
-          <option value="outbound">Outgoing</option>
-        </select>
-      </div>
+      <Filters filter={filter} setFilter={setFilter} />
       <Spacer space={3} direction="vertical">
         {Object.entries(groupedCalls).map(([date, calls]) => {
           return (
