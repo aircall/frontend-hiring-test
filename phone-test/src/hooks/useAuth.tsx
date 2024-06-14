@@ -1,28 +1,38 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
+import { AuthenticationStatus } from '../declarations/enums';
 
-const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
-});
-
-export interface AuthPRoviderProps {
-  children: React.ReactNode;
+interface AuthContextType {
+  login: (credentials: { username: string; password: string }) => void;
+  logout: () => void;
+  user: any;
+  status: AuthenticationStatus;
 }
 
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
-  const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
-  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
+  const [user, setUser] = useState(null);
+  const [status, setStatus] = useState<AuthenticationStatus>(AuthenticationStatus.Loading);
+  const [accessToken, setAccessToken] = useLocalStorage('access_token', null);
+  const [, setRefreshToken] = useLocalStorage('refresh_token', null);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (accessToken) {
+      setStatus(AuthenticationStatus.Authenticated);
+    } else {
+      setStatus(AuthenticationStatus.Unauthenticated);
+    }
+  }, [accessToken]);
+
   // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
+  const login = ({ username, password }: { username: string; password: string }) => {
+    setStatus(AuthenticationStatus.Loading);
     return loginMutation({
       variables: { input: { username, password } },
       onCompleted: ({ login }: any) => {
@@ -30,7 +40,7 @@ export const AuthProvider = () => {
         setAccessToken(access_token);
         setRefreshToken(refresh_token);
         setUser(user);
-        console.log('redirect to calls');
+        setStatus(AuthenticationStatus.Authenticated);
         navigate('/calls');
       }
     });
@@ -40,15 +50,21 @@ export const AuthProvider = () => {
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
+    setUser(null);
+    setStatus(AuthenticationStatus.Unauthenticated);
     navigate('/login', { replace: true });
   };
 
-  const value = useMemo(() => {
-    return {
+  const value = useMemo(
+    () => ({
       login,
-      logout
-    };
-  }, []);
+      logout,
+      user,
+      status
+    }),
+    [user, status]
+  );
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />
@@ -57,5 +73,9 @@ export const AuthProvider = () => {
 };
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('Hook should be called within AuthProvider');
+  }
+  return context;
 };
