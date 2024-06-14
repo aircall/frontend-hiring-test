@@ -20,7 +20,7 @@ export const ProtectedLayout = () => {
   }
 
   if (!data?.me) {
-    return <div>You aren't authorized to view this page</div>;
+    return <div>You aren't authorized to view this page.</div>;
   }
 
   return (
