@@ -9,6 +9,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # https://github.com/cypress-io/github-action/issues/48
+      matrix:
+        containers: [ 1, 2 ] # Uses 2 parallel instances
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,6 +38,11 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: yarn start
+          wait-on: 'http://localhost:3000' # Waits for above
+          # Records to Cypress Cloud
+          # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
+          record: true
+          parallel: true # Runs test in parallel using settings above
 
         env:
           # For recording and parallelization to work you must set your CYPRESS_RECORD_KEY
