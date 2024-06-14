@@ -6,10 +6,6 @@ on:
 permissions:
   contents: write
 
-defaults:
-  run:
-    working-directory: "phone-test"
-
 jobs:
   build:
 
