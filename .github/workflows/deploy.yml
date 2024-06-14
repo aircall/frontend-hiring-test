@@ -5,6 +5,10 @@ on:
     branches:
       - goksel # Change this to master later
 
+defaults:
+    run:
+        working-directory: ./phone-test
+
 jobs:
   build:
 
@@ -17,6 +21,7 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
+          cache-dependency-path: ./phone-test/yarn.lock
 
       - run: yarn install --frozen-lockfile
 
