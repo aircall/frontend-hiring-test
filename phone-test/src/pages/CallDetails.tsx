@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { GET_CALL_DETAILS } from "../gql/queries/getCallDetails";
-import { Box, Button, Typography, useToast } from "@aircall/tractor";
+import { Box, Button, Grid, Typography, useToast } from "@aircall/tractor";
 import { formatDate, formatDuration } from "../helpers/dates";
 import { ARCHIVE_CALL } from "../gql/mutations/calls";
 import useRedirectToLogin from "../hooks/useRedirectToLogin";
@@ -17,14 +17,17 @@ export const CallDetailsPage = () => {
   });
   const { showToast } = useToast();
 
-  const [archiveCall] = useMutation(ARCHIVE_CALL);
+  const [archiveCall, { error: archiveCallError }] = useMutation(ARCHIVE_CALL);
 
-  useRedirectToLogin(error);
+  // Redirect to login if user is not authenticated
+  useRedirectToLogin(error || archiveCallError);
 
   if (loading) return <p>Loading call details...</p>;
   if (error) return <p>You aren't authorized to view this page</p>;
 
   const { call } = data;
+
+  if (!call) return <p>Couldn't find call with id {callId}</p>;
 
   const handleArchive = async () => {
     try {
@@ -54,18 +57,26 @@ export const CallDetailsPage = () => {
         <div>{`Type: ${call.call_type}`}</div>
         <div>{`Created at: ${formatDate(call.created_at)}`}</div>
         <div>{`Direction: ${call.direction}`}</div>
-        <div>{`From: ${call.from}`}</div>
+        <div>
+          <a href={`tel:${call.from}`}>{`From: ${call.from}`}</a>
+        </div>
         <div>{`Duration: ${formatDuration(call.duration / 1000)}`}</div>
         <div>{`Is archived: ${call.is_archived}`}</div>
-        <div>{`To: ${call.to}`}</div>
-        <div>{`Via: ${call.via}`}</div>
+        <div>
+          <a href={`tel:${call.to}`}>{`To: ${call.to}`}</a>
+        </div>
+        <div>
+          <a href={`tel:${call.via}`}>{`Via: ${call.via}`}</a>
+        </div>
         {call.notes?.map((note: Note, index: number) => {
           return <div key={note.id}>{`Note ${index + 1}: ${note.content}`}</div>;
         })}
       </Box>
-      <Button size="xSmall" variant="destructive" onClick={handleArchive}>
-        Archive call
-      </Button>
+      <Grid display="inline-block" marginLeft="1rem">
+        <Button size="xSmall" variant="destructive" onClick={handleArchive}>
+          Archive call
+        </Button>
+      </Grid>
     </>
   );
 };
