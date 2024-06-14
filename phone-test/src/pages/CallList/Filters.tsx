@@ -20,7 +20,7 @@ export default function Filters({
     setFilter({ call_type: "", direction: "" });
   }, [setFilter]);
   return (
-    <Grid columnGap={4} gridTemplateColumns="auto auto 1fr">
+    <Grid columnGap={4} gridTemplateColumns="1fr 1fr auto">
       <Select
         size="small"
         options={callTypeOptions}
