@@ -51,3 +51,6 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
 
+      - name: Promote deployment to production
+        run: vercel promote https://frontend-hiring-test-seven.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
+
