@@ -22,7 +22,6 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
-          cache-dependency-path: phone-test/yarn.lock
 
       - run: yarn install --frozen-lockfile
 
@@ -35,5 +34,5 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: phone-test/build
+          folder: build
 

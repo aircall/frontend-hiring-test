@@ -1,66 +1,46 @@
-# :phone: Aircall Frontend Hiring Test
+# Getting Started with Create React App
 
-Backed by over $220 million of investment since 2015, Aircall creates technology that fuels accessible, transparent and collaborative communication to empower our base of 14,000+ customers (and growing) to make authentic, human connections. With over 1.3M calls per day, we focus on user experience, collaboration and integration with other software.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-We are looking for engaged and passionate frontend software engineers to join our growing engineering team.
+## Available Scripts
 
-_Feel free to apply! Drop us a line with your LinkedIn/GitHub/Twitter at jobs@aircall.io._
+In the project directory, you can run:
 
-## Context
+### `yarn start`
 
-We ask all candidates to take either a home test or a live coding one. We've created a basic application, listing calls and displaying their details, as a support for both tests.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## Exercise
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-### Current state of the application
+### `yarn test`
 
-We provide an application with very basic features:
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-- authentication (accepting random username/password)
-- listing calls, with pagination
-- displaying call details
+### `yarn build`
 
-The application is not production ready. It contains several issues and existing features could be improved a lot. That's on purpose, we'll ask you to work on that. More info in the next section.
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-### Expectations
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-As said above, the application is far from being production ready. We'll ask you to fix some known issues, improve existing features and add new ones.
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-You won't have time to fix everything, and we don't expect you to. Also, we adjust our expectations depending on your seniority. Here's what expected for each level of seniority:
+### `yarn eject`
 
-- **junior software engineer**
-  - Improve the pagination in the calls list view. The app displays a dropdown to let users change the number of calls per page. But it actually has no impact on the UI. Please fix that.
-  - Add a filtering feature in the calls list view. You can for instance filter on the call type, or the direction.
-  - Group calls per day. For instance, if 3 calls were made the same day, group them into the same section.
-- **software engineer**
-  - All of the above
-  - Fix the logout feature. For now, it does redirect the users to the login page but they are automatically redirected back to the calls list.
-  - Fix the token expiration UX. Access tokens are invalid after 10 minutes, making all new requests fail. Either improve the user experience by redirecting users to the login page with an information toast or use the refresh token (see API docs).
-  - Add unit tests for the `date` helper functions.
-- **senior software engineer**
-  - All of the above
-  - Add an end to test for the feature of your choice. For instance, test that users can log into the app, access to the details of call and log out.
-  - Implement the archive call feature and add real-time support. Meaning that if you open the app in 2 tabs, archive a call from the first tab, the second tab must reflect this change. Create a PR for this feature as if you were submitting it to our team, for it to be merged and released in production. As we try to work asynchonously, writing skills are important to us.
-- **staff engineer and above**
-  - All of the above
-  - Write a plan describing what would be required for this app to be released into production, keeping the same features set, and how you would implement it. Potential topics to be addressed here are: testing, CI/CD, documentation, performances, scaling, developer experience... We don't expect you to address all of them, focus on the ones that matters the most for you.
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-### Stack
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-The application relies on a quite common stack. It's a React/Typescript application, created with `create-react-app`, and using a GraphQL API. It uses our own lovely UI library, called Tractor. It's a public library, you can have access to its [Storybook](http://tractor.aircall.io/) and [NPM](https://www.npmjs.com/package/@aircall/tractor) page.
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-If you joined us, you'd work on a very similar stack.
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## APIs
+## Learn More
 
-The application relies on a GraphQL API. You can find its documentation [here](documentation/GRAPHQL_API.md) and more information about the models [there](documentation/MODELS.md).
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-We've previously built a REST API for this test as well. While we suggest you to work with the GraphQL API, you could switch to the REST API if you'd like. You'd find its documentation [here](documentation/REST_API.md).
-
-## Submission
-
-Please fork this repository and submit your technical test through this [form](https://forms.gle/1TG1snJoGgvPKox5A).
-
-We'll try to review it in the next 48 hours and get back to you to talk about your code!
-
-Contact us at jobs@aircall.io if you need more details.
+To learn React, check out the [React documentation](https://reactjs.org/).
