@@ -13,6 +13,7 @@ import { formatDuration } from 'date-fns';
 import { formatDate, formatDateAsDay } from '../../helpers/dates';
 import { ApolloError } from '@apollo/client';
 import { PropsWithChildren } from 'react';
+import { ArchiveButton } from '../../components/ArchiveButton';
 
 interface Call {
   id: string;
@@ -128,6 +129,7 @@ const CallsListHistory = ({
                     <Typography variant="caption">{notes}</Typography>
                   </Box>
                   <Flex justifyContent="end" style={{ gap: '1rem' }}>
+                    <ArchiveButton callId={call.id} isArchived={call.is_archived} />
                     <Button
                       data-testid="call-details"
                       size="xSmall"

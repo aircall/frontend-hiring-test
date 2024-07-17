@@ -4,9 +4,13 @@ import {
   InMemoryCache,
   ApolloProvider as ApolloProviderBase,
   createHttpLink,
+  split,
   NormalizedCacheObject
 } from '@apollo/client';
 
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 import { getAccessToken } from '../apollo/shared/token';
 import Config from '../config';
 import { setContext } from '@apollo/client/link/context';
@@ -24,8 +28,27 @@ const createApolloClient = (token: string | null) => {
     };
   });
 
+  const wsLink = new WebSocketLink(
+    new SubscriptionClient(`wss://${Config.BASE_URL}/websocket`, {
+      lazy: true,
+      reconnect: true,
+      connectionParams: async () => ({
+        authorization: token ? token : ''
+      })
+    })
+  );
+
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+    },
+    wsLink,
+    httpLink
+  );
+
   return new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: authLink.concat(splitLink),
     cache: new InMemoryCache()
   });
 };
@@ -38,6 +61,8 @@ const ApolloProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === Token.ACCESS) {
+        console.log('new token detected');
+
         setClient(createApolloClient(getAccessToken()));
       }
     };
@@ -48,6 +73,10 @@ const ApolloProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  useEffect(() => {
+    console.log('client updated');
+  }, [client]);
 
   return <ApolloProviderBase client={client}>{children}</ApolloProviderBase>;
 };

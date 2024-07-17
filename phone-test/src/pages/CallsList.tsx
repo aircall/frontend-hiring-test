@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import { PAGINATED_CALLS } from '../gql/queries';
+import { ON_UPDATED_CALL } from '../gql/mutations';
 import { Flex } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CallsListHistory } from '../views/CallsList/CallsListHistory';
@@ -46,6 +47,17 @@ export const CallsListPage: React.FC = () => {
     },
     onCompleted: refreshToken
   });
+
+  const { data: subscriptionData } = useSubscription(ON_UPDATED_CALL);
+
+  useEffect(() => {
+    if (subscriptionData) {
+      refetch({
+        offset: (activePage - 1) * itemsPerPage,
+        limit: itemsPerPage
+      });
+    }
+  }, [subscriptionData, refetch, activePage, itemsPerPage]);
 
   useEffect(() => {
     refetch({
