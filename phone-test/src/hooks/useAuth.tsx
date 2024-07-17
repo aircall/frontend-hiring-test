@@ -1,12 +1,16 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { LOGIN } from '../gql/mutations';
 import { useLocalStorage } from './useLocalStorage';
 import { useMutation } from '@apollo/client';
+import { Token } from '../helpers/constants';
+import { useToken } from './useToken';
+import { isTokenExpired } from '../helpers/isTokenExpired';
 
 const AuthContext = createContext({
-  login: ({}) => {},
-  logout: () => {}
+  login: ({ username, password }: { username: string; password: string }) => {},
+  logout: () => {},
+  user: { id: '', username: '' }
 });
 
 export interface AuthPRoviderProps {
@@ -14,41 +18,56 @@ export interface AuthPRoviderProps {
 }
 
 export const AuthProvider = () => {
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState('loading');
-  const [accessToken, setAccessToken] = useLocalStorage('access_token', undefined);
-  const [refreshToken, setRefreshToken] = useLocalStorage('refresh_token', undefined);
+  const { accessToken } = useToken();
+  const [user, setUser] = useState({ id: '', username: '' });
+  const [, setAccessToken] = useLocalStorage('access_token', undefined);
+  const [, setRefreshToken] = useLocalStorage('refresh_token', undefined);
   const [loginMutation] = useMutation(LOGIN);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
-  // call this function when you want to authenticate the user
-  const login = ({ username, password }: any) => {
-    return loginMutation({
-      variables: { input: { username, password } },
-      onCompleted: ({ login }: any) => {
-        const { access_token, refresh_token, user } = login;
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
-        setUser(user);
-        console.log('redirect to calls');
-        navigate('/calls');
-      }
-    });
-  };
+  useEffect(() => {
+    if (pathname === '/login' && !isTokenExpired(accessToken)) {
+      navigate('/calls');
+    } else if (pathname !== '/login' && isTokenExpired(accessToken)) {
+      navigate('/login');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
 
-  // call this function to sign out logged in user
-  const logout = () => {
+  const login = useCallback(
+    ({ username, password }: { username: string; password: string }) => {
+      return loginMutation({
+        variables: { input: { username, password } },
+        onCompleted: ({ login }: any) => {
+          const { access_token, refresh_token, user } = login;
+          setAccessToken(access_token);
+          //let the apollo client know it has a new token available
+          window.dispatchEvent(
+            new StorageEvent('storage', { key: Token.ACCESS, newValue: access_token })
+          );
+          setRefreshToken(refresh_token);
+          setUser(user);
+        }
+      });
+    },
+    [loginMutation, setAccessToken, setRefreshToken]
+  );
+
+  const logout = useCallback(() => {
     setAccessToken(null);
     setRefreshToken(null);
     navigate('/login', { replace: true });
-  };
+  }, [navigate, setAccessToken, setRefreshToken]);
 
   const value = useMemo(() => {
     return {
       login,
-      logout
+      logout,
+      user
     };
-  }, []);
+  }, [login, logout, user]);
+
   return (
     <AuthContext.Provider value={value}>
       <Outlet />

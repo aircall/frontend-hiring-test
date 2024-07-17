@@ -32,3 +32,7 @@ const getValidDate = (date: Date | string) => {
 export const formatDate = (date: string) => {
   return format(getValidDate(date), 'LLL d - HH:mm');
 };
+
+export const formatDateAsDay = (date: string) => {
+  return format(getValidDate(date), 'LLL d - yyyy');
+};

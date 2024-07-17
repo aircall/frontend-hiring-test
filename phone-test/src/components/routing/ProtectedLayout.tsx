@@ -1,22 +1,40 @@
-import { Outlet, Link } from 'react-router-dom';
-import { Box, Flex, Spacer, Grid } from '@aircall/tractor';
+import { Flex, Spacer, Grid, Button } from '@aircall/tractor';
 import logo from '../../logo.png';
+import { PropsWithChildren } from 'react';
+import { AppContainer } from '../AppContainer';
+import { useAuth } from '../../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
-export const ProtectedLayout = () => {
+export const ProtectedLayout = ({ children }: PropsWithChildren) => {
+  const { user, logout } = useAuth();
+
   return (
-    <Box minWidth="100vh" p={4}>
-      <Flex justifyContent="space-between" alignItems="center">
+    <Flex
+      display="flex"
+      flex={1}
+      flexDirection="column"
+      justifyContent="space-between"
+      alignItems="center"
+      minHeight={'100vh'}
+      minWidth={'100vw'}
+      p={4}
+    >
+      <Flex minWidth="100%" justifyContent="space-between" alignItems="center">
         <Link to="/calls">
           <img src={logo} alt="Aircall" width="32px" height="32px" />
         </Link>
         <Spacer space="m" alignItems="center">
-          <span>{`Welcome {username}!`}</span>
-          <Link to="/login">logout</Link>
+          <span>{`Welcome ${user?.username ?? ''}!`}</span>
+          <Button size="xSmall" variant="destructive" data-testid="logout" onClick={logout}>
+            Logout
+          </Button>
         </Spacer>
       </Flex>
-      <Grid w="500px" mx="auto" rowGap={2}>
-        <Outlet />
-      </Grid>
-    </Box>
+      <AppContainer>
+        <Grid flex={1} rowGap={2}>
+          {children}
+        </Grid>
+      </AppContainer>
+    </Flex>
   );
 };
