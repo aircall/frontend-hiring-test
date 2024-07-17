@@ -16,6 +16,7 @@
     "date-fns": "^2.29.3",
     "graphql": "^16.6.0",
     "husky": "^8.0.2",
+    "jsonwebtoken": "^9.0.2",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
@@ -23,6 +24,7 @@
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.6",
+    "subscriptions-transport-ws": "^0.11.0",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
@@ -30,6 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "setup:pw":"yarn playwright install",
+    "test:e2e": "yarn setup:pw && playwright test ./e2e.spec.ts",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -59,5 +63,10 @@
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.1",
+    "cypress": "^13.13.0",
+    "playwright": "^1.45.1"
   }
 }

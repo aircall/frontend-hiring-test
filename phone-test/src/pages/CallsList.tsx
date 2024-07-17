@@ -1,125 +1,123 @@
-import { useQuery } from '@apollo/client';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import { useQuery, useSubscription } from '@apollo/client';
 import { PAGINATED_CALLS } from '../gql/queries';
-import {
-  Grid,
-  Icon,
-  Typography,
-  Spacer,
-  Box,
-  DiagonalDownOutlined,
-  DiagonalUpOutlined,
-  Pagination
-} from '@aircall/tractor';
-import { formatDate, formatDuration } from '../helpers/dates';
+import { ON_UPDATED_CALL } from '../gql/mutations';
+import { Flex } from '@aircall/tractor';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { CallsListHistory } from '../views/CallsList/CallsListHistory';
+import { CallsListPagination } from '../views/CallsList/CallsListPagination';
+import { CallsListHeader } from '../views/CallsList/CallsListHeader';
+import { ProtectedLayout } from '../components/routing/ProtectedLayout';
+import { useToken } from '../hooks/useToken';
 
-export const PaginationWrapper = styled.div`
-  > div {
-    width: inherit;
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-  }
-`;
+const CALLS_PER_PAGE_OPTIONS = [5, 10, 20];
 
-const CALLS_PER_PAGE = 5;
+export interface Call {
+  id: string;
+  direction: 'inbound' | 'outbound';
+  call_type: 'missed' | 'answered' | 'voicemail';
+  duration: number;
+  from: string;
+  to: string;
+  created_at: string;
+  is_archived: boolean;
+  notes?: { id: string; content: string }[];
+}
 
-export const CallsListPage = () => {
+export const CallsListPage: React.FC = () => {
   const [search] = useSearchParams();
+  const { refreshToken } = useToken();
   const navigate = useNavigate();
   const pageQueryParams = search.get('page');
+  const itemsPerPageQueryParams = search.get('itemsPerPage');
+  const callTypeFilterQueryParams = search.get('callType');
+  const directionFilterQueryParams = search.get('direction');
+
   const activePage = !!pageQueryParams ? parseInt(pageQueryParams) : 1;
-  const { loading, error, data } = useQuery(PAGINATED_CALLS, {
+  const itemsPerPage = !!itemsPerPageQueryParams
+    ? parseInt(itemsPerPageQueryParams)
+    : CALLS_PER_PAGE_OPTIONS[0];
+  const [callTypeFilter, setCallTypeFilter] = useState(callTypeFilterQueryParams || '');
+  const [directionFilter, setDirectionFilter] = useState(directionFilterQueryParams || '');
+
+  const { loading, error, data, refetch } = useQuery(PAGINATED_CALLS, {
     variables: {
-      offset: (activePage - 1) * CALLS_PER_PAGE,
-      limit: CALLS_PER_PAGE
-    }
-    // onCompleted: () => handleRefreshToken(),
+      offset: (activePage - 1) * itemsPerPage,
+      limit: itemsPerPage
+    },
+    onCompleted: refreshToken
   });
 
-  if (loading) return <p>Loading calls...</p>;
-  if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
+  const { data: subscriptionData } = useSubscription(ON_UPDATED_CALL);
 
-  const { totalCount, nodes: calls } = data.paginatedCalls;
+  useEffect(() => {
+    if (subscriptionData) {
+      refetch({
+        offset: (activePage - 1) * itemsPerPage,
+        limit: itemsPerPage
+      });
+    }
+  }, [subscriptionData, refetch, activePage, itemsPerPage]);
 
-  const handleCallOnClick = (callId: string) => {
-    navigate(`/calls/${callId}`);
-  };
+  useEffect(() => {
+    refetch({
+      offset: (activePage - 1) * itemsPerPage,
+      limit: itemsPerPage
+    });
+  }, [itemsPerPage, activePage, refetch]);
 
   const handlePageChange = (page: number) => {
-    navigate(`/calls/?page=${page}`);
+    navigate(`/calls/?page=${page}&itemsPerPage=${itemsPerPage}`);
   };
 
+  const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newItemsPerPage = parseInt(event.target.value);
+    navigate(`/calls/?page=1&itemsPerPage=${newItemsPerPage}`);
+  };
+
+  const handleCallTypeFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCallTypeFilter(event.target.value);
+  };
+
+  const handleDirectionFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setDirectionFilter(event.target.value);
+  };
+
+  const totalCount = data?.paginatedCalls?.totalCount ?? 0;
+  const calls = data?.paginatedCalls.nodes ?? [];
+
+  const handleCallOnClick = (callId: string) => navigate(`/calls/${callId}`);
+
   return (
-    <>
-      <Typography variant="displayM" textAlign="center" py={3}>
-        Calls History
-      </Typography>
-      <Spacer space={3} direction="vertical">
-        {calls.map((call: Call) => {
-          const icon = call.direction === 'inbound' ? DiagonalDownOutlined : DiagonalUpOutlined;
-          const title =
-            call.call_type === 'missed'
-              ? 'Missed call'
-              : call.call_type === 'answered'
-              ? 'Call answered'
-              : 'Voicemail';
-          const subtitle = call.direction === 'inbound' ? `from ${call.from}` : `to ${call.to}`;
-          const duration = formatDuration(call.duration / 1000);
-          const date = formatDate(call.created_at);
-          const notes = call.notes ? `Call has ${call.notes.length} notes` : <></>;
-
-          return (
-            <Box
-              key={call.id}
-              bg="black-a30"
-              borderRadius={16}
-              cursor="pointer"
-              onClick={() => handleCallOnClick(call.id)}
-            >
-              <Grid
-                gridTemplateColumns="32px 1fr max-content"
-                columnGap={2}
-                borderBottom="1px solid"
-                borderBottomColor="neutral-700"
-                alignItems="center"
-                px={4}
-                py={2}
-              >
-                <Box>
-                  <Icon component={icon} size={32} />
-                </Box>
-                <Box>
-                  <Typography variant="body">{title}</Typography>
-                  <Typography variant="body2">{subtitle}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" textAlign="right">
-                    {duration}
-                  </Typography>
-                  <Typography variant="caption">{date}</Typography>
-                </Box>
-              </Grid>
-              <Box px={4} py={2}>
-                <Typography variant="caption">{notes}</Typography>
-              </Box>
-            </Box>
-          );
-        })}
-      </Spacer>
-
-      {totalCount && (
-        <PaginationWrapper>
-          <Pagination
-            activePage={activePage}
-            pageSize={CALLS_PER_PAGE}
-            onPageChange={handlePageChange}
-            recordsTotalCount={totalCount}
+    <ProtectedLayout>
+      <Flex flexDirection={'column'} minH="100%" justifyContent={'space-between'} flex={1}>
+        <Flex flexDirection="column" flex={1}>
+          <CallsListHeader
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={handleItemsPerPageChange}
+            options={CALLS_PER_PAGE_OPTIONS}
+            callTypeFilter={callTypeFilter}
+            directionFilter={directionFilter}
+            onCallTypeFilterChange={handleCallTypeFilterChange}
+            onDirectionFilterChange={handleDirectionFilterChange}
           />
-        </PaginationWrapper>
-      )}
-    </>
+          <CallsListHistory
+            calls={calls}
+            handleCallOnClick={handleCallOnClick}
+            loading={loading}
+            error={error}
+            callTypeFilter={callTypeFilter}
+            directionFilter={directionFilter}
+          />
+        </Flex>
+
+        <CallsListPagination
+          activePage={activePage}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          recordsTotalCount={totalCount}
+        />
+      </Flex>
+    </ProtectedLayout>
   );
 };
