@@ -36,6 +36,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
+// NOTE: The backend uses the legacy 'subscriptions-transport-ws' protocol, not 'graphql-ws'.
+// If you are implementing real-time features, use 'subscriptions-transport-ws' and 'WebSocketLink'.
+// We have installed 'subscriptions-transport-ws' for you.
+// import { WebSocketLink } from '@apollo/client/link/ws';
+// import { SubscriptionClient } from 'subscriptions-transport-ws';
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthProvider />}>
