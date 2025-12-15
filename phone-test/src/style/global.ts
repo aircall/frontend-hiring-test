@@ -1,4 +1,4 @@
-import { createGlobalStyle } from '@xstyled/styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 export const GlobalAppStyle = createGlobalStyle`
   html, body {
